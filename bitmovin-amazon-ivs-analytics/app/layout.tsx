@@ -9,7 +9,6 @@ import { Route } from "@/components/Route";
 
 export const metadata: Metadata = {
   applicationName: "Dashboard",
-  title: "Home",
   description: "Bitmovin and Amazon IVS Demo",
 };
 
@@ -19,9 +18,8 @@ type Props = {
 
 const ROUTES = [{text: "Sessions", href: "/sessions"}];
 
-export default ({ children }: Props) => {
-  return (
-    <html lang="en">
+export default function RootLayout({ children }: Props) {
+  return <html lang="en">
       <body>
         <Main navigation={<Navigation />} breadcrumbs={<Route items={ROUTES}/>}>
           <>
@@ -31,6 +29,5 @@ export default ({ children }: Props) => {
         </Main>
         <main>{children}</main>
       </body>
-    </html>
-  );
+    </html>;
 };

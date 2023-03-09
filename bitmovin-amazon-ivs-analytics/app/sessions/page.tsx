@@ -5,15 +5,6 @@ export const metadata: Metadata = {
   description: "Bitmovin and Amazon IVS Demo",
 };
 
-export default () => {
-  return (
-    <main>
-
-  
-
-     
-
-      
-    </main>
-  );
+export default function Sessions() {
+  return <p>Sessions</p>;
 }
