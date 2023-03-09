@@ -1,12 +1,19 @@
 "use client";
 
 import "@cloudscape-design/global-styles/index.css";
-import AppLayout from "@cloudscape-design/components/app-layout";
-import { applyMode, applyDensity, Density, Mode } from '@cloudscape-design/global-styles';
 
+import AppLayout from "@cloudscape-design/components/app-layout";
+import {
+  applyMode,
+  applyDensity,
+  Density,
+  Mode,
+} from "@cloudscape-design/global-styles";
 
 import React from "react";
-if (typeof window === 'undefined') {
+import { AppContent } from "./AppContent";
+
+if (typeof window === "undefined") {
   console.log(`
     CloudScape isn't fully capable of server-side rendering.
     The server had to disable useLayoutEffect manually.
@@ -18,12 +25,12 @@ if (typeof window === 'undefined') {
   applyDensity(Density.Comfortable);
 }
 
-export default function ({
-  children,
-}: {
-  children: React.ReactNode
-}) {
+export default ({ children }: { children: React.ReactNode }) => {
   return (
-    <AppLayout content={children} />
-  )
+    <>
+      <AppLayout content={<AppContent>{children}</AppContent>} />
+    </>
+  );
 }
+
+
