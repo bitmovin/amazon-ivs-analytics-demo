@@ -5,12 +5,6 @@ export const metadata: Metadata = {
   description: "Bitmovin and Amazon IVS Demo",
 };
 
-type Params = {
-  params: {
-    id: string;
-  };
-};
-
-export default function Page({params:{id}}: Params) {
-  return <p>Channel: {id}</p>;
+export default function Page(props: {params: {id: string}}) {
+  return <p>Channel: {props.params.id}</p>;
 }

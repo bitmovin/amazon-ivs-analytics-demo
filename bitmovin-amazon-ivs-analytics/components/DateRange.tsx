@@ -1,5 +1,4 @@
 import DateRangePicker, { DateRangePickerProps } from "@cloudscape-design/components/date-range-picker";
-import { useSearchParams } from "next/navigation";
 import { useState } from "react";
 type Value = DateRangePickerProps.AbsoluteValue | null;
 

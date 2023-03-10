@@ -1,19 +1,11 @@
 "use client";
 
-import TopNavigation from "@cloudscape-design/components/top-navigation";
-import { useSelectedLayoutSegments } from "next/navigation";
+import BaseHeader from "@cloudscape-design/components/header"
 
-export const Header = ({ children } : {children?: JSX.Element}) => {
-  const segments = useSelectedLayoutSegments();
-  return <TopNavigation
-    identity={{
-      title: segments.at(0),
-      href: "#"
-    }}
-    i18nStrings={{
-      overflowMenuTriggerText: "",
-      overflowMenuTitleText: ""
-    }}
-    search={children}
-  />
-};
+export const Header = (props: {title: string}) => {
+    return (
+        <BaseHeader  variant="h1">
+            {props.title}
+        </BaseHeader>
+    )
+}

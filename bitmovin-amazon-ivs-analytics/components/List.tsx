@@ -40,7 +40,7 @@ export const List = <T extends Item>({
       loading={loading}
       columnDefinitions={(columns || (items.length > 0 ? Object.getOwnPropertyNames(items[0]) : [])).map(
         (header: string & keyof T) => ({
-          id,
+          id: header,
           header,
           cell: (item: T) => (
             <Link href={id ? `${route}/${item[id]}` : route} >

@@ -1,8 +1,7 @@
 "use client";
 import { applyMode, Mode } from "@cloudscape-design/global-styles";
-import AppLayout from "@cloudscape-design/components/app-layout";
+import BaseAppLayout from "@cloudscape-design/components/app-layout";
 import React from "react";
-import { Sidebar } from "./Sidebar";
 
 
 if (typeof window === "undefined") {
@@ -17,13 +16,13 @@ if (typeof window === "undefined") {
   applyMode(Mode.Dark);
 }
 
-export type MainProps = {
-  paths: string[];
-  children: JSX.Element[];
-};
 
-export const Main = ({ children, paths }: MainProps ) =>
-  <AppLayout
-    navigation={<Sidebar paths={paths} />}
-    content={children}
-  />;
+export function AppLayout(props: {breadcrumbs: JSX.Element, navigation: JSX.Element, content: JSX.Element}) {
+  return (
+    <BaseAppLayout
+      breadcrumbs={props.breadcrumbs}
+      navigation={props.navigation}
+      content={props.content}
+    />
+  );
+}

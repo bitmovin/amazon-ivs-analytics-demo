@@ -1,20 +1,21 @@
 import { List } from "@/components/List";
-import { Metadata } from "next";
-import { Suspense } from "react";
-import { fetchSession } from "../../../components/bitmovinApi";
+import { fetchSession } from "@/utils/Bitmovin";
 
-export const metadata: Metadata = {
+export const metadata = {
   title: "Session",
   description: "Bitmovin and Amazon IVS Demo",
 };
 
-
-
 export default async function Page({params: {id}}: {params: {id: string}}) {
-  const items = await fetchSession(id)
-  const it = items?.map(i => ({...i, id: ''})) || [];
+  let i = 0;
+  const items = (await fetchSession(id)).map(m => ({...m, id: (i++).toString()}));
 
-  return <Suspense fallback={<p>Loading...</p>}>
-    <List loading={false} route='/sessions' title={'Session Details'} items={it} id={"id"} />
-  </Suspense>;
+  return <List
+    loading={false}
+    route='/sessions'
+    title={'Session Details'}
+    items={items}
+    id={"id"}
+  />
+
 }

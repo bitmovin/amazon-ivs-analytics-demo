@@ -1,7 +1,6 @@
 import { List } from "@/components/List";
 import { Metadata } from "next";
 
-
 export const metadata: Metadata = {
   title: "Channels",
   description: "Bitmovin and Amazon IVS Demo",

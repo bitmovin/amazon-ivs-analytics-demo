@@ -1,3 +1,5 @@
+
+import { Container } from "@/components/Container";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -5,5 +7,9 @@ export const metadata: Metadata = {
 };
 
 export default function App() {
-  return  <p>App</p>;
+  return (
+    <Container><p>App</p></Container>
+  );
 }
+
+
