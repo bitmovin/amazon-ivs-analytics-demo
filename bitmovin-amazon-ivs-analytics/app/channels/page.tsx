@@ -1,5 +1,4 @@
 import { List } from "@/components/List";
-import { Title } from "@/components/Title";
 import { Metadata } from "next";
 
 
@@ -7,9 +6,6 @@ export const metadata: Metadata = {
   title: "Channels",
   description: "Bitmovin and Amazon IVS Demo",
 };
-
-
-
 
 const ITEMS = [
   { id: '1', name: 'Channel 1' },
@@ -34,15 +30,14 @@ const ITEMS = [
   { id: '20', name: 'Channel 20' },
 ];
 
-function Channels() {
+export default function Page() {
   return (
     <List
+      loading={false}
       title={'Channels'}
-      route={'channels'}
+      route={'/channels'}
       items={ITEMS}
       id='id'
     />
   );
-}
-
-export default Channels;
+};

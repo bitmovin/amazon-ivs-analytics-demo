@@ -1,41 +1,34 @@
 "use client";
 
 import Box from "@cloudscape-design/components/box";
-import Button from "@cloudscape-design/components/button";
-import Header from "@cloudscape-design/components/header";
-import Pagination from "@cloudscape-design/components/pagination";
 import Table from "@cloudscape-design/components/table";
+import { Route } from "next";
 import Link from "next/link";
-import { useState } from "react";
 import { DateRange, useDateRange } from "./DateRange";
 
-type KeyOf<T> = string & keyof T;
-
-type Item<T> = {
-  route: string;
-  id?: KeyOf<T>;
+type Item = Record<string, string[] | number | string | boolean | undefined  | null> & {id: string};
+type Params<T extends Item> = {
+  id: string & keyof T,
+  route: Route,
+  loading: boolean,
+  items: T[];
+  title: string;
+  columns?: (string & keyof T)[];
 };
 
-type Data<T> = {
-  items?: T[];
-  title: string;
-  columns?: KeyOf<T>[];
-} & Item<T>;
-
-export const List = <
-  T extends Record<string, string | number | string[] | null | boolean>
->({
+export const List = <T extends Item>({
+  loading,
   route,
   title,
   items,
   columns,
   id,
-}: Data<T>) => {
+}: Params<T>) => {
   const [value, setValue] = useDateRange(null);
   return (
     <Table
       filter={<DateRange value={value} setValue={setValue} />}
-      items={items ? items : []}
+      items={items}
       empty={
         <Box >
           <b>No resources</b>
@@ -44,15 +37,14 @@ export const List = <
           </Box>
         </Box>
       }
-      loading={false}
-      resizableColumns={true}
-      columnDefinitions={(columns || Object.keys(items?.at(0) || {})).map(
-        (header) => ({
+      loading={loading}
+      columnDefinitions={(columns || (items.length > 0 ? Object.getOwnPropertyNames(items[0]) : [])).map(
+        (header: string & keyof T) => ({
           id,
           header,
           cell: (item: T) => (
-            <Link href={`${route}/${item[id || 'id']}`.toLowerCase()}>
-              {item[header] || "Loading..."}
+            <Link href={id ? `${route}/${item[id]}` : route} >
+              {`${item[header]}`}
             </Link>
           ),
         })

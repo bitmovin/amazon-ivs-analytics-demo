@@ -16,8 +16,9 @@ const fetchSession = async (id: string) => (
 
 export default async function Session({params: {id}}: {params: {id: string}}) {
   const items = await fetchSession(id)
+  const it = items.map(i => ({...i, id: 'a'}))
 
   return <Suspense fallback={<p>Loading...</p>}>
-    <List route={'#'} title={'Session Details'} items={items} />
+    <List loading={false} route='/sessions' title={'Session Details'} items={it} id={"id"} />
   </Suspense>;
 }

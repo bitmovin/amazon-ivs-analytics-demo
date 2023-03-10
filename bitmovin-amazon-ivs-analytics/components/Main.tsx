@@ -1,6 +1,5 @@
 "use client";
 import { applyMode, Mode } from "@cloudscape-design/global-styles";
-
 import AppLayout from "@cloudscape-design/components/app-layout";
 import React from "react";
 import { Sidebar } from "./Sidebar";
