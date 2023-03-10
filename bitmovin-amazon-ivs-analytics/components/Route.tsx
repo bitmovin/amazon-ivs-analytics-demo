@@ -1,14 +1,16 @@
 'use client';
 
-import * as React from "react";
 import BreadcrumbGroup from "@cloudscape-design/components/breadcrumb-group";
-import { useRouter } from "next/router";
-import { usePathname } from "next/navigation";
 
-export const Route = ({items}:{items:{text:string, href:string}[]}) => {
+export const Route = ({items}:{items:string[]}) => {
   return (
     <BreadcrumbGroup
-      items={items}
+      items={
+        items.map(text => ({
+          text, 
+          href: `/${text.toLowerCase()}`
+        })
+      )}
       ariaLabel="Route"
     />
   );

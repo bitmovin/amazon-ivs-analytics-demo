@@ -1,20 +1,29 @@
 "use client";
-import { setupCloudScape } from "@/lib";
-import { SideNavigation } from "@cloudscape-design/components";
 import AppLayout from "@cloudscape-design/components/app-layout";
-import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { applyMode, Mode } from "@cloudscape-design/global-styles";
+import React from "react";
+import { Navigation } from "./Navigation";
 
-setupCloudScape();
+
+if (typeof window === "undefined") {
+  console.log(`
+  CloudScape isn't fully capable of server-side rendering.
+  The server had to disable useLayoutEffect manually.
+  See more: https://github.com/cloudscape-design/components/pull/79
+`);
+  
+  React.useLayoutEffect = () => { };
+} else {
+  applyMode(Mode.Dark);
+}
 
 export type MainProps = {
-  children: JSX.Element | JSX.Element[];
-  navigation: JSX.Element;
-  breadcrumbs: JSX.Element;
+  paths: string[];
+  children: JSX.Element[];
 };
 
-export const Main = ({ children, navigation, breadcrumbs}: MainProps ) => {
-  return (
-    <AppLayout content={children} navigation={navigation} breadcrumbs={breadcrumbs} />
-  );
-};
+export const Main = ({ children, paths }: MainProps ) =>
+  <AppLayout
+    navigation={<Navigation paths={paths} />}
+    content={children}
+  />;

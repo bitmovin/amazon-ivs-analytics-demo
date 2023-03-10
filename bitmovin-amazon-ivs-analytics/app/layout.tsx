@@ -4,30 +4,31 @@ import { Metadata } from "next";
 import { Main } from "@/components/Main";
 import { Header } from "@/components/Header";
 import { Search } from "@/components/Search";
-import { Navigation } from "@/components/Navigation";
-import { Route } from "@/components/Route";
 
 export const metadata: Metadata = {
-  applicationName: "Dashboard",
+  title: {
+    default: "Dashboard",
+    template: "%s | Bitmovin IVS",
+  },
+  applicationName: "Bitmovin IVS",
   description: "Bitmovin and Amazon IVS Demo",
 };
 
-type Props = {
-  children: JSX.Element;
-};
+const PATHS = ["Channels", "Sessions"];
 
-const ROUTES = [{text: "Sessions", href: "/sessions"}];
-
-export default function RootLayout({ children }: Props) {
-  return <html lang="en">
-      <body>
-        <Main navigation={<Navigation />} breadcrumbs={<Route items={ROUTES}/>}>
-          <>
-            <Header search={<Search param={"search"} />} />
+export default function RootLayout({ children }: { children: JSX.Element }) {
+  return (
+    <html lang="en">
+      <body className="awsui-dark-mode">
+        <main>
+          <Main paths={PATHS} >
+            <Header>
+              <Search param={"search"} />
+            </Header>
             {children}
-          </>
-        </Main>
-        <main>{children}</main>
+          </Main>
+        </main>
       </body>
-    </html>;
-};
+    </html>
+  );
+}

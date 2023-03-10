@@ -2,14 +2,15 @@
 
 import TopNavigation from "@cloudscape-design/components/top-navigation";
 
-export type HeaderProps = {
-  search?: JSX.Element;
-};
-
-export const Header = ({ search } : HeaderProps) => (
+export const Header = ({ children } : {children?: JSX.Element}) => (
   <TopNavigation
-    identity={{ href: "#" }}
-    i18nStrings={{ overflowMenuTriggerText: "", overflowMenuTitleText: "" }}
-    search={search}
+    identity={{
+      href: "#"
+    }}
+    i18nStrings={{
+      overflowMenuTriggerText: "",
+      overflowMenuTitleText: ""
+    }}
+    search={children}
   />
 );
