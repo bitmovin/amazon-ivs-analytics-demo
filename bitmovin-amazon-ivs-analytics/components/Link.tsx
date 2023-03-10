@@ -1,9 +1,9 @@
 
 import { Route } from "next";
-import Link from "next/link"
+import BaseLink from "next/link";
 
-export default function <T>(props: { href: Route<T> }) {
+export function Link<T>(props: { href: Route<T> }) {
     return (
-        <Link href={props.href} />
+        <BaseLink href={props.href} />
     );
 };
