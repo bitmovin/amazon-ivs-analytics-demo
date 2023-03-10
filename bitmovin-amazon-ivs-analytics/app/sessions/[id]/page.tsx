@@ -1,7 +1,7 @@
 import { List } from "@/components/List";
 import { Metadata } from "next";
 import { Suspense } from "react";
-import { bitmovinApi } from "../../../components/bitmovinApi";
+import { analytics } from "../../../components/bitmovinApi";
 
 export const metadata: Metadata = {
   title: "Session",
@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 };
 
 const fetchSession = async (id: string) => (
-  await bitmovinApi.analytics.impressions.create(id, {
+  await analytics.impressions.create(id, {
     licenseKey: process.env.BITMOVIN_ANALYTICS_LICENSE_KEY
   })
 ).flatMap(e => e).flatMap(e => ({...e}));

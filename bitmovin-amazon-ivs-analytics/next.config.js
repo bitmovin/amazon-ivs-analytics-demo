@@ -1,8 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   transpilePackages: [
-    '@cloudscape-design/components',
-    '@bitmovin/api-sdk'
+    '@cloudscape-design/components'
   ],
   experimental: {
     appDir: true,

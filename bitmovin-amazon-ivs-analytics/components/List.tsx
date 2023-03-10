@@ -46,7 +46,7 @@ export const List = <
       }
       loading={false}
       resizableColumns={true}
-      columnDefinitions={(columns ? columns : []).map(
+      columnDefinitions={(columns || Object.keys(items?.at(0) || {})).map(
         (header) => ({
           id,
           header,
