@@ -2,11 +2,11 @@
 
 import SideNavigation from "@cloudscape-design/components/side-navigation";
 
-type NavigationProps = {
+type SidebarProps = {
   paths: string[];
 };
 
-export const Navigation = ({ paths }: NavigationProps) => (
+export const Sidebar = ({ paths }: SidebarProps) => (
   <SideNavigation
     header={{ href: "/", text: "Bitmovin" }}
     items={paths.map((text) => ({

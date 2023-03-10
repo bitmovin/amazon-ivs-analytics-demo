@@ -2,7 +2,7 @@
 import AppLayout from "@cloudscape-design/components/app-layout";
 import { applyMode, Mode } from "@cloudscape-design/global-styles";
 import React from "react";
-import { Navigation } from "./Navigation";
+import { Sidebar } from "./Sidebar";
 
 
 if (typeof window === "undefined") {
@@ -24,6 +24,6 @@ export type MainProps = {
 
 export const Main = ({ children, paths }: MainProps ) =>
   <AppLayout
-    navigation={<Navigation paths={paths} />}
+    navigation={<Sidebar paths={paths} />}
     content={children}
   />;

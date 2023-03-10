@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@bitmovin/api-sdk": "^1.152.0",
     "@cloudscape-design/collection-hooks": "^1.0.19",
     "@cloudscape-design/components": "^3.0.224",
     "@cloudscape-design/global-styles": "^1.0.7",

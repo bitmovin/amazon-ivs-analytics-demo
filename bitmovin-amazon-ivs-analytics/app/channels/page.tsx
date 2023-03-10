@@ -37,10 +37,9 @@ const ITEMS = [
 function Channels() {
   return (
     <List
-      title={<Title>{'Channels'}</Title>}
+      title={'Channels'}
       route={'channels'}
       items={ITEMS}
-      columns={['id', 'name']} 
       id='id'
     />
   );
