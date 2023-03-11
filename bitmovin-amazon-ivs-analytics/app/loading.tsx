@@ -1,9 +1,9 @@
-import { Container } from "@/components/Container";
+import { List } from "@/components/List";
 
 export const metadata = {
   title: "Home"
 };
 
 export default function Loading() {
-  return <Container><p>Loading...</p></Container>
+  return <List loading={true} />
 }

@@ -7,28 +7,24 @@ import Link from "next/link";
 import { DateRange, useDateRange } from "./DateRange";
 
 type Item = Record<string, string[] | number | string | boolean | undefined  | null> & {id: string};
-type Params<T extends Item> = {
+type Params<T extends Item> = { loading: true } | {
   id: string & keyof T,
   route: Route,
-  loading: boolean,
+  loading: false,
   items: T[];
   title: string;
   columns?: (string & keyof T)[];
 };
 
-export const List = <T extends Item>({
-  loading,
-  route,
-  title,
-  items,
-  columns,
-  id,
-}: Params<T>) => {
+export const List = <T extends Item>(props: Params<T>) => {
   const [value, setValue] = useDateRange(null);
-  return (
+
+  return props.loading ? (
+    <Table loading={true} items={[]} columnDefinitions={[]} />
+  ) : (
     <Table
       filter={<DateRange value={value} setValue={setValue} />}
-      items={items}
+      items={props.items}
       empty={
         <Box >
           <b>No resources</b>
@@ -37,13 +33,13 @@ export const List = <T extends Item>({
           </Box>
         </Box>
       }
-      loading={loading}
-      columnDefinitions={(columns || (items.length > 0 ? Object.getOwnPropertyNames(items[0]) : [])).map(
+      loading={false}
+      columnDefinitions={(props.columns || (props.items.length > 0 ? Object.getOwnPropertyNames(props.items[0]) : [])).map(
         (header: string & keyof T) => ({
           id: header,
           header,
           cell: (item: T) => (
-            <Link href={id ? `${route}/${item[id]}` : route} >
+            <Link href={props.id ? `${props.route}/${item[props.id]}` : props.route} >
               {`${item[header]}`}
             </Link>
           ),

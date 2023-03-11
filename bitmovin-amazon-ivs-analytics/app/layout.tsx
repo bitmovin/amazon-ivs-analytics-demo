@@ -42,7 +42,6 @@ export default function RootLayout(props: {children: JSX.Element}) {
 
   const appLayout = (
     <AppLayout
-      
       breadcrumbs={breadcrumbGroup}
       navigation={sideNavigation}
       content={contentLayout}
@@ -51,7 +50,7 @@ export default function RootLayout(props: {children: JSX.Element}) {
 
   return (
     <html lang="en">
-      <body className="awsui-dark-mode">
+      <body className="awsui-dark-mode awsui-compact-mode">
         <main>
           {topNavigation}
           {appLayout}
