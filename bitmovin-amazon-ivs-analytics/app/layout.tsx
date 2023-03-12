@@ -5,8 +5,6 @@ import { Metadata } from "next";
 import { AppLayout } from "@/components/AppLayout";
 import { TopNavigation } from "@/components/TopNavigation";
 import { SideNavigation } from "@/components/SideNavigation";
-import { ContentLayout } from "@/components/Content";
-import { Header } from "@/components/Header";
 import { BreadcrumbGroup } from '@/components/BreadcrumbGroup';
 
 export const metadata: Metadata = {
@@ -24,16 +22,26 @@ export default function RootLayout(props: {children: JSX.Element}) {
   );
 
   const sideNavigation = (
-    <SideNavigation  items={[
-      {route: '/channels', text: 'Channels'},
-      {route: '/sessions', text: 'Sessions'}
-    ]}/>
-  );
-
-  const contentLayout = (
-    <ContentLayout header={<Header title='Dashboard' />}>
-      {props.children}
-    </ContentLayout>
+    <SideNavigation
+      name='Root'
+      path='/'
+      sections={[
+        {
+          name: 'Lists',
+          path: '/lists',
+          items: [
+            {
+              name: 'Channels',
+              path: '/lists/channels',
+            },
+            {
+              name: 'Sessions',
+              path: '/lists/sessions',
+            }
+          ]
+        }
+      ]}
+    />
   );
 
   const breadcrumbGroup = (
@@ -44,7 +52,7 @@ export default function RootLayout(props: {children: JSX.Element}) {
     <AppLayout
       breadcrumbs={breadcrumbGroup}
       navigation={sideNavigation}
-      content={contentLayout}
+      content={props.children}
     />
   );
 

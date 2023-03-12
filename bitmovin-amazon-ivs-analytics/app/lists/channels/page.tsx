@@ -1,3 +1,4 @@
+import { ContentLayout } from "@/components/ContentLayout";
 import { List } from "@/components/List";
 import { Metadata } from "next";
 
@@ -31,12 +32,14 @@ const ITEMS = [
 
 export default function Page() {
   return (
-    <List
-      loading={false}
-      title={'Channels'}
-      route={'/channels'}
-      items={ITEMS}
-      id='id'
-    />
+    <ContentLayout header={'Channels'}>
+      <List
+        id='id'
+        loading={false}
+        route='/lists/channels'
+        title='Channels'
+        items={ITEMS}
+      />
+    </ContentLayout>
   );
 };

@@ -1,13 +1,14 @@
 "use client";
 
+import { Header } from "@cloudscape-design/components";
 import BaseContentLayout from "@cloudscape-design/components/content-layout";
 
 
-export function ContentLayout(props: {header: JSX.Element, children: JSX.Element}) {
+export function ContentLayout(props: {header: string, children: JSX.Element}) {
     return (
         <BaseContentLayout 
             disableOverlap={false}
-            header={props.header}
+            header={<Header>{props.header}</Header>}
         >
             {props.children}
         </BaseContentLayout>

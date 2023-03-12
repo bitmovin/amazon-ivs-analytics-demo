@@ -1,5 +1,6 @@
 import { List } from "@/components/List";
 import { fetchSessions } from "@/utils/Bitmovin";
+import { ContentLayout } from "@/components/ContentLayout";
 
 export const metadata = {
   title: "Sessions",
@@ -22,11 +23,16 @@ export default async function Page() {
     error: null
   })) || [];
 
-  return <List
-    id='id'
-    loading={false}
-    route='/sessions'
-    title='Sessions'
-    items={items}
-  />;
+  return (
+    <ContentLayout header={'Sessions'}>
+      <List
+        id='id'
+        loading={false}
+        route='/lists/sessions'
+        title='Sessions'
+        items={items}
+      />
+    </ContentLayout>
+    
+  )
 }

@@ -1,5 +1,5 @@
-
-import { Container } from "@/components/Container";
+import { ContentLayout } from "@/components/ContentLayout";
+import { List } from "@/components/List";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -8,7 +8,9 @@ export const metadata: Metadata = {
 
 export default function App() {
   return (
-    <Container><p>App</p></Container>
+    <ContentLayout header={'Lists'}>
+      <List loading={true} />
+    </ContentLayout>
   );
 }
 
