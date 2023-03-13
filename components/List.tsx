@@ -1,6 +1,6 @@
 'use client';
 
-import Box from "@cloudscape-design/components/box";
+import { Container } from "./Container";
 import Table from "@cloudscape-design/components/table";
 import { Route } from "next";
 import Link from "next/link";
@@ -19,14 +19,7 @@ export const List = <T extends Item>(props: { items: T[] }) => {
   const loading = items.length <= 0;
   const columnDefinitions = items.at(0) ? Object.keys(items[0]).map(columnDefinition) : [];
   const filter = (<DateRange {...{value, setValue}} />);
-  const empty = (
-    <Box>
-      <b>No resources</b>
-      <Box>
-        No resources to display.
-      </Box>
-    </Box>
-  );
+  const empty = (<Container><p>Nothing</p></Container>);
 
   return (
     <Table

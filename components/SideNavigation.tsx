@@ -4,31 +4,21 @@ import BaseSideNavigation from "@cloudscape-design/components/side-navigation";
 import { Route } from "next";
 import { usePathname } from "next/navigation";
 
-interface Item<R extends string> {
+export type Item<R extends string> = {
   name: string,
   route: Route<R>
 }
 
-interface Section<R extends string> {
-  name: string,
-  route: Route<R>
+export type Section<R extends string> = Item<R> & {
   items: Item<R>[]
 }
 
-interface Navigation<R extends string> {
-  name: string,
-  route: Route<R>
-  sections: Section<R>[]
-}
-
-export function SideNavigation<R extends string>(props: Navigation<R>) {
-  const header = {href: props.route, text: props.name};
-
-  const path = usePathname();
+export function SideNavigation<R extends string>(props: { sections: Section<R>[] }) {
+  const activeHref = usePathname();
+  const header = {href: '/', text: 'Home'};
 
   const items = props.sections.map(section => ({
      type: 'section' as const,
-     defaultExpanded: true,
      text: section.name,
      href: section.route,
      items: section.items.map(item => ({
@@ -41,7 +31,7 @@ export function SideNavigation<R extends string>(props: Navigation<R>) {
   return (
     <BaseSideNavigation
       header={header}
-      activeHref={path}
+      activeHref={activeHref}
       items={items}
     />
   );

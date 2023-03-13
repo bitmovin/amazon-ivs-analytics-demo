@@ -1,8 +1,8 @@
 "use client";
 
-import { Header } from "@cloudscape-design/components";
+import Header from "@cloudscape-design/components/header";
 import BaseCards from "@cloudscape-design/components/cards";
-import { Route } from "next";
+import { Route, } from "next";
 import Link from "next/link";
 
 interface Item<R extends string> {

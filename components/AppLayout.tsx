@@ -3,6 +3,8 @@
 import { BreadcrumbGroup } from "@/components/BreadcrumbGroup";
 import BaseAppLayout from "@cloudscape-design/components/app-layout";
 import React from "react";
+import { ContentLayout } from "./ContentLayout";
+import { Section, SideNavigation } from "./SideNavigation";
 
 
 if (typeof window === "undefined") {
@@ -16,12 +18,13 @@ if (typeof window === "undefined") {
 }
 
 
-export function AppLayout(props: {navigation: JSX.Element, content: JSX.Element}) {
+export function AppLayout<R extends string>(props: { sections: Section<R>[], content: JSX.Element}) {
   return (
     <BaseAppLayout
+      toolsHide={true}
       breadcrumbs={<BreadcrumbGroup />}
-      navigation={props.navigation}
-      content={props.content}
+      navigation={<SideNavigation sections={props.sections}/>}
+      content={<ContentLayout>{props.content}</ContentLayout>}
     />
   );
 }

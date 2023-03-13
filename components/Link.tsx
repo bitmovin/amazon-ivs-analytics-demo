@@ -2,7 +2,7 @@
 import { Route } from "next";
 import BaseLink from "next/link";
 
-export function Link<T>(props: { href: Route<T> }) {
+export function Link<T extends string>(props: { href: Route<T> }) {
     return (
         <BaseLink href={props.href} />
     );
