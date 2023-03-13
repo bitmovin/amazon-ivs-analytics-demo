@@ -1,16 +1,15 @@
 'use client';
 
-import * as Base from "@cloudscape-design/components/breadcrumb-group";
-import { Route } from "next";
-import { usePathname, useRouter, useSelectedLayoutSegments } from "next/navigation";
+import BreadcrumbGroup, { BreadcrumbGroupProps } from "@cloudscape-design/components/breadcrumb-group";
+import { useRouter, useSelectedLayoutSegments } from "next/navigation";
 
-export type Item = Base.BreadcrumbGroupProps.Item;
-export type ClickDetail<T extends Item = Item> = Base.BreadcrumbGroupProps.ClickDetail<T>
+export type Item = BreadcrumbGroupProps.Item;
+export type ClickDetail<T extends Item = Item> = BreadcrumbGroupProps.ClickDetail<T>
 export type RouteEvent<T extends Item = Item> = CustomEvent<ClickDetail<T>>
 export type RemovedProps = 'items' | 'onFollow' | 'onClick';
-export type Props<T extends Item = Item> = Omit<Base.BreadcrumbGroupProps<T>, RemovedProps>
+export type Props<T extends Item = Item> = Omit<BreadcrumbGroupProps<T>, RemovedProps>
 
-export function BreadcrumbGroup(props: Props) {
+export default function(props: Props) {
   const router = useRouter();
   const segments = useSelectedLayoutSegments();
   
@@ -27,6 +26,6 @@ export function BreadcrumbGroup(props: Props) {
   }
   
   return (
-    <Base.default {...props} items={items} onFollow={onClick} onClick={onClick} />
+    <BreadcrumbGroup {...props} items={items} onFollow={onClick} onClick={onClick} />
   );
 }

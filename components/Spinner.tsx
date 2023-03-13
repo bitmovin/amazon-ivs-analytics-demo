@@ -1,7 +1,5 @@
-"use client";
+import dynamic from "next/dynamic";
 
-import BaseSpinner, { SpinnerProps } from "@cloudscape-design/components/spinner";
-
-export function Spinner(props: SpinnerProps) {
-    return (<BaseSpinner {...props} />)
-}
+export const Spinner = dynamic(() => import('./client/Spinner'), {
+    loading: () => <div>Loading</div>
+});

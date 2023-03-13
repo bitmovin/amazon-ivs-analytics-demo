@@ -1,9 +1,8 @@
 "use client";
 
-import * as Base from "@cloudscape-design/components/app-layout";
+import AppLayout, { AppLayoutProps } from "@cloudscape-design/components/app-layout";
 
-export type Props = Base.AppLayoutProps;
-
-export function AppLayout(props: Props) {
-  return (<Base.default {...props} />);
+export type Props = AppLayoutProps;
+export default function(props: Props) {
+  return (<AppLayout {...props} />);
 }

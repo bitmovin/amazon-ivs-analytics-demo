@@ -1,4 +1,4 @@
-import { List } from "@/components/List";
+import List from "@/components/client/List";
 
 export default function Loading() {
   return (<List loading />);

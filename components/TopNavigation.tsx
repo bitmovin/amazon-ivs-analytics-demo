@@ -1,10 +1,5 @@
-import { Suspense } from 'react'
-import * as Client from './client/TopNavigation'
+import dynamic from 'next/dynamic'
 
-export function TopNavigation<R extends string>(props: Client.Props<R>) {
-    return (
-        <Suspense fallback={<Client.TopNavigation {...props} />}>
-            <Client.TopNavigation {...props} />
-        </Suspense>
-    )
-}
+export const TopNavigation = dynamic(() => import('./client/TopNavigation'), {
+    loading: () => <div>Loading</div>
+});

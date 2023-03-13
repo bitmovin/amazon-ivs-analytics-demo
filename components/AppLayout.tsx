@@ -1,8 +1,5 @@
+import dynamic from 'next/dynamic';
 
-import * as Client from './client/AppLayout'
-
-export function AppLayout(props: Client.Props) {
-    return (
-        <Client.AppLayout {...props} />
-    );
-}
+export const AppLayout = dynamic(() => import('./client/AppLayout'), {
+    loading: () => <div>Loading</div>
+});

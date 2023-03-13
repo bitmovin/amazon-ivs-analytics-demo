@@ -1,11 +1,7 @@
 "use client";
 
-import BaseHeader, { HeaderProps } from "@cloudscape-design/components/header"
+import dynamic from "next/dynamic";
 
-export const Header = (props: HeaderProps) => {
-    return (
-        <BaseHeader {...props}>
-            {props.children}
-        </BaseHeader>
-    );
-}
+export const Header = dynamic(() => import('./client/Header'),{
+    loading: () => <div>Loading</div>
+});

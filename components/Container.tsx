@@ -1,7 +1,5 @@
-"use client";
+import dynamic from "next/dynamic";
 
-import * as Base from "@cloudscape-design/components/container";
-
-export function Container(props: Base.ContainerProps) {
-  return (<Base.default {...props}>{props.children}</ Base.default>);
-}
+export const Container = dynamic(() => import("./client/Container"), {
+  loading: () => <div>Loading</div>
+});

@@ -1,7 +1,5 @@
-import * as Client from './client/BreadcrumbGroup'
+import dynamic from 'next/dynamic';
 
-export function BreadcrumbGroup(props: Client.Props) {
-    return (
-        <Client.BreadcrumbGroup {...props} />
-    );
-}
+export const BreadcrumbGroup = dynamic(() => import('./client/BreadcrumbGroup'), {
+    loading: () => <div>Loading</div>
+});
