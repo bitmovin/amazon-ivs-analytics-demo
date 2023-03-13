@@ -1,7 +1,7 @@
 "use client";
 
-import BaseContainer from "@cloudscape-design/components/container";
+import * as Base from "@cloudscape-design/components/container";
 
-export function Container(props: {children: JSX.Element[] | JSX.Element}) {
-  return (<BaseContainer>{props.children}</BaseContainer>);
+export function Container(props: Base.ContainerProps) {
+  return (<Base.default {...props}>{props.children}</ Base.default>);
 }

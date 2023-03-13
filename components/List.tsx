@@ -1,14 +1,12 @@
 'use client';
 
-import { Container } from "./Container";
 import Table, { TableProps } from "@cloudscape-design/components/table";
 import { Route } from "next";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { DateRange, useDateRange } from "./DateRange";
 
-type Value = string[] | string | number | boolean | undefined;
-type Item = { [x: string]: Value };
+export type Value = string[] | string | number | boolean | undefined;
+export type Item = { [x: string]: Value };
 
 export type ListProps<T extends Item> = ({
   items: T[]
@@ -21,7 +19,7 @@ export type ListProps<T extends Item> = ({
 
 }
 
-export const List = <T extends Item>(props: ListProps<T>) => {
+export function List<T extends Item>(props: ListProps<T>) {
   const pathname =  usePathname();
   const columnDefinitions = props.items?.at(0) ? Object.keys(props.items[0]).map(columnDefinition) : [];
 
@@ -47,3 +45,4 @@ export const List = <T extends Item>(props: ListProps<T>) => {
     });
   }
 };
+

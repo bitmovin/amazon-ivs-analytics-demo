@@ -29,5 +29,5 @@ const ITEMS = [
 ];
 
 export default function Page() {
-  return (<List items={ITEMS} variant="embedded" />);
+  return (<List items={ITEMS} />);
 };

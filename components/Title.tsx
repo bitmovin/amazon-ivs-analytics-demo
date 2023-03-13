@@ -3,7 +3,9 @@
 import { usePathname, useSelectedLayoutSegment } from "next/navigation";
 
 export function Title(): JSX.Element {
-    const pathname = (usePathname().split('/').at(-1) || useSelectedLayoutSegment());
-    const title = pathname?.at(0)?.toUpperCase().concat(pathname.slice(1).toLowerCase());
+    const pathname = usePathname();
+    const segment =  useSelectedLayoutSegment();
+    const name = (pathname.split('/').at(-1) || segment) || 'Home';
+    const title = name?.at(0)?.toUpperCase().concat(name.slice(1).toLowerCase());
     return <>{title}</>
 }

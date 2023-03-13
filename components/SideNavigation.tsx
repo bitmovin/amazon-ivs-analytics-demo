@@ -32,7 +32,7 @@ export function SideNavigation<R extends string>(props: { header: Header<R>, ite
   return (
     <BaseSideNavigation
       header={props.header}
-      onFollow={({detail}) => router.replace(detail.href)}
+      onFollow={(event) => { event.preventDefault(); router.replace(event.detail.href) }}
       activeHref={activeHref}
       items={props.items}
     />

@@ -2,10 +2,10 @@
 
 import BaseContentLayout from "@cloudscape-design/components/content-layout";
 
-export function ContentLayout(props: { header: JSX.Element, children: JSX.Element }) {
+export function ContentLayout(props: { disableOverlap: boolean, header: JSX.Element, children: JSX.Element }) {
     return (
         <BaseContentLayout
-            disableOverlap={false}
+            disableOverlap={props.disableOverlap}
             header={props.header}
         >
             {props.children}

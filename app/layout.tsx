@@ -4,10 +4,9 @@ import '@cloudscape-design/global-styles/index.css';
 import { TopNavigation } from '@/components/TopNavigation';
 import { AppLayout } from '@/components/AppLayout';
 import { SideNavigation } from '@/components/SideNavigation';
-import { BreadcrumbGroup } from '@/components/BreadcrumbGroup';
+import { BreadcrumbGroup } from '@/components/client/BreadcrumbGroup';
 import { ContentLayout } from '@/components/ContentLayout';
 import { Header } from '@/components/Header';
-import { Container } from '@/components/Container';
 import { Title } from '@/components/Title';
 
 export const metadata = {
@@ -23,36 +22,47 @@ export default function RootLayout(props: { children: JSX.Element }) {
   return (
     <html lang="en">
       <body className="awsui-dark-mode">
-        <main>
-          <TopNavigation title={metadata.applicationName} />
-          <AppLayout
-            navigation={
-              <SideNavigation
-                header={{text: 'Bitmovin', href: '/'}}
-                items={[{
-                  type: 'link-group',
-                  text: 'Lists',
-                  href: '/lists',
-                  items: [{
-                    type: 'link',
-                    text: 'Channels',
-                    href: '/lists/channels',
-                  }, {
-                    type: 'link',
-                    text: 'Sessions',
-                    href: '/lists/sessions',
-                  }]
-              }]} 
+        <TopNavigation
+          identity={{ 
+            title: metadata.applicationName,
+            href: '/'
+          }}
+          i18nStrings={{
+            overflowMenuTitleText: '', 
+            overflowMenuTriggerText: ''
+          }}
+        />
+        <AppLayout
+          navigation={
+            <SideNavigation
+              header={{text: 'Bitmovin', href: '/'}}
+              items={[{
+                    type: 'link-group',
+                    text: 'Lists',
+                    href: '/lists',
+                    items: [{
+                      type: 'link',
+                      text: 'Channels',
+                      href: '/lists/channels',
+                    }, {
+                      type: 'link',
+                      text: 'Sessions',
+                      href: '/lists/sessions',
+                    }]
+              }]}
             />
           }
-          breadcrumbs={<BreadcrumbGroup />}
+          breadcrumbs={
+            <BreadcrumbGroup />
+          }
           content={
-            <ContentLayout header={<Header variant='h2'><Title /></Header>}>
+            <ContentLayout 
+              disableOverlap={false}
+              header={<Header variant='h2'><Title /></Header>}>
               {props.children}
             </ContentLayout>
-          } 
-          />
-        </main>
+          }
+        />
       </body>
     </html>
   );
