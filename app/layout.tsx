@@ -45,12 +45,10 @@ export default function RootLayout(props: { children: JSX.Element }) {
               }]} 
             />
           }
-          breadcrumbs={
-            <BreadcrumbGroup />
-          }
+          breadcrumbs={<BreadcrumbGroup />}
           content={
             <ContentLayout header={<Header variant='h2'><Title /></Header>}>
-              <Container>{props.children}</Container>
+              {props.children}
             </ContentLayout>
           } 
           />

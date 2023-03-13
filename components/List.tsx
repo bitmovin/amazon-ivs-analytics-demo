@@ -1,7 +1,7 @@
 'use client';
 
 import { Container } from "./Container";
-import Table from "@cloudscape-design/components/table";
+import Table, { TableProps } from "@cloudscape-design/components/table";
 import { Route } from "next";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -10,44 +10,40 @@ import { DateRange, useDateRange } from "./DateRange";
 type Value = string[] | string | number | boolean | undefined;
 type Item = { [x: string]: Value };
 
-export const List = <T extends Item>(props: { items: T[] }) => {
-  const [value, setValue] = useDateRange(null);
-  const pathname =  usePathname();
+export type ListProps<T extends Item> = ({
+  items: T[]
+  loading?: undefined
+} | {
+  items?: undefined
+  loading: true
+}) & Partial<Record<'empty' | 'filter', JSX.Element>> & {
+  variant?: TableProps.Variant
 
-  const variant = 'embedded';
-  const items = props.items;
-  const loading = items.length <= 0;
-  const columnDefinitions = items.at(0) ? Object.keys(items[0]).map(columnDefinition) : [];
-  const filter = (<DateRange {...{value, setValue}} />);
-  const empty = (<Container><p>Nothing</p></Container>);
+}
+
+export const List = <T extends Item>(props: ListProps<T>) => {
+  const pathname =  usePathname();
+  const columnDefinitions = props.items?.at(0) ? Object.keys(props.items[0]).map(columnDefinition) : [];
 
   return (
     <Table
-      empty={empty}
-      items={items}
-      filter={filter}
-      variant={variant}
-      loading={loading}
+      empty={props.empty}
+      items={props.loading ? [] : props.items}
+      filter={props.filter}
+      variant={props.variant}
+      loading={props.loading}
       columnDefinitions={columnDefinitions}
     />
   );
 
   function columnDefinition(column: string & keyof T) {
     return ({
-      header: columnHeader(column),
-      cell: (item: T) => cell(item, column)
+      header: <p>{column}</p>,
+      cell: (item: T) => (
+        <Link href={`${pathname}/${item[column]}` as Route}>
+          {item[column]}
+        </Link>
+      )
     });
-  }
-
-  function cell(item: T, column: string & keyof T) {
-    return (
-      <Link href={`${pathname}/${item[column]}` as Route}>
-        {item[column]}
-      </Link>
-    );
-  }
-
-  function columnHeader(column: string & keyof T) {
-    return <p>{column}</p>;
   }
 };

@@ -13,6 +13,10 @@ interface Item<R extends string> {
 
 type Props<R extends string> = {
     items: Item<R>[]
+    loading?: undefined
+} | {
+    items?: undefined
+    loading: true
 }
 
 export function Cards<R extends string>(props: Props<R>) {
@@ -32,9 +36,9 @@ export function Cards<R extends string>(props: Props<R>) {
 
     return (
         <BaseCards
-            loading={props.items.length <= 0}
-            cardsPerRow={[{cards: props.items.length}]}
-            items={props.items}
+            loading={props.loading ?? false}
+            cardsPerRow={props.loading ? [] : [{cards: props.items.length}]}
+            items={props.loading ? [] : props.items}
             cardDefinition={cardDefinition}
         />
     );
