@@ -1,38 +1,40 @@
 "use client";
 
-import BaseSideNavigation from "@cloudscape-design/components/side-navigation";
+import BaseSideNavigation, { SideNavigationProps } from "@cloudscape-design/components/side-navigation";
 import { Route } from "next";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 export type Item<R extends string> = {
-  name: string,
-  route: Route<R>
+  type: 'link',
+  text: string,
+  href: Route<R>
 }
 
-export type Section<R extends string> = Item<R> & {
+export type Section<R extends string> = {
+  type: 'link-group',
+  text: string,
+  href: Route<R>,
   items: Item<R>[]
 }
 
-export function SideNavigation<R extends string>(props: { sections: Section<R>[] }) {
-  const activeHref = usePathname();
-  const header = {href: '/', text: 'Home'};
+export type Header<R extends string> = {
+  text: string;
+  href: Route<R>;
+  logo?: SideNavigationProps.Logo;
+}
 
-  const items = props.sections.map(section => ({
-     type: 'section' as const,
-     text: section.name,
-     href: section.route,
-     items: section.items.map(item => ({
-        type: 'link' as const,
-        text: item.name,
-        href: item.route
-     }))
-  })); 
+export type ItemList<R extends string> = ReadonlyArray<Section<R> | Item<R>>
+
+export function SideNavigation<R extends string>(props: { header: Header<R>, items: ItemList<R> }) {
+  const router = useRouter();
+  const activeHref = usePathname();
   
   return (
     <BaseSideNavigation
-      header={header}
+      header={props.header}
+      onFollow={({detail}) => router.replace(detail.href)}
       activeHref={activeHref}
-      items={items}
+      items={props.items}
     />
   );
 }

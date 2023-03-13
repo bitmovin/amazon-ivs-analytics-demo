@@ -1,11 +1,14 @@
 "use client";
 
-import BaseHeader from "@cloudscape-design/components/header"
+import BaseHeader, { HeaderProps } from "@cloudscape-design/components/header"
+import { usePathname, useSelectedLayoutSegment } from "next/navigation";
 
-export const Header = (props: {title: string}) => {
+export const Header = (props: { variant: HeaderProps.Variant }) => {
+    const pathname = usePathname().split('/').slice(-1).at(0) || 'Home';
+    const text = pathname[0].toUpperCase().concat(pathname.slice(1).toLowerCase());
     return (
-        <BaseHeader variant="h2">
-            {props.title}
+        <BaseHeader variant={props.variant}>
+            {text}
         </BaseHeader>
     );
 }

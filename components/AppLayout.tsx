@@ -1,10 +1,7 @@
 "use client";
 
-import { BreadcrumbGroup } from "@/components/BreadcrumbGroup";
 import BaseAppLayout from "@cloudscape-design/components/app-layout";
 import React from "react";
-import { ContentLayout } from "./ContentLayout";
-import { Section, SideNavigation } from "./SideNavigation";
 
 
 if (typeof window === "undefined") {
@@ -18,13 +15,17 @@ if (typeof window === "undefined") {
 }
 
 
-export function AppLayout<R extends string>(props: { sections: Section<R>[], content: JSX.Element}) {
+export function AppLayout(props: { breadcrumbs: JSX.Element, navigation: JSX.Element, content: JSX.Element}) {
   return (
     <BaseAppLayout
       toolsHide={true}
-      breadcrumbs={<BreadcrumbGroup />}
-      navigation={<SideNavigation sections={props.sections}/>}
-      content={<ContentLayout>{props.content}</ContentLayout>}
+      toolsOpen={false}
+      toolsWidth={0}
+      tools={<></>}
+      onToolsChange={()=>{}}
+      breadcrumbs={props.breadcrumbs}
+      navigation={props.navigation}
+      content={props.content}
     />
   );
 }
