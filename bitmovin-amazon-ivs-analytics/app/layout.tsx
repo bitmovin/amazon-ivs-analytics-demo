@@ -6,6 +6,7 @@ import { AppLayout } from "@/components/AppLayout";
 import { TopNavigation } from "@/components/TopNavigation";
 import { SideNavigation } from "@/components/SideNavigation";
 import { BreadcrumbGroup } from '@/components/BreadcrumbGroup';
+import { ContentLayout } from '@/components/ContentLayout';
 
 export const metadata: Metadata = {
   title: {
@@ -21,22 +22,22 @@ export default function RootLayout(props: {children: JSX.Element}) {
     <TopNavigation title="Bitmovin Analytics & Amazon IVS" />
   );
 
-  const sideNavigation = (
+  const navigation = (
     <SideNavigation
-      name='Root'
-      path='/'
+      name='Home'
+      route='/'
       sections={[
         {
           name: 'Lists',
-          path: '/lists',
+          route: '/lists',
           items: [
             {
               name: 'Channels',
-              path: '/lists/channels',
+              route: '/lists/channels',
             },
             {
               name: 'Sessions',
-              path: '/lists/sessions',
+              route: '/lists/sessions',
             }
           ]
         }
@@ -44,21 +45,20 @@ export default function RootLayout(props: {children: JSX.Element}) {
     />
   );
 
-  const breadcrumbGroup = (
-    <BreadcrumbGroup />
-  )
+  const content = (
+    <ContentLayout>{props.children}</ContentLayout>
+  );
 
   const appLayout = (
     <AppLayout
-      breadcrumbs={breadcrumbGroup}
-      navigation={sideNavigation}
-      content={props.children}
+      navigation={navigation}
+      content={content}
     />
   );
 
   return (
     <html lang="en">
-      <body className="awsui-dark-mode awsui-compact-mode">
+      <body className="awsui-dark-mode">
         <main>
           {topNavigation}
           {appLayout}

@@ -1,5 +1,6 @@
 "use client";
 
+import { BreadcrumbGroup } from "@/components/BreadcrumbGroup";
 import BaseAppLayout from "@cloudscape-design/components/app-layout";
 import React from "react";
 
@@ -15,10 +16,10 @@ if (typeof window === "undefined") {
 }
 
 
-export function AppLayout(props: {breadcrumbs: JSX.Element, navigation: JSX.Element, content: JSX.Element}) {
+export function AppLayout(props: {navigation: JSX.Element, content: JSX.Element}) {
   return (
     <BaseAppLayout
-      breadcrumbs={props.breadcrumbs}
+      breadcrumbs={<BreadcrumbGroup />}
       navigation={props.navigation}
       content={props.content}
     />

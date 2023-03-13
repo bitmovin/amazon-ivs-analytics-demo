@@ -1,6 +1,5 @@
 import { List } from "@/components/List";
 import { fetchSessions } from "@/utils/Bitmovin";
-import { ContentLayout } from "@/components/ContentLayout";
 
 export const metadata = {
   title: "Sessions",
@@ -9,30 +8,15 @@ export const metadata = {
 
 export default async function Page() {
   const now = Date.now();
+  const offset = 1000 * 60 * 60 * 24 * 10;
+  const before = now - offset;
+  const start = new Date(before);
+  const end = new Date(now);
+  const limit = 10;
+  const query = { start, end, limit };
+  const result = await fetchSessions(query);
+  const impressions = result.impressions ?? [];
+  const items = impressions.map((item) => ({...item}));
 
-  const result = await fetchSessions({
-    start: new Date(now  - 1000 * 60 * 60 * 24 * 10),
-    end: new Date(now),
-    limit: 10
-  });
-
-  const items = result.impressions?.map((item) => ({
-    id: item.impressionId || '',
-    start_time: null,
-    end_time: null,
-    error: null
-  })) || [];
-
-  return (
-    <ContentLayout header={'Sessions'}>
-      <List
-        id='id'
-        loading={false}
-        route='/lists/sessions'
-        title='Sessions'
-        items={items}
-      />
-    </ContentLayout>
-    
-  )
+  return (<List items={items} />);
 }

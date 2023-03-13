@@ -7,5 +7,5 @@ export const Header = (props: {title: string}) => {
         <BaseHeader variant="h1">
             {props.title}
         </BaseHeader>
-    )
+    );
 }

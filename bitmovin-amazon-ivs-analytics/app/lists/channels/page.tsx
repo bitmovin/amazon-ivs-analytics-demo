@@ -1,8 +1,6 @@
-import { ContentLayout } from "@/components/ContentLayout";
 import { List } from "@/components/List";
-import { Metadata } from "next";
 
-export const metadata: Metadata = {
+export const metadata = {
   title: "Channels",
   description: "Bitmovin and Amazon IVS Demo",
 };
@@ -31,15 +29,5 @@ const ITEMS = [
 ];
 
 export default function Page() {
-  return (
-    <ContentLayout header={'Channels'}>
-      <List
-        id='id'
-        loading={false}
-        route='/lists/channels'
-        title='Channels'
-        items={ITEMS}
-      />
-    </ContentLayout>
-  );
+  return (<List items={ITEMS} />);
 };

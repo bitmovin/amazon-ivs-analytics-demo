@@ -1,5 +1,5 @@
-import { List } from "@/components/List";
+import { Spinner } from "@/components/Spinner";
 
 export default function Loading() {
-  return <List loading={true} />
+  return (<Spinner />);
 }
