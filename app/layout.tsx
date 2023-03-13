@@ -8,6 +8,7 @@ import { BreadcrumbGroup } from '@/components/BreadcrumbGroup';
 import { ContentLayout } from '@/components/ContentLayout';
 import { Header } from '@/components/Header';
 import { Container } from '@/components/Container';
+import { Title } from '@/components/Title';
 
 export const metadata = {
   title: {
@@ -48,10 +49,7 @@ export default function RootLayout(props: { children: JSX.Element }) {
             <BreadcrumbGroup />
           }
           content={
-            <ContentLayout header={
-                <Header variant='h2'>{<>Header</>}</Header>
-              }
-            >
+            <ContentLayout header={<Header variant='h2'><Title /></Header>}>
               <Container>{props.children}</Container>
             </ContentLayout>
           } 

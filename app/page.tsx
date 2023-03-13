@@ -1,3 +1,5 @@
+import { Container } from "@/components/Container";
+import { Header } from "@/components/Header";
 
 
 export const metadata = {
@@ -5,9 +7,7 @@ export const metadata = {
 };
 
 export default function App() {
-  return (
-    'AA'
-  )
+  return 'OLOCO MEU'
 }
 
 
