@@ -1,45 +1,43 @@
-"use client";
+'use client';
 
 import Header from "@cloudscape-design/components/header";
 import BaseCards from "@cloudscape-design/components/cards";
 import { Route } from "next";
 import Link from "next/link";
 
-interface Item<R extends string> {
+interface Item<R> {
     name: string,
     description: string,
-    route: Route<R>
+    route: R
 }
 
-type Props<R extends string> = {
-    items: Item<R>[]
+type Props<T> = {
+    items: T[]
     loading?: undefined
 } | {
     items?: undefined
     loading: true
 }
 
-export default function<R extends string>(props: Props<R>) {
-    const header = (item: Item<R>) => (
+export default function<R extends string>(props: Props<Item<Route<R>>>) {
+    const header = (item: Item<Route<R>>) => (
         <Header>{item.route ?
             <Link href={item.route}>{item.name}</Link> : item.name
         }</Header>
     )
-
-    const cardDefinition = {
-        header,
-        sections: [{
-            id: 'description',
-            header: 'Description',
-            content: (item: Item<R>) => item.description
-    }]};
 
     return (
         <BaseCards
             loading={props.loading ?? false}
             cardsPerRow={props.loading ? [] : [{cards: props.items.length}]}
             items={props.loading ? [] : props.items}
-            cardDefinition={cardDefinition}
+            cardDefinition={{
+                header,
+                sections: [{
+                    id: 'description',
+                    header: 'Description',
+                    content: (item) => item.description
+            }]}}
         />
     );
 }

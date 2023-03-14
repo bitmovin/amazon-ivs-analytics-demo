@@ -1,3 +1,5 @@
+import '@cloudscape-design/global-styles/index.css';
+
 import { TopNavigation } from '@/components/TopNavigation';
 import { AppLayout } from '@/components/AppLayout';
 import { SideNavigation } from '@/components/SideNavigation';
@@ -40,7 +42,11 @@ export default function RootLayout(props: { children: JSX.Element }) {
             />
           }
           breadcrumbs={<BreadcrumbGroup />}
-          content={props.children}
+          content={
+            <ContentLayout>
+              {props.children}
+            </ContentLayout>
+          }
         />
       </body>
     </html>

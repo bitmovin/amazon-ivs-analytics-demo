@@ -1,6 +1,5 @@
 "use client";
 
-import '@cloudscape-design/global-styles/index.css';
 import TopNavigation, { TopNavigationProps } from "@cloudscape-design/components/top-navigation";
 import { useRouter } from "next/navigation";
 import React from "react";

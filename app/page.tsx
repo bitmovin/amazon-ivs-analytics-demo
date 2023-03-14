@@ -6,7 +6,7 @@ export const metadata = {
 
 export default function App() {
   return (
-    <Wizard steps={[{
+    <Wizard  steps={[{
       title: 'Bitmovin API Key',
       description: 'Your API Key',
 
