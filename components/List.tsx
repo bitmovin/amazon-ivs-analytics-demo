@@ -1,5 +1,3 @@
 import dynamic from 'next/dynamic';
 
-export const List = dynamic(() => import('./client/List'), {
-    loading: () => <div>Loading</div>
-});
+export const List = dynamic(() => import('./client/List'));

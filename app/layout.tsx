@@ -1,6 +1,3 @@
-import '@/app/globals.css';
-import '@cloudscape-design/global-styles/index.css';
-
 import { TopNavigation } from '@/components/TopNavigation';
 import { AppLayout } from '@/components/AppLayout';
 import { SideNavigation } from '@/components/SideNavigation';
@@ -21,25 +18,15 @@ export const metadata = {
 export default function RootLayout(props: { children: JSX.Element }) {
   return (
     <html lang="en">
-      <body className="awsui-dark-mode">
-        <TopNavigation
-          identity={{ 
-            title: metadata.applicationName,
-            href: '/'
-          }}
-          i18nStrings={{
-            overflowMenuTitleText: '', 
-            overflowMenuTriggerText: ''
-          }}
-        />
+      <body>
+        <TopNavigation />
         <AppLayout
           navigation={
-            <SideNavigation
-              header={{text: 'Bitmovin', href: '/'}}
+            <SideNavigation header={{text: 'Bitmovin', href: '/'}}
               items={[{
-                    type: 'link-group',
-                    text: 'Lists',
-                    href: '/lists',
+                type: 'link-group',
+                text: 'Lists',
+                href: '/lists',
                     items: [{
                       type: 'link',
                       text: 'Channels',
@@ -52,16 +39,8 @@ export default function RootLayout(props: { children: JSX.Element }) {
               }]}
             />
           }
-          breadcrumbs={
-            <BreadcrumbGroup />
-          }
-          content={
-            <ContentLayout 
-              disableOverlap={false}
-              header={<Header variant='h2'><Title /></Header>}>
-              {props.children}
-            </ContentLayout>
-          }
+          breadcrumbs={<BreadcrumbGroup />}
+          content={props.children}
         />
       </body>
     </html>

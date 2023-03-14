@@ -1,4 +1,5 @@
 import { List } from "@/components/List";
+import Link from "next/link";
 
 export const metadata = {
   title: "Channels",

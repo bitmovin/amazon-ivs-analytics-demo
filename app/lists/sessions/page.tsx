@@ -1,6 +1,5 @@
 import { List } from "@/components/List";
 import { fetchSessions } from "@/utils/Bitmovin";
-import { Suspense } from "react";
 
 export const metadata = {
   title: "Sessions",
@@ -20,8 +19,6 @@ export default async function Page() {
   const items = impressions.map((item) => ({...item}));
 
   return (
-    <Suspense fallback={<List loading />}> 
       <List items={items} />
-    </Suspense>
   );
 }

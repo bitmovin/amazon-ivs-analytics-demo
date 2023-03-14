@@ -12,13 +12,11 @@ export type Props<T extends Item = Item> = Omit<BreadcrumbGroupProps<T>, Removed
 export default function(props: Props) {
   const router = useRouter();
   const segments = useSelectedLayoutSegments();
-  
-  const entries = Array.from(segments.entries()).map(([key, val]) => ({
-    text: `${val[0].toUpperCase()}${val.slice(1).toLowerCase()}`,
-    href: `/${segments.slice(0, key + 1).join('/')}`,
-  }));
 
-  const items = [{href: '/', text: 'Home'}, ...entries];
+  const items = [{href: '/', text: 'Home'}, ...segments.map((segment, key) => ({
+    text: `${segment[0].toUpperCase()}${segment.slice(1).toLowerCase()}`,
+    href: `/${segments.slice(0, key + 1).join('/')}`,
+  }))];
 
   const onClick = (e: RouteEvent) => {
     e.preventDefault();

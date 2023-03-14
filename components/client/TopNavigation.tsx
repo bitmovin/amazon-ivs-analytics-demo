@@ -1,5 +1,6 @@
 "use client";
 
+import '@cloudscape-design/global-styles/index.css';
 import TopNavigation, { TopNavigationProps } from "@cloudscape-design/components/top-navigation";
 import { useRouter } from "next/navigation";
 import React from "react";
@@ -8,18 +9,31 @@ if (typeof window === 'undefined') {
     React.useLayoutEffect = React.useEffect;
 }
 
-export default function(props: TopNavigationProps) {
+export type Props = Omit<TopNavigationProps, 'i18nStrings' | 'identity'>
+
+export default function(props: Props) {
   const router = useRouter();
 
-  const identity = {
-    ...props.identity, 
-    onFollow: (e: CustomEvent) => {
-      e.preventDefault();
-      return router.replace(props.identity.href)
-    }
-  };
-
   return (
-      <TopNavigation {...props} identity={identity} />
+      <TopNavigation
+        {...props}
+        identity={{
+          title: 'Title',
+          href: '/',
+          logo: {
+            src: '/favicon.ico',
+            alt: 'logo'
+          },
+          onFollow: (event) => {
+            event.preventDefault();
+            return router.replace('/', {
+              forceOptimisticNavigation: true,
+            });
+          },
+        }}
+        i18nStrings={{
+          overflowMenuTitleText: 'Menu', 
+          overflowMenuTriggerText: 'Show'
+      }} />
   );
 }

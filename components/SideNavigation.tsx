@@ -1,5 +1,3 @@
 import dynamic from "next/dynamic";
 
-export const SideNavigation = dynamic(() => import('./client/SideNavigation'), {
-  loading: () => <div>Loading</div>
-});
+export const SideNavigation = dynamic(() => import('./client/SideNavigation'));
