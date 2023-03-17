@@ -1,10 +1,11 @@
-'use client'
+'use client';
 
-export default function ErrorPage({error, reset}: {
-    error: Error,
-    reset: () => void
-}) {
-    return (
-        <p>Error</p>
-    )
+import { Alert } from '@/components/Alert';
+
+export default function ErrorPage() {
+	return (
+		<Alert type='error'>
+			<p>Error</p>
+		</Alert>
+	);
 }

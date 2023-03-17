@@ -1,7 +1,12 @@
-"use client";
+'use client';
 
-import Spinner, { SpinnerProps } from "@cloudscape-design/components/spinner";
+import Spinner, { SpinnerProps } from '@cloudscape-design/components/spinner';
+import React from 'react';
 
-export default function(props: SpinnerProps) {
-    return (<Spinner {...props} />)
+if (typeof window === 'undefined') {
+	React.useLayoutEffect = () => ({});
+}
+
+export default function ClientSpinner(props: Partial<SpinnerProps>) {
+	return (<Spinner {...props} />);
 }

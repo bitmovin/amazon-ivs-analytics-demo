@@ -1,7 +1,8 @@
-import { Cards } from "@/components/Cards";
 
-export default function Page() {
-  return (<Cards loading />);
+import { Spinner } from '@/components/Spinner';
+
+export default function Loading() {
+	return (<Spinner />);
 }
 
 

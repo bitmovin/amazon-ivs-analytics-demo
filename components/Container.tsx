@@ -1,3 +1,3 @@
-import dynamic from "next/dynamic";
+import dynamic from 'next/dynamic';
 
-export const Container = dynamic(() => import("./client/Container"));
+export const Container = dynamic(() => import('./client/Container'));

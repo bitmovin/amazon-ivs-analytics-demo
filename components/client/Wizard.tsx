@@ -1,18 +1,26 @@
-"use client";
+'use client';
 
-import Wizard, { WizardProps } from "@cloudscape-design/components/wizard";
+import Wizard, { WizardProps } from '@cloudscape-design/components/wizard';
+import React from 'react';
 
-type Props = Omit<WizardProps, 'i18nStrings'>
+if (typeof window === 'undefined') {
+	React.useLayoutEffect = () => ({});
+}
 
-export default function(props: Props) {
-  return (
-    <Wizard {...props} i18nStrings={{
-        cancelButton: 'Cancel',
-        nextButton: 'Next',
-        previousButton: 'Previous',
-        submitButton: 'Submit',
-        collapsedStepsLabel: (stepNumber, stepsCount) => `${stepNumber}/${stepsCount}`,
-        stepNumberLabel: (stepNumber) => stepNumber.toString(),
-    }} />
-  );
+export default function ClientWizard({i18nStrings, ...props}: Partial<WizardProps>) {
+
+	return (
+		<Wizard {...props}
+			steps={props.steps || []}
+			i18nStrings={{
+				stepNumberLabel: (step) => `${step}`,
+				collapsedStepsLabel: (step, count) => `${step}/${count}`,
+				nextButton: 'Next',
+				cancelButton: 'Cancel',
+				previousButton: 'Previous',
+				submitButton: 'Submit',
+				...i18nStrings,
+			}}
+		/>
+	);
 }

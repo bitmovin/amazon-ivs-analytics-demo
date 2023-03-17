@@ -1,30 +1,32 @@
 'use client';
 
 import Table, { TableProps } from '@cloudscape-design/components/table';
-import { Route } from "next";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import React from 'react';
 
-export type Value = string[] | string | number | boolean | undefined;
-export type Item = Record<string, Value>;
-export type Props<T extends Item> = Omit<TableProps<T>, 'columnDefinitions'>
+if (typeof window === 'undefined') {
+	React.useLayoutEffect = () => ({});
+}
 
-export default function<T extends Item>(props: Props<T>) {
-  const pathname =  usePathname();
-  const columnDefinitions = props.items?.at(0) ?
-    Object.keys(props.items[0]).map((column) => ({
-      header: <p>{column}</p>,
-      cell: (item: T) => (
-        <Link href={`${pathname}/${item[column]}` as Route}>
-          {item[column]}
-        </Link>
-      )
-    })) : [];
-
-  return (
-    <Table {...props}
-      columnDefinitions={columnDefinitions}
-    />
-  );
-};
+export type Cell = string | number | boolean | string[] | Element;
+export type Row = Record<string, Cell>
+export type Props<T> = { rows: T[] } & TableProps<T>;
+export default function ClientTable<T extends Row>(props: Partial<Props<T>>) {
+	return (
+		<Table
+			{...props}
+			items={props.rows || []}
+			columnDefinitions={
+				Object.keys(props.rows?.at(0) || {}).map(column => ({
+					header: <>{column}</>,
+					ariaLabel: (data) => `${data}${column}`,
+					cell: (item: T) => {
+						const cell = item[column] || 'null';
+						const data = typeof cell === 'object' ? JSON.stringify(cell) : cell;
+						return <>{data}</>;
+					},
+				})) || []
+			}
+		/>
+	);
+}
 

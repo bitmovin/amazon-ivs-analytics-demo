@@ -1,7 +1,12 @@
-"use client";
+'use client';
 
-import Container, { ContainerProps } from "@cloudscape-design/components/container";
+import Container, { ContainerProps } from '@cloudscape-design/components/container';
+import React from 'react';
 
-export default function(props: ContainerProps) {
-  return (<Container {...props}>{props.children}</ Container>);
+if (typeof window === 'undefined') {
+	React.useLayoutEffect = () => ({});
+}
+
+export default function ClientContainer(props: ContainerProps) {
+	return (<Container {...props} />);
 }

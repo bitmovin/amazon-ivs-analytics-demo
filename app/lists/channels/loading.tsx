@@ -1,5 +1,5 @@
-import { List } from "@/components/List";
+import { List } from '@/components/List';
 
 export default function Loading() {
-  return (<List loading items={[]} />);
+	return (<List items={[]} loading />);
 }
