@@ -1,11 +1,11 @@
 import dynamic from "next/dynamic";
 
 const Spinner = dynamic(() => import("@/client/Spinner"), {
-	loading: () => <p>Loading...</p>,
+	loading: (props) => <p>Loading...</p>,
 });
 
 const Box = dynamic(() => import("@/client/Box"), {
-	loading: () => <Spinner />,
+	loading: (props) => <Spinner />,
 });
 
 export default function Loading() {

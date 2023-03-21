@@ -1,3 +1,0 @@
-import dynamic from 'next/dynamic';
-
-export const Cards = dynamic(() => import('./client/Cards'));

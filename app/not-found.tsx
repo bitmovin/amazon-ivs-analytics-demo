@@ -10,10 +10,10 @@ const Alert = dynamic(() => import("@/client/Alert"), {
 	loading: () => <Spinner />,
 });
 
-export default function ErrorPage(props: { error: Error }) {
+export default function NotFoundPage() {
 	return (
 		<Alert type="error">
-			<p>{props.error.message}</p>
+			<p>Tenant not Found</p>
 		</Alert>
 	);
 }

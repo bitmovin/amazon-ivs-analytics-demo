@@ -1,0 +1,13 @@
+.awsui-context-top-navigation>header>div {
+    height: 48px !important;
+    padding-left: 20px !important;
+
+    div>a>img {
+        height: 24px !important;
+    }
+}
+
+
+[class*="awsui_offset-right-xxl"] {
+    margin-right: 12px !important;
+}

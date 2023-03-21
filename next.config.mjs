@@ -1,15 +1,25 @@
+
+import NextBundleAnalyzer from "@next/bundle-analyzer";
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
 	reactStrictMode: true,
+	swcMinify: true,
 	devIndicators: {
 		buildActivity: true,
-		buildActivityPosition: 'top-right'
+		buildActivityPosition: "top-right",
 	},
 	experimental: {
 		appDir: true,
-		typedRoutes: true
+		typedRoutes: true,
 	},
-	transpilePackages: ['@cloudscape-design/components']
+	transpilePackages: ["@cloudscape-design/components", "@cloudscape-design/board-components"],
+
 };
 
-export default nextConfig;
+
+const withBundleAnalyzer = NextBundleAnalyzer({
+	enabled: process.env.ANALYZE === "true",
+});
+
+export default withBundleAnalyzer(nextConfig);

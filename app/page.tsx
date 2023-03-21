@@ -1,20 +1,23 @@
-import { Wizard } from '@/components/Wizard';
+import { redirect } from "@/server/routes";
+import { fetchOrganizations } from "@/server/bitmovin";
+import { notFound } from "next/navigation";
 
 export const metadata = {
-	title: 'Home'
+	title: {
+		default: "Bitmovin IVS",
+		template: "Bitmovin IVS",
+	},
+	applicationName: "Bitmovin IVS",
+	description: "Bitmovin and Amazon IVS Demo",
+	viewport: { width: "device-width", initialScale: 1 },
 };
 
-export default function App() {
-	return (
-		<Wizard
-			steps={[{
-				title: 'Bitmovin API Key',
-				description: (<p>{'Your API Key'}</p>),
-				content: (<p>{'All good'}</p>),
-				info: 'Sure thing',
-			}]}
-		/>
-	);
+export default async function RootPage() {
+	const orgs = await fetchOrganizations();
+	const id = orgs.items?.at(0)?.id;
+	if (id) {
+		return redirect(`/${id}`);
+	} else {
+		return notFound();
+	}
 }
-
-
