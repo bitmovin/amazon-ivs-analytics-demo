@@ -6,10 +6,12 @@ import SessionsChart from "./sessions-chart";
 import AnalyticsChart from "./analytics-chart";
 import SessionsTable from "./sessions-table";
 import Spinner from "@/client/Spinner";
+import { getDictionary } from "@/server/dictionaries";
 
 export default async function Page(props: {
 	searchParams: { orgId?: string; licenseKey?: string };
 }) {
+	const dict = await getDictionary("en");
 	const orgId = props.searchParams.orgId;
 	const licenseKey = props.searchParams.licenseKey;
 
@@ -21,20 +23,20 @@ export default async function Page(props: {
 
 	return (
 		<Board
-			fallback={<Spinner fallback={<p>Loading...</p>} />}
-			empty={<Spinner fallback={<p>Loading...</p>} />}
+			fallback={<Spinner fallback={<p>{dict.loading}</p>} />}
+			empty={<Spinner fallback={<p>{dict.loading}</p>} />}
 			items={(
 				[
 					{
 						id: "bar",
-						dimension: "Bar Chart",
+						dimension: "BAR_CHART",
 						minColumnSpan: 1,
 						minRowSpan: 3,
 						disableContentPaddings: true,
 					},
 					{
 						id: "sessions",
-						dimension: "Sessions",
+						dimension: "SESSIONS",
 						minColumnSpan: 1,
 						minRowSpan: 3,
 						disableContentPaddings: true,
@@ -48,13 +50,14 @@ export default async function Page(props: {
 					).map((dimension) => ({
 						id: "analytics-chart",
 						dimension,
-						minColumnSpan: 1,
+						minColumnSpan:
+							dimension === "REBUFFER_PERCENTAGE" ? 2 : 1,
 						minRowSpan: 3,
 						disableContentPaddings: false,
 					})),
 					{
 						id: "sessions-table",
-						dimension: "Error Sessions",
+						dimension: "ERROR_SESSIONS",
 						minColumnSpan: 2,
 						minRowSpan: 3,
 						disableContentPaddings: false,
@@ -71,7 +74,7 @@ export default async function Page(props: {
 						<Header
 							fallback={<Spinner fallback={<p>Loading...</p>} />}
 						>
-							{chart.dimension}
+							{dict.dimensions[chart.dimension]}
 						</Header>
 					),
 					disableContentPaddings: chart.disableContentPaddings,

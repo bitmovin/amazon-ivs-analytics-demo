@@ -1,0 +1,11 @@
+{
+    "dimensions": {
+        "REBUFFER_PERCENTAGE": "Rebuffer %",
+        "ERROR_RATE": "Error %",
+        "DROPPED_FRAMES": "Dropped Frames",
+        "ERROR_SESSIONS": "Error Sessions",
+        "BAR_CHART": "Bar Chart",
+        "SESSIONS": "Sessions"
+    },
+    "loading": "Loading..."
+}
