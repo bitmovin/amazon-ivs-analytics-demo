@@ -8,9 +8,13 @@ import {
 } from "@bitmovin/api-sdk";
 import Spinner from "@/client/Spinner";
 
-export type SessionsChartProps = { licenseKey: string; orgId: string };
+export type SessionsChartProps = {
+	licenseKey: string;
+	orgId: string;
+	dimension: keyof typeof AnalyticsAttribute;
+};
 
-export default function SessionsChart(props: SessionsChartProps) {
+export default function AnalyticsChart(props: SessionsChartProps) {
 	return (
 		<Suspense fallback={<Fallback />}>
 			{/* @ts-expect-error suspense */}
@@ -46,6 +50,7 @@ async function Component(props: SessionsChartProps) {
 	const end = new Date(now);
 	const orgId = props.orgId;
 	const licenseKey = props.licenseKey;
+	const dimension = AnalyticsAttribute[props.dimension];
 
 	const avg = await fetchAvg({ next: { revalidate: 60 } }, orgId, {
 		filters: [],
@@ -56,7 +61,7 @@ async function Component(props: SessionsChartProps) {
 				order: AnalyticsOrder.DESC,
 			},
 		],
-		dimension: AnalyticsAttribute.REBUFFER_PERCENTAGE,
+		dimension,
 		includeContext: true,
 		start,
 		end,
@@ -64,6 +69,10 @@ async function Component(props: SessionsChartProps) {
 		interval: AnalyticsInterval.MINUTE,
 		limit: 200,
 	});
+
+	const rows = avg.rows ?? [];
+
+	console.log(avg);
 
 	return (
 		<AreaChartItem
@@ -74,15 +83,16 @@ async function Component(props: SessionsChartProps) {
 					Loading sessions
 				</div>
 			}
+			xScaleType="time"
+			xDomain={[start.getTime(), end.getTime()]}
 			series={[
 				{
-					title: "Rebuffer %",
+					title: dimension,
 					type: "area",
-					data:
-						avg.rows?.map((row) => ({
-							x: row[0] as number,
-							y: (row[1] as number) * 100,
-						})) || [],
+					data: rows.map((row) => ({
+						x: row[0] as number,
+						y: row[1] as number,
+					})),
 				},
 			]}
 		/>
