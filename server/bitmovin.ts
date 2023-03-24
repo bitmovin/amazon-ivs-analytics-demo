@@ -1,6 +1,9 @@
 import "server-only";
 
-import BitmovinApi, { AnalyticsImpressionsQuery } from "@bitmovin/api-sdk";
+import BitmovinApi, {
+	AnalyticsAvgQueryRequest,
+	AnalyticsImpressionsQuery,
+} from "@bitmovin/api-sdk";
 
 import { requireEnv } from "./env";
 import { AnalyticsLicenseListQueryParams } from "@bitmovin/api-sdk/dist/analytics/licenses/AnalyticsLicenseListQueryParams";
@@ -30,6 +33,17 @@ function getClient(requestInit?: RequestInit, tenantOrgId?: string) {
 		});
 	}
 }
+
+export const fetchAvg = cache(
+	async (
+		requestInit?: RequestInit,
+		tenantOrgId?: string,
+		params?: AnalyticsAvgQueryRequest
+	) => {
+		const client = getClient(requestInit, tenantOrgId);
+		return await client.analytics.queries.avg.create(params);
+	}
+);
 
 export const preloadInformation = (
 	requestInit?: RequestInit,

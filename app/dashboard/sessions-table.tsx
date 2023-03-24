@@ -78,12 +78,12 @@ async function Component(props: SessionsTableProps) {
 			{ next: { revalidate: 60 } },
 			props.orgId
 		).then((details) => ({
-			time: format(details[0].time || 0, "LLLL d, yyyy"),
-			path: details[0].path,
-			video: details[0].videoTitle,
-			os: details[0].operatingsystem,
-			browser: details[0].browser,
-			platform: details[0].platform,
+			TIME: format(details[0].time || 0, "dd/LL/yyyy, hh:mm:ss"),
+			PATH: details[0].path,
+			VIDEO: details[0].videoTitle,
+			OS: details[0].operatingsystem,
+			PLATFORM: details[0].platform,
+			BROWSER: details[0].browser,
 		}))
 	);
 
@@ -91,11 +91,16 @@ async function Component(props: SessionsTableProps) {
 
 	return (
 		<Table
-			fallback={<p>Loading...</p>}
 			loading={false}
 			items={sessions}
 			variant="embedded"
 			columnDefinitions={[]}
+			fallback={
+				<div>
+					<Spinner fallback={<p>Loading...</p>} />
+					Loading sessions
+				</div>
+			}
 		/>
 	);
 }

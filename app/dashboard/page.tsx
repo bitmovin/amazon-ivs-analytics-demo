@@ -1,20 +1,24 @@
 import Board from "@/client/Board";
-import Box from "@/client/Box";
-import LineChartItem from "@/client/LineChartItem";
 import AreaChartItem from "@/client/AreaChartItem";
 import BarChartItem from "@/client/BarChartItem";
 import { redirect } from "next/navigation";
 import Header from "@/client/Header";
 import SessionsChart from "./sessions-chart";
+import RebufferChart from "./rebuffer-chart";
 import SessionsTable from "./sessions-table";
 import Spinner from "@/client/Spinner";
 
 export default async function Page(props: {
 	searchParams: { orgId?: string; licenseKey?: string };
 }) {
-	if (!props.searchParams.orgId || !props.searchParams.licenseKey) {
+	const orgId = props.searchParams.orgId;
+	const licenseKey = props.searchParams.licenseKey;
+
+	if (!licenseKey || !orgId) {
 		redirect("/");
 	}
+
+	const params = { orgId, licenseKey };
 
 	return (
 		<Board
@@ -25,13 +29,6 @@ export default async function Page(props: {
 					{
 						id: "bar",
 						title: "Bar Chart",
-						minColumnSpan: 1,
-						minRowSpan: 3,
-						disableContentPaddings: true,
-					},
-					{
-						id: "line",
-						title: "Line Chart",
 						minColumnSpan: 1,
 						minRowSpan: 3,
 						disableContentPaddings: true,
@@ -55,6 +52,13 @@ export default async function Page(props: {
 						id: "sessions-table",
 						title: "Last Error Sessions",
 						minColumnSpan: 2,
+						minRowSpan: 3,
+						disableContentPaddings: false,
+					},
+					{
+						id: "rebuffer-chart",
+						title: "Rebuffer Chart",
+						minColumnSpan: 1,
 						minRowSpan: 3,
 						disableContentPaddings: false,
 					},
@@ -134,161 +138,6 @@ export default async function Page(props: {
 										1601118000000,
 									]}
 									yDomain={[-10000, 40000]}
-								/>
-							) : id === "line" ? (
-								<LineChartItem
-									fallback={
-										<Spinner fallback={<p>Loading...</p>} />
-									}
-									hideFilter={true}
-									hideLegend={true}
-									series={[
-										{
-											title: "Site 1",
-											type: "line",
-											data: [
-												{
-													x: 1601002800000,
-													y: 58020,
-												},
-												{
-													x: 1601003700000,
-													y: 102402,
-												},
-												{
-													x: 1601004600000,
-													y: 104920,
-												},
-												{
-													x: 1601005500000,
-													y: 94031,
-												},
-												{
-													x: 1601006400000,
-													y: 125021,
-												},
-												{
-													x: 1601007300000,
-													y: 159219,
-												},
-												{
-													x: 1601008200000,
-													y: 193082,
-												},
-												{
-													x: 1601009100000,
-													y: 162592,
-												},
-												{
-													x: 1601010000000,
-													y: 274021,
-												},
-												{
-													x: 1601010900000,
-													y: 264286,
-												},
-												{
-													x: 1601011800000,
-													y: 289210,
-												},
-												{
-													x: 1601012700000,
-													y: 256362,
-												},
-												{
-													x: 1601013600000,
-													y: 257306,
-												},
-												{
-													x: 1601014500000,
-													y: 186776,
-												},
-												{
-													x: 1601015400000,
-													y: 294020,
-												},
-												{
-													x: 1601016300000,
-													y: 385975,
-												},
-												{
-													x: 1601017200000,
-													y: 486039,
-												},
-												{
-													x: 1601018100000,
-													y: 490447,
-												},
-												{
-													x: 1601019000000,
-													y: 361845,
-												},
-												{
-													x: 1601019900000,
-													y: 339058,
-												},
-												{
-													x: 1601020800000,
-													y: 298028,
-												},
-												{
-													x: 1601021700000,
-													y: 231902,
-												},
-												{
-													x: 1601022600000,
-													y: 224558,
-												},
-												{
-													x: 1601023500000,
-													y: 253901,
-												},
-												{
-													x: 1601024400000,
-													y: 102839,
-												},
-												{
-													x: 1601025300000,
-													y: 234943,
-												},
-												{
-													x: 1601026200000,
-													y: 204405,
-												},
-												{
-													x: 1601027100000,
-													y: 190391,
-												},
-												{
-													x: 1601028000000,
-													y: 183570,
-												},
-												{
-													x: 1601028900000,
-													y: 162592,
-												},
-												{
-													x: 1601029800000,
-													y: 148910,
-												},
-												{
-													x: 1601030700000,
-													y: 229492,
-												},
-												{
-													x: 1601031600000,
-													y: 293910,
-												},
-											],
-										},
-										{
-											title: "Peak hours",
-											type: "threshold",
-											x: 1601021400000,
-										},
-									]}
-									xDomain={[1601002800000, 1601031600000]}
-									yDomain={[0, 500000]}
 								/>
 							) : id === "area" ? (
 								<AreaChartItem
@@ -571,17 +420,15 @@ export default async function Page(props: {
 									yDomain={[0, 500000]}
 								/>
 							) : id === "sessions" ? (
-								<SessionsChart
-									licenseKey={props.searchParams.licenseKey!}
-									orgId={props.searchParams.orgId!}
-								/>
+								<SessionsChart {...params} />
 							) : id === "sessions-table" ? (
-								<SessionsTable
-									licenseKey={props.searchParams.licenseKey!}
-									orgId={props.searchParams.orgId!}
-								/>
+								<SessionsTable {...params} />
+							) : id === "rebuffer-chart" ? (
+								<RebufferChart {...params} />
 							) : (
-								<p>None</p>
+								<div>
+									<p>None</p>
+								</div>
 							),
 					},
 				})

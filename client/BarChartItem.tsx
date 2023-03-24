@@ -25,7 +25,7 @@ export default function BarChartItem({
 			ref={containerQueryRef}
 			{...{
 				style: {
-					height: "calc(100% - 10px)",
+					height: "100%",
 					width: "100%",
 				},
 			}}
