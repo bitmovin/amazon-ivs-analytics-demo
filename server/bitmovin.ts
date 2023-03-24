@@ -78,19 +78,19 @@ export const fetchOrganization = cache(
 	}
 );
 
-export const preloadLicenseKeys = (
-	params: AnalyticsLicenseListQueryParams,
+export const preloadLicenses = (
+	requestInit?: RequestInit,
 	tenantOrgId?: string,
-	requestInit?: RequestInit
+	params?: AnalyticsLicenseListQueryParams
 ) => {
-	void fetchLicenseKeys(params, tenantOrgId, requestInit);
+	void fetchLicenses(requestInit, tenantOrgId, params);
 };
 
-export const fetchLicenseKeys = cache(
+export const fetchLicenses = cache(
 	async (
-		params: AnalyticsLicenseListQueryParams,
+		requestInit?: RequestInit,
 		tenantOrgId?: string,
-		requestInit?: RequestInit
+		params?: AnalyticsLicenseListQueryParams
 	) => {
 		const client = getClient(requestInit, tenantOrgId);
 		return await client.analytics.licenses.list(params);
@@ -117,7 +117,7 @@ export const fetchImpression = async (
 		impressionId,
 		{ licenseKey }
 	);
-	return impressions?.map((e) => ({ ...e })) || [];
+	return impressions?.flat() || [];
 };
 
 export const preloadImpressions = (
@@ -141,3 +141,6 @@ export const fetchImpressions = cache(
 		return response;
 	}
 );
+
+
+

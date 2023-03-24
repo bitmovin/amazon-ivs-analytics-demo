@@ -1,17 +1,24 @@
 "use client";
 
-import BarChart, {
-	BarChartProps,
-} from "@cloudscape-design/components/bar-chart";
-import { ChartDataTypes } from "@cloudscape-design/components/mixed-line-bar-chart/interfaces";
-import React from "react";
+import React, { Suspense, lazy } from "react";
+
+import type { BarChartProps } from "@cloudscape-design/components/bar-chart";
+import type { ChartDataTypes } from "@cloudscape-design/components/mixed-line-bar-chart/interfaces";
+
+const LazyBarChart = lazy(
+	() => import("@cloudscape-design/components/bar-chart")
+);
 
 if (typeof window === "undefined") {
 	React.useLayoutEffect = React.useEffect;
 }
 
-export default function ClientBarChart<T extends ChartDataTypes>(
-	props: BarChartProps<T>
+export default function ClientBarChart(
+	props: BarChartProps<ChartDataTypes> & { fallback: JSX.Element }
 ) {
-	return <BarChart {...props} />;
+	return (
+		<Suspense fallback={props.fallback}>
+			<LazyBarChart {...props} />
+		</Suspense>
+	);
 }

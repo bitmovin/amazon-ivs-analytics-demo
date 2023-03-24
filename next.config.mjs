@@ -4,16 +4,15 @@ import NextBundleAnalyzer from "@next/bundle-analyzer";
 /** @type {import('next').NextConfig} */
 const nextConfig = {
 	reactStrictMode: true,
-	swcMinify: true,
 	devIndicators: {
 		buildActivity: true,
 		buildActivityPosition: "top-right",
 	},
 	experimental: {
 		appDir: true,
-		typedRoutes: true,
+		typedRoutes: true
 	},
-	transpilePackages: ["@cloudscape-design/components", "@cloudscape-design/board-components"],
+	transpilePackages: ["@cloudscape-design/components", "@cloudscape-design/board-components", "@cloudscape-design/component-toolkit"],
 
 };
 

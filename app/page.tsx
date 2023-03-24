@@ -1,6 +1,5 @@
-import { redirect } from "@/server/routes";
-import { fetchOrganizations } from "@/server/bitmovin";
-import { notFound } from "next/navigation";
+import { login } from "@/server/login";
+import { redirect, notFound } from "next/navigation";
 
 export const metadata = {
 	title: {
@@ -13,11 +12,9 @@ export const metadata = {
 };
 
 export default async function RootPage() {
-	const orgs = await fetchOrganizations();
-	const id = orgs.items?.at(0)?.id;
-	if (id) {
-		return redirect(`/${id}`);
-	} else {
-		return notFound();
-	}
+	const params = await login();
+	const org = params.orgs.at(0) ?? notFound();
+	const license = org.licenses.at(0) ?? notFound();
+
+	redirect(`/dashboard?orgId=${org.orgId}&licenseKey=${license.licenseKey}`);
 }

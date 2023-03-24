@@ -1,12 +1,24 @@
 "use client";
 
-import React from "react";
-import Alert, { AlertProps } from "@cloudscape-design/components/alert";
+import React, { Suspense, lazy } from "react";
+
+import type { AlertProps } from "@cloudscape-design/components/alert";
+
+const LazyAlert = lazy(
+	() => import("@cloudscape-design/components/app-layout")
+);
 
 if (typeof window === "undefined") {
 	React.useLayoutEffect = React.useEffect;
 }
 
-export default function ClientAlert(props: AlertProps) {
-	return <Alert {...props} />;
+export default function Alert({
+	fallback,
+	...props
+}: AlertProps & { fallback: JSX.Element }) {
+	return (
+		<Suspense fallback={fallback}>
+			<LazyAlert {...props} />
+		</Suspense>
+	);
 }

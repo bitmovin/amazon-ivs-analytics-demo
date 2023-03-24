@@ -1,3 +1,3 @@
 export default function Loading() {
-	return <p>Logging in...</p>;
+	return <p>Fetching stats...</p>;
 }

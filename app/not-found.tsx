@@ -1,18 +1,10 @@
 "use client";
 
-import dynamic from "next/dynamic";
-
-const Spinner = dynamic(() => import("@/client/Spinner"), {
-	loading: () => <p>Loading...</p>,
-});
-
-const Alert = dynamic(() => import("@/client/Alert"), {
-	loading: () => <Spinner />,
-});
+import Alert from "@/client/Alert";
 
 export default function NotFoundPage() {
 	return (
-		<Alert type="error">
+		<Alert type="error" fallback={<p>Tenant not Found</p>}>
 			<p>Tenant not Found</p>
 		</Alert>
 	);
