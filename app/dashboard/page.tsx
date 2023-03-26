@@ -1,13 +1,14 @@
 import Board from "@/client/Board";
-import BarChartItem from "@/client/BarChartItem";
 import { redirect } from "next/navigation";
 import Header from "@/client/Header";
-import AnalyticsChart from "./analytics-chart";
+import AreaChart from "./area-chart";
+import BarChart from "./bar-chart";
 import Table from "./analytics-table";
 import Spinner from "@/client/Spinner";
 import getDictionary from "@/server/dictionaries";
 import Link from "next/link";
 import Box from "@/client/Box";
+import { PageProps } from "../types";
 
 export default async function Page(props: PageProps<"/dashboard">) {
 	const dict = await getDictionary("en");
@@ -26,13 +27,14 @@ export default async function Page(props: PageProps<"/dashboard">) {
 			empty={<Spinner fallback={<p>{dict.loading}</p>} />}
 			items={(
 				[
-					{
-						id: "bar",
-						dimension: "BAR_CHART",
+					...(["SUPPORTED_VIDEO_CODECS"] as const).map((filter) => ({
+						id: "bar" as const,
+						filter,
+						dimension: "IMPRESSION_ID",
 						minColumnSpan: 1,
 						minRowSpan: 3,
 						disableContentPaddings: true,
-					},
+					})),
 					...(
 						[
 							"REBUFFER_PERCENTAGE",
@@ -44,7 +46,7 @@ export default async function Page(props: PageProps<"/dashboard">) {
 						dimension,
 						minColumnSpan: 1,
 						minRowSpan: 3,
-						disableContentPaddings: false,
+						disableContentPaddings: true,
 					})),
 					...(["ERROR_CODE"] as const).map((dimension) => ({
 						id: "analytics-table" as const,
@@ -54,7 +56,18 @@ export default async function Page(props: PageProps<"/dashboard">) {
 						disableContentPaddings: true,
 						footer: (
 							<Box textAlign="center">
-								<Link href="/dashboard/sessions">View all</Link>
+								<Link
+									href={{
+										pathname: "/dashboard/sessions",
+										query: {
+											licenseKey,
+											orgId,
+											dimension,
+										},
+									}}
+								>
+									View all
+								</Link>
 							</Box>
 						),
 					})),
@@ -74,75 +87,112 @@ export default async function Page(props: PageProps<"/dashboard">) {
 									<Spinner fallback={<p>Loading...</p>} />
 								}
 							>
-								{dict.dimensions[chart.dimension]}
+								{
+									dict.dimensions[
+										"filter" in chart
+											? chart["filter"]
+											: chart.dimension
+									]
+								}
 							</Header>
 						),
 						disableContentPaddings: chart.disableContentPaddings,
 						footer: "footer" in chart ? chart.footer : <></>,
 						element:
 							chart.id === "bar" ? (
-								<BarChartItem
-									fallback={
-										<Spinner fallback={<p>Loading...</p>} />
-									}
+								<BarChart
+									{...params}
 									hideFilter={true}
-									hideLegend={true}
-									yScaleType="linear"
-									xScaleType="categorical"
-									series={[
+									dimension="IMPRESSION_ID"
+									interval="MINUTE"
+									horizontalBars={false}
+									orderBy={[
+										{ name: "MINUTE", order: "DESC" },
+									]}
+									bars={[
 										{
-											title: "Site 1",
-											type: "bar",
-											data: [
+											name: "AVC",
+											filters: [
 												{
-													x: 1601089200000,
-													y: 34503,
+													name: chart.filter,
+													operator: "CONTAINS",
+													value: "avc",
 												},
+
 												{
-													x: 1601096400000,
-													y: 25832,
-												},
-												{
-													x: 1601103600000,
-													y: 4012,
-												},
-												{
-													x: 1601110800000,
-													y: -5602,
-												},
-												{
-													x: 1601118000000,
-													y: 17839,
+													name: "VIDEO_STARTUPTIME",
+													operator: "GT",
+													value: 0,
 												},
 											],
 										},
 										{
-											title: "Average revenue",
-											type: "threshold",
-											y: 19104,
+											name: "HEVC",
+											filters: [
+												{
+													name: chart.filter,
+													operator: "CONTAINS",
+													value: "hevc",
+												},
+
+												{
+													name: "VIDEO_STARTUPTIME",
+													operator: "GT",
+													value: 0,
+												},
+											],
+										},
+										{
+											name: "VP9",
+											filters: [
+												{
+													name: chart.filter,
+													operator: "CONTAINS",
+													value: "vp9",
+												},
+												{
+													name: "VIDEO_STARTUPTIME",
+													operator: "GT",
+													value: 0,
+												},
+											],
+										},
+										{
+											name: "AV1",
+											filters: [
+												{
+													name: chart.filter,
+													operator: "CONTAINS",
+													value: "av1",
+												},
+
+												{
+													name: "VIDEO_STARTUPTIME",
+													operator: "GT",
+													value: 0,
+												},
+											],
 										},
 									]}
-									xDomain={[
-										1601089200000, 1601096400000,
-										1601103600000, 1601110800000,
-										1601118000000,
-									]}
-									yDomain={[-10000, 40000]}
+									query={"count"}
 								/>
 							) : chart.id === "analytics-chart" ? (
-								<AnalyticsChart
+								<AreaChart
 									{...params}
 									query="avg"
 									dimension={chart.dimension}
 									limit={100}
+									interval="MINUTE"
 									orderBy={[
 										{ name: "MINUTE", order: "DESC" },
 									]}
-									interval="MINUTE"
+									hideFilter={true}
+									xScaleType="time"
 								/>
 							) : chart.id === "analytics-table" ? (
 								<Table
 									{...params}
+									variant="embedded"
 									filters={[
 										{
 											name: chart.dimension,
@@ -160,8 +210,7 @@ export default async function Page(props: PageProps<"/dashboard">) {
 									columns={{
 										time: {
 											header: <>{"Time"}</>,
-											type: "link",
-											href: "/dashboard/sessions",
+											type: "text",
 										},
 										path: {
 											header: <>{"Path"}</>,

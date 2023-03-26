@@ -21,7 +21,7 @@ export default function LineChartItem({
 
 	return (
 		<div
-			className="line-chart-container"
+			className="chart-container"
 			ref={containerQueryRef}
 			{...{
 				style: {

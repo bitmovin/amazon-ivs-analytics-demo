@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import AreaChartItem from "@/client/AreaChartItem";
-import { fetchQuery } from "@/server/bitmovin";
+import { fetchQuery, Interval, Order } from "@/server/bitmovin";
 import {
 	AnalyticsAttribute,
 	AnalyticsInterval,
@@ -8,11 +8,11 @@ import {
 } from "@bitmovin/api-sdk";
 import Spinner from "@/client/Spinner";
 import QueriesApi from "@bitmovin/api-sdk/dist/analytics/queries/QueriesApi";
+import { AreaChartProps } from "@cloudscape-design/components";
+import { ChartDataTypes } from "@cloudscape-design/components/internal/components/cartesian-chart/interfaces";
 
 type Query<K extends keyof QueriesApi> = Parameters<typeof fetchQuery<K>>[0];
 type Dimension = keyof typeof AnalyticsAttribute;
-type Order = keyof typeof AnalyticsOrder;
-type Interval = keyof typeof AnalyticsInterval;
 
 export type AnalyticsChartProps<K extends keyof QueriesApi> = {
 	licenseKey: string;
@@ -25,7 +25,7 @@ export type AnalyticsChartProps<K extends keyof QueriesApi> = {
 		name: Dimension;
 		order: Order;
 	}[];
-};
+} & Partial<AreaChartProps<ChartDataTypes>>;
 
 export default function AnalyticsChart<K extends keyof QueriesApi>(
 	props: AnalyticsChartProps<K>
@@ -41,7 +41,7 @@ export default function AnalyticsChart<K extends keyof QueriesApi>(
 function Fallback<K extends keyof QueriesApi>(props: AnalyticsChartProps<K>) {
 	return (
 		<AreaChartItem
-			loadingText="Loading sessions"
+			{...props}
 			empty={
 				<div>
 					<Spinner fallback={<p>Loading sessions</p>} />
@@ -97,14 +97,13 @@ async function Component<K extends keyof QueriesApi>(
 
 	return (
 		<AreaChartItem
-			hideFilter={true}
+			{...props}
 			fallback={
 				<div>
 					<Spinner fallback={<p>Loading sessions</p>} />
 					Loading sessions
 				</div>
 			}
-			xScaleType="time"
 			xDomain={[start.getTime(), end.getTime()]}
 			series={[
 				{

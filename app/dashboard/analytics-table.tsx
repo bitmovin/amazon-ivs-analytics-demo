@@ -1,28 +1,16 @@
 import { Suspense } from "react";
-import { fetchImpression, fetchImpressions } from "@/server/bitmovin";
 import {
-	AnalyticsAbstractFilter,
-	AnalyticsAttribute,
-	AnalyticsContainsFilter,
-	AnalyticsEqualFilter,
-	AnalyticsGreaterThanFilter,
-	AnalyticsGreaterThanOrEqualFilter,
-	AnalyticsInFilter,
-	AnalyticsLessThanFilter,
-	AnalyticsLessThanOrEqualFilter,
-	AnalyticsNotContainsFilter,
-	AnalyticsNotEqualFilter,
-	AnalyticsQueryOperator,
-} from "@bitmovin/api-sdk";
+	Attribute,
+	Filter,
+	fetchImpression,
+	fetchImpressions,
+	mapFilters,
+} from "@/server/bitmovin";
 import ClientTable from "@/client/Table";
 import Spinner from "@/client/Spinner";
 import { Route } from "next";
+import { TableProps } from "@cloudscape-design/components/table";
 
-type Attribute = keyof typeof AnalyticsAttribute;
-type Operator = typeof AnalyticsQueryOperator;
-type GroupOperators = "IN" | "CONTAINS" | "NOTCONTAINS";
-type ElementOperator = keyof Omit<Operator, GroupOperators>;
-type ListOperator = keyof Pick<Operator, GroupOperators>;
 type Item = Record<string, string | number>;
 type Cell = Partial<Record<string, JSX.Element>>;
 
@@ -43,29 +31,15 @@ type Column = {
 
 type ColumnList = Partial<Record<Lowercase<Attribute>, Column>>;
 
-type ElementFilter = {
-	name: Attribute;
-	operator: ElementOperator;
-	value: unknown;
-};
-
-type ListFilter = {
-	name: Attribute;
-	operator: ListOperator;
-	value: unknown[];
-};
-
-type Filter = ElementFilter | ListFilter;
-
 export type AnalyticsTableProps = {
 	licenseKey: string;
 	orgId: string;
-	dimension: keyof typeof AnalyticsAttribute;
+	dimension: Attribute;
 	columns: ColumnList;
 	filters: Filter[];
 	limit: number;
 	footer?: JSX.Element;
-};
+} & Partial<TableProps>;
 
 export default function Table(props: AnalyticsTableProps) {
 	return (
@@ -79,15 +53,12 @@ export default function Table(props: AnalyticsTableProps) {
 function Fallback(props: AnalyticsTableProps) {
 	return (
 		<ClientTable
+			{...props}
 			loading={true}
 			loadingText="Loading sessions"
 			items={[{}]}
-			stickyHeader
-			variant="embedded"
 			resizableColumns
 			columnDefinitions={[]}
-			columns={props.columns}
-			footer={props.footer}
 			fallback={
 				<div>
 					<Spinner fallback={<p>Loading...</p>} />
@@ -103,14 +74,11 @@ async function Component(props: AnalyticsTableProps) {
 
 	return (
 		<ClientTable
+			{...props}
 			loading={false}
-			stickyHeader
 			items={items}
-			variant="embedded"
 			resizableColumns
 			columnDefinitions={[]}
-			columns={props.columns}
-			footer={props.footer}
 			fallback={
 				<div>
 					<Spinner fallback={<p>Loading...</p>} />
@@ -183,56 +151,4 @@ async function updateProps(props: AnalyticsTableProps) {
 	}
 
 	return cells;
-}
-function mapFilters(filter: Filter) {
-	const name = AnalyticsAttribute[filter.name];
-	const operator = AnalyticsQueryOperator[filter.operator];
-	const value = filter.value;
-	const obj = { name, operator, value };
-
-	if (filter.operator === "NE") {
-		return new AnalyticsNotEqualFilter(obj);
-	}
-
-	if (filter.operator === "CONTAINS") {
-		return new AnalyticsContainsFilter(obj);
-	}
-
-	if (filter.operator === "GT") {
-		return new AnalyticsGreaterThanFilter(obj);
-	}
-
-	if (filter.operator === "GTE") {
-		return new AnalyticsGreaterThanOrEqualFilter(obj);
-	}
-
-	if (filter.operator === "LT") {
-		return new AnalyticsLessThanFilter(obj);
-	}
-
-	if (filter.operator === "LTE") {
-		return new AnalyticsLessThanOrEqualFilter(obj);
-	}
-
-	if (filter.operator === "EQ") {
-		return new AnalyticsEqualFilter(obj);
-	}
-
-	if (filter.operator === "IN") {
-		return new AnalyticsInFilter({
-			name,
-			operator,
-			value: filter.value,
-		});
-	}
-
-	if (filter.operator === "NOTCONTAINS") {
-		return new AnalyticsNotContainsFilter({
-			name,
-			operator,
-			value: filter.value,
-		});
-	}
-
-	return new AnalyticsAbstractFilter(obj);
 }

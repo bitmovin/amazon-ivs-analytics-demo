@@ -13,11 +13,12 @@ if (typeof window === "undefined") {
 	React.useLayoutEffect = React.useEffect;
 }
 
-export default function ClientBarChart(
-	props: BarChartProps<ChartDataTypes> & { fallback: JSX.Element }
-) {
+export default function ClientBarChart({
+	fallback,
+	...props
+}: BarChartProps<ChartDataTypes> & { fallback: JSX.Element }) {
 	return (
-		<Suspense fallback={props.fallback}>
+		<Suspense fallback={fallback}>
 			<LazyBarChart {...props} />
 		</Suspense>
 	);

@@ -22,7 +22,7 @@ export default function AreaChartItem({
 	}));
 	return (
 		<div
-			className="line-chart-container"
+			className="chart-container"
 			ref={containerQueryRef}
 			{...{
 				style: {

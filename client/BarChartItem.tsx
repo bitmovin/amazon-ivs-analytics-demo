@@ -21,7 +21,7 @@ export default function BarChartItem({
 	}));
 	return (
 		<div
-			className="bar-chart-container"
+			className="chart-container"
 			ref={containerQueryRef}
 			{...{
 				style: {
