@@ -66,7 +66,7 @@ async function Component() {
 						items: org.licenses.map((license) => ({
 							id: license.licenseKey,
 							text: license.name || "name",
-							href: `?orgId=${org.orgId}&licenseKey=${license.licenseKey}`,
+							href: `/dashboard?orgId=${org.orgId}&licenseKey=${license.licenseKey}`,
 							items: undefined,
 						})),
 					})),

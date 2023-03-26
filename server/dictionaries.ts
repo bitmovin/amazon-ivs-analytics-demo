@@ -4,5 +4,6 @@ const dictionaries = {
 	en: () => import("@/dictionaries/en.json").then((module) => module.default),
 };
 
-export const getDictionary = async (key: keyof typeof dictionaries) =>
-	dictionaries[key]();
+export default async function getDictionary(key: keyof typeof dictionaries) {
+	return dictionaries[key]();
+}

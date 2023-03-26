@@ -21,13 +21,21 @@ export default function AppLayout({
 	return (
 		<Suspense fallback={fallback}>
 			<LazyAppLayout
-				navigationOpen={navigationOpen}
-				onNavigationChange={({ detail }) =>
-					setNavigationOpen(detail.open)
-				}
-				toolsOpen={toolsOpen}
-				onToolsChange={({ detail }) => setToolsOpen(detail.open)}
 				{...props}
+				navigationOpen={
+					props.navigationHide === false && navigationOpen
+				}
+				onNavigationChange={({ detail }) => {
+					if (props.navigationHide === false) {
+						setNavigationOpen(detail.open);
+					}
+				}}
+				toolsOpen={props.toolsHide === false && toolsOpen}
+				onToolsChange={({ detail }) => {
+					if (props.toolsHide === false) {
+						setToolsOpen(detail.open);
+					}
+				}}
 			/>
 		</Suspense>
 	);

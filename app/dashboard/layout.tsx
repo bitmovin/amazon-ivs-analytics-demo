@@ -1,4 +1,3 @@
-import AppLayout from "@/client/AppLayout";
 import ContentLayout from "@/client/ContentLayout";
 import Header from "@/client/Header";
 
@@ -16,20 +15,11 @@ export default async function DashboardLayout(props: {
 	children: JSX.Element;
 }) {
 	return (
-		<AppLayout
-			toolsHide={true}
-			navigationHide={true}
-			fallback={<p>Loading...</p>}
-			content={
-				<ContentLayout
-					fallback={props.children}
-					header={
-						<Header fallback={<h1>Dashboard</h1>}>Dashboard</Header>
-					}
-				>
-					{props.children}
-				</ContentLayout>
-			}
-		/>
+		<ContentLayout
+			fallback={props.children}
+			header={<Header fallback={<h1>Dashboard</h1>}>Dashboard</Header>}
+		>
+			{props.children}
+		</ContentLayout>
 	);
 }

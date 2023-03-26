@@ -22,13 +22,27 @@ export default function TopNavigation({
 
 	for (const utility of props.utilities || []) {
 		if (utility.type === "button" && utility.href) {
+			utility.onClick = (event) => {
+				event.preventDefault();
+				if (utility.href) {
+					router.push(utility.href, {
+						forceOptimisticNavigation: true,
+					});
+				}
+			};
 			router.prefetch(utility.href);
 		} else if (utility.type === "menu-dropdown") {
 			for (const item of utility.items) {
-				if (item.href) {
-					router.prefetch(item.href);
-				}
+				if (item.href) router.prefetch(item.href);
 			}
+
+			utility.onItemClick = (event) => {
+				event.preventDefault();
+				if (event.detail.href)
+					router.push(event.detail.href, {
+						forceOptimisticNavigation: true,
+					});
+			};
 		}
 	}
 

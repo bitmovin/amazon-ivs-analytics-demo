@@ -17,7 +17,8 @@ type Data = {
 	element: JSX.Element;
 	header?: JSX.Element;
 	footer?: JSX.Element;
-	disableContentPaddings?: boolean;
+	settings?: JSX.Element;
+	disableContentPaddings: boolean;
 };
 type Item<D = Data> = BoardProps.Item<D>;
 type Items<D = Data> = Readonly<Item<D>[]>;
@@ -27,7 +28,7 @@ type Props<D = Data> = BoardProps<D>;
 export default function Board({
 	fallback,
 	...props
-}: Omit<Props, "renderItem" | "onItemsChange" | "i18nStrings"> & {
+}: Partial<Omit<Props, "renderItem" | "onItemsChange" | "i18nStrings">> & {
 	fallback: JSX.Element;
 }) {
 	const [items, setItems] = useState(props.items as Items);
@@ -41,16 +42,17 @@ export default function Board({
 				}
 				renderItem={<D,>(item: Item<D>) => (
 					<BoardItem
+						fallback={(item as Item).data.element}
 						header={(item as Item).data.header}
 						footer={(item as Item).data.footer}
+						settings={(item as Item).data.settings}
 						disableContentPaddings={
-							(item as Item).data.disableContentPaddings || false
+							(item as Item).data.disableContentPaddings
 						}
 						i18nStrings={{
 							dragHandleAriaLabel: "",
 							resizeHandleAriaLabel: "",
 						}}
-						fallback={(item as Item).data.element}
 					>
 						{(item as Item).data.element}
 					</BoardItem>

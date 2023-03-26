@@ -1,29 +1,44 @@
 import { Suspense } from "react";
 import AreaChartItem from "@/client/AreaChartItem";
-import { fetchAvg } from "@/server/bitmovin";
+import { fetchQuery } from "@/server/bitmovin";
 import {
 	AnalyticsAttribute,
 	AnalyticsInterval,
 	AnalyticsOrder,
 } from "@bitmovin/api-sdk";
 import Spinner from "@/client/Spinner";
+import QueriesApi from "@bitmovin/api-sdk/dist/analytics/queries/QueriesApi";
 
-export type SessionsChartProps = {
+type Query<K extends keyof QueriesApi> = Parameters<typeof fetchQuery<K>>[0];
+type Dimension = keyof typeof AnalyticsAttribute;
+type Order = keyof typeof AnalyticsOrder;
+type Interval = keyof typeof AnalyticsInterval;
+
+export type AnalyticsChartProps<K extends keyof QueriesApi> = {
 	licenseKey: string;
 	orgId: string;
-	dimension: keyof typeof AnalyticsAttribute;
+	dimension: Dimension;
+	query: Query<K>;
+	limit: number;
+	interval: Interval;
+	orderBy: {
+		name: Dimension;
+		order: Order;
+	}[];
 };
 
-export default function AnalyticsChart(props: SessionsChartProps) {
+export default function AnalyticsChart<K extends keyof QueriesApi>(
+	props: AnalyticsChartProps<K>
+) {
 	return (
-		<Suspense fallback={<Fallback />}>
+		<Suspense fallback={<Fallback {...props} />}>
 			{/* @ts-expect-error suspense */}
 			<Component {...props} />
 		</Suspense>
 	);
 }
 
-function Fallback() {
+function Fallback<K extends keyof QueriesApi>(props: AnalyticsChartProps<K>) {
 	return (
 		<AreaChartItem
 			loadingText="Loading sessions"
@@ -44,35 +59,41 @@ function Fallback() {
 	);
 }
 
-async function Component(props: SessionsChartProps) {
+async function Component<K extends keyof QueriesApi>(
+	props: AnalyticsChartProps<K>
+) {
 	const now = Date.now();
 	const start = new Date(now - 1000 * 60 * 60);
 	const end = new Date(now);
 	const orgId = props.orgId;
 	const licenseKey = props.licenseKey;
 	const dimension = AnalyticsAttribute[props.dimension];
+	const interval = AnalyticsInterval[props.interval];
+	const limit = props.limit;
+	const orderBy = props.orderBy.map((orderBy) => ({
+		name: AnalyticsAttribute[orderBy.name],
+		order: AnalyticsOrder[orderBy.order],
+	}));
 
-	const avg = await fetchAvg({ next: { revalidate: 60 } }, orgId, {
-		filters: [],
-		groupBy: [],
-		orderBy: [
-			{
-				name: AnalyticsAttribute.MINUTE,
-				order: AnalyticsOrder.DESC,
-			},
-		],
-		dimension,
-		includeContext: true,
-		start,
-		end,
-		licenseKey,
-		interval: AnalyticsInterval.MINUTE,
-		limit: 200,
-	});
+	const result = await fetchQuery(
+		props.query,
+		{ next: { revalidate: 60 } },
+		orgId,
+		{
+			filters: [],
+			groupBy: [],
+			orderBy,
+			dimension,
+			includeContext: true,
+			start,
+			end,
+			licenseKey,
+			interval,
+			limit,
+		}
+	);
 
-	const rows = avg.rows ?? [];
-
-	console.log(avg);
+	const rows = result.rows ?? [];
 
 	return (
 		<AreaChartItem

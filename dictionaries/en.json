@@ -5,7 +5,8 @@
         "DROPPED_FRAMES": "Dropped Frames",
         "ERROR_SESSIONS": "Error Sessions",
         "BAR_CHART": "Bar Chart",
-        "SESSIONS": "Sessions"
+        "SESSIONS": "Sessions",
+        "ERROR_CODE": "Error Code"
     },
     "loading": "Loading..."
 }

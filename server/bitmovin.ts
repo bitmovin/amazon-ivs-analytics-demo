@@ -8,6 +8,7 @@ import BitmovinApi, {
 import { requireEnv } from "./env";
 import { AnalyticsLicenseListQueryParams } from "@bitmovin/api-sdk/dist/analytics/licenses/AnalyticsLicenseListQueryParams";
 import { cache } from "react";
+import QueriesApi from "@bitmovin/api-sdk/dist/analytics/queries/QueriesApi";
 
 const config = {
 	apiKey: requireEnv("BITMOVIN_API_KEY"),
@@ -34,14 +35,15 @@ function getClient(requestInit?: RequestInit, tenantOrgId?: string) {
 	}
 }
 
-export const fetchAvg = cache(
-	async (
+export const fetchQuery = cache(
+	async <K extends keyof QueriesApi>(
+		type: K,
 		requestInit?: RequestInit,
 		tenantOrgId?: string,
-		params?: AnalyticsAvgQueryRequest
+		params?: Parameters<QueriesApi[K]["create"]>[0]
 	) => {
 		const client = getClient(requestInit, tenantOrgId);
-		return await client.analytics.queries.avg.create(params);
+		return await client.analytics.queries[type].create(params);
 	}
 );
 
@@ -120,19 +122,19 @@ export const preloadImpression = (
 	void fetchImpression(impressionId, tenantOrgId, requestInit, licenseKey);
 };
 
-export const fetchImpression = async (
-	impressionId: string,
-	licenseKey: string,
-	requestInit?: RequestInit,
-	tenantOrgId?: string
-) => {
-	const client = getClient(requestInit, tenantOrgId);
-	const impressions = await client.analytics.impressions.create(
-		impressionId,
-		{ licenseKey }
-	);
-	return impressions?.flat() || [];
-};
+export const fetchImpression = cache(
+	async (
+		impressionId: string,
+		licenseKey: string,
+		requestInit?: RequestInit,
+		tenantOrgId?: string
+	) => {
+		const client = getClient(requestInit, tenantOrgId);
+		return await client.analytics.impressions.create(impressionId, {
+			licenseKey,
+		});
+	}
+);
 
 export const preloadImpressions = (
 	requestInit?: RequestInit,

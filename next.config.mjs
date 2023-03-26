@@ -12,7 +12,11 @@ const nextConfig = {
 		appDir: true,
 		typedRoutes: true
 	},
-	transpilePackages: ["@cloudscape-design/components", "@cloudscape-design/board-components", "@cloudscape-design/component-toolkit"],
+	transpilePackages: [
+		"@cloudscape-design/components",
+		"@cloudscape-design/board-components",
+		"@cloudscape-design/component-toolkit"
+	],
 
 };
 

@@ -1,6 +1,7 @@
 import "@cloudscape-design/global-styles/index.css";
 import "./globals.scss";
 import TopNavigation from "./top-navigation";
+import AppLayout from "@/client/AppLayout";
 
 export const metadata = {
 	title: {
@@ -17,7 +18,12 @@ export default function RootLayout(props: { children: JSX.Element }) {
 		<html lang="en">
 			<body>
 				<TopNavigation />
-				{props.children}
+				<AppLayout
+					toolsHide={true}
+					navigationHide={true}
+					fallback={<p>Loading...</p>}
+					content={props.children}
+				/>
 			</body>
 		</html>
 	);
