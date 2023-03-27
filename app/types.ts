@@ -11,4 +11,6 @@ export type SearchParams<T extends Route<string>> = T extends "/"
 	? { orgId: string; licenseKey: string }
 	: T extends "/dashboard/sessions"
 	? SearchParams<"/dashboard"> & { dimension: Attribute }
+  : T extends "/dashboard/stream-sessions"
+  ? SearchParams<"/dashboard"> & { channelArn: string }
 	: never;
