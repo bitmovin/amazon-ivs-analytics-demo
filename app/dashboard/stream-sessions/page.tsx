@@ -38,6 +38,10 @@ export default async function Page(props: PageProps<"/dashboard/stream-sessions"
 					header: <>{"Error"}</>,
 					type: "text",
 				},
+				detailLink: {
+					header: <>{""}</>,
+					type: "text",
+				},
 			}}
 		/>
 	);

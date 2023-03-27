@@ -6,6 +6,7 @@ import ClientTable from "@/client/Table";
 import Spinner from "@/client/Spinner";
 import { Route } from "next";
 import { TableProps } from "@cloudscape-design/components/table";
+import Link from "next/link";
 
 type Cell = Partial<Record<string, JSX.Element>>;
 
@@ -35,6 +36,7 @@ export declare enum StreamSessionDetail {
   startTime = 'startTime',
   endTime = 'endTime',
   error = 'error',
+  detailLink = 'detailLink',
 }
 
 export type ColumnList = Record<StreamSessionDetail, Column>;
@@ -108,6 +110,16 @@ async function updateProps(props: IvsStreamSessionsProps) {
       item['startTime'] = <>{streamSession.startTime?.toISOString()}</>;
       item['endTime'] = <>{streamSession.endTime?.toISOString() || 'Live now'}</>;
       item['error'] = <>{streamSession.hasErrorEvent ? 'Error occurred' : 'No error'}</>;
+      item['detailLink'] =
+      <Link
+        href={{
+          pathname: "/dashboard/stream-session-details",
+          query: {
+            channelArn: channelArn,
+            streamId: streamSession.streamId
+          },
+        }}
+      >View Details</Link>
 
       cells.push(item);
 	}
