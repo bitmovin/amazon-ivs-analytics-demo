@@ -10,6 +10,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@aws-sdk/client-ivs": "^3.299.0",
     "@bitmovin/api-sdk": "1.153.0",
     "@cloudscape-design/board-components": "3.0.5",
     "@cloudscape-design/component-toolkit": "1.0.0-beta.11",
