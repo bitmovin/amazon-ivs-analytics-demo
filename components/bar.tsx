@@ -1,7 +1,7 @@
 import "server-only";
 
 import type {
-	Attribute,
+	AttributeKey,
 	QueryType,
 } from "@/server/bitmovin";
 
@@ -10,10 +10,10 @@ import type { FilterElement } from "./filter";
 export type BarProps<K extends QueryType> = {
 	id: string;
 	query: K;
-	dimension: Attribute;
+	dimension: AttributeKey;
 	hidden?: boolean;
 	color?: string;
-	children: FilterElement[]
+	children: FilterElement | FilterElement[]
 };
 
 export type BarElement<K extends QueryType> = CustomElement<BarProps<K>>;

@@ -39,12 +39,6 @@ export function Fallback(props: Partial<ChartProps>) {
 					Loading sessions
 				</div>
 			}
-			fallback={
-				<div>
-					<Spinner />
-					Loading sessions
-				</div>
-			}
 			series={[]}
 		/>
 	);
@@ -52,7 +46,7 @@ export function Fallback(props: Partial<ChartProps>) {
 
 async function Component(props: ChartProps) {
 	const now = Date.now();
-	const start = new Date(now - 1000 * 60 * 60);
+	const start = new Date(now - 1000 * 60 * 60 * 3);
 	const end = new Date(now);
 	const orgId = props.orgId;
 	const licenseKey = props.licenseKey;
@@ -67,11 +61,16 @@ async function Component(props: ChartProps) {
 					{ next: { revalidate: 60 } },
 					orgId,
 					{
-						filters: [area.props.children]
-							.flat()
-							.flatMap((filter) => (filter ? [filter] : []))
-							.map(mapFilter),
-						dimension: AnalyticsAttribute[area.props.dimension],
+						filters: area.props.children
+							? [area.props.children]
+									.flat()
+									.flatMap((filter) => filter)
+									.map((filter) => mapFilter(filter.props))
+									.flatMap((filter) =>
+										filter ? [filter] : []
+									)
+							: [],
+						dimension: AnalyticsAttribute[area.props.field],
 						includeContext: true,
 						start,
 						end,
@@ -142,16 +141,5 @@ async function Component(props: ChartProps) {
 			)
 	);
 
-	return (
-		<AreaChartItem
-			{...props}
-			fallback={
-				<div>
-					<Spinner />
-					Loading sessions
-				</div>
-			}
-			series={results[0]}
-		/>
-	);
+	return <AreaChartItem {...props} series={results[0]} />;
 }

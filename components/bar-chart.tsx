@@ -2,7 +2,7 @@ import "server-only";
 
 import { Suspense } from "react";
 import ClientBarChart from "@/components/client/BarChartItem";
-import { fetchQuery, Interval, Order, Attribute } from "@/server/bitmovin";
+import { fetchQuery, Interval, Order, AttributeKey } from "@/server/bitmovin";
 import {
 	AnalyticsAttribute,
 	AnalyticsInterval,
@@ -19,12 +19,11 @@ import React from "react";
 export type ChartProps<K extends QueryType> = {
 	licenseKey: string;
 	orgId: string;
-	query: Query<K>;
 	limit: number;
 	factor?: number;
 	interval?: Interval;
 	orderBy?: {
-		name: Attribute;
+		name: AttributeKey;
 		order: Order;
 	}[];
 	children: BarElement<QueryType>[];
@@ -74,7 +73,11 @@ async function Component<K extends keyof QueriesApi>(props: ChartProps<K>) {
 	const results = await Promise.all(
 		props.children.map((bar) =>
 			fetchQuery(bar.props.query, { next: { revalidate: 60 } }, orgId, {
-				filters: bar.props.children.map(mapFilter),
+				filters: [bar.props.children]
+					.flat()
+					.flatMap((filter) => filter)
+					.map((filter) => mapFilter(filter.props))
+					.flatMap((filter) => (filter ? [filter] : [])),
 				dimension: AnalyticsAttribute[bar.props.dimension],
 				includeContext: true,
 				start,

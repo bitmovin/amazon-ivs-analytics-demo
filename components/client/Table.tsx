@@ -11,11 +11,9 @@ if (typeof window === "undefined") {
 	React.useLayoutEffect = () => ({});
 }
 
-export default function Table<
-	T extends { [x: string]: JSX.Element | undefined }
->(
+export default function Table(
 	props: Omit<TableProps<unknown>, "trackBy" | "isItemDisabled"> & {
-		columns: Record<string, { header: JSX.Element }>;
+		columns: { id: string; children: JSX.Element | string }[];
 	}
 ) {
 	return (
@@ -31,11 +29,13 @@ export default function Table<
 				{...props}
 				items={props.items}
 				columnDefinitions={
-					(Object.keys(props.columns || {}).map((column) => ({
-						header: <>{props.columns[column].header}</>,
+					(props.columns.map((column) => ({
+						header: <>{column.children}</>,
 						ariaLabel: (data) => `${data}${column}`,
-						cell: (item: T) => {
-							return item[column];
+						cell: <T extends { [x: string]: JSX.Element }>(
+							item: T
+						) => {
+							return item[column.id];
 						},
 					})) || []) as TableProps<unknown>["columnDefinitions"]
 				}

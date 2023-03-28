@@ -1,49 +1,26 @@
 import "server-only";
-import { Attribute, OperatorKey, fetchQuery } from "@/server/bitmovin";
+import { AttributeKey, OperatorKey, fetchQuery } from "@/server/bitmovin";
 import type QueriesApi from "@bitmovin/api-sdk/dist/analytics/queries/QueriesApi";
-import { AnalyticsAttribute, AnalyticsQueryOperator } from "@bitmovin/api-sdk";
+import { AnalyticsAttribute, AnalyticsImpressionSample, AnalyticsQueryOperator } from "@bitmovin/api-sdk";
+import { FilteringProperty } from "@cloudscape-design/components/property-filter/interfaces";
 
 export type QueryType = keyof QueriesApi;
 export type QueryFunction<K extends QueryType> = typeof fetchQuery<K>;
 export type QueryParameters<K extends QueryType> = Parameters<QueryFunction<K>>;
 export type Query<K extends QueryType> = QueryParameters<K>[0];
 
-export type Value = number | string;
+export type Sample = typeof AnalyticsImpressionSample["prototype"];
+export type Key = keyof Sample;
+export type Value = string | number;
+export type Values = string[] | number;
 
-export type Predicate<O extends OperatorKey, V extends Value> = {
-	operator: O;
-	value: V;
-};
-export type PredicateFactory<O extends OperatorKey> = <V extends Value>(
-	operator: O,
-	value: V
-) => Predicate<O, V>;
-export type CreatePredicateFactory = <O extends OperatorKey>(
-	operator: O
-) => <V extends Value>(value: Value) => Predicate<O, V>;
+export type CommonOps<V extends number | string> = { is: V } |  { not: V } | { has: V } |  { lacks: V } | { in: V[] }
+export type NumberOps<V extends number> = CommonOps<V> | { above: V }| { below: V } | { min: V } | { max: V };
+export type Ops<V extends number | string = number | string> = V extends number ? NumberOps<V> : CommonOps<V>;
 
-export const createPredicate = function (operator) {
-	return function predicate(value) {
-		return {
-			operator,
-			value,
-		};
-	};
-} as CreatePredicateFactory;
 
-export const equals = createPredicate("EQ");
-export const notEquals = createPredicate("NE");
-export const lessThan = createPredicate("LT");
-export const lessThanOrEquals = createPredicate("LTE");
-export const greaterThan = createPredicate("GT");
-export const greaterThanOrEquals = createPredicate("GTE");
-export const contains = createPredicate("CONTAINS");
-export const notContains = createPredicate("NOTCONTAINS");
-
-export default function Filter<O extends OperatorKey, V extends Value>(
-	props: {
-		name: Attribute;
-	} & Predicate<O, V>
+export default function Filter<V extends string | number, const A extends AttributeKey>(
+	props: { field: A } & Ops<V>
 ) {
 	return {
 		type: null as JSX.Element["key"],
@@ -52,12 +29,36 @@ export default function Filter<O extends OperatorKey, V extends Value>(
 	};
 }
 
-export type FilterElement = ReturnType<typeof Filter>;
-export function mapFilter(filter: FilterElement) {
-	console.log(filter);
-	const name = AnalyticsAttribute[filter.props.name];
-	const operator = AnalyticsQueryOperator[filter.props.operator];
-	const value = filter.props.value;
+export type FilterElement<V extends string | number = string | number, A extends AttributeKey = AttributeKey> = ReturnType<
+	typeof Filter<V, A>
+>;
+export function mapFilter(filter: Partial<FilterElement["props"]>) {
+	if (!filter.field) {
+		return undefined;
+	}
+	
+	const name = AnalyticsAttribute[filter.field];
 
-	return { name, operator, value };
+
+	if ("is" in filter) {
+		return { name, operator: AnalyticsQueryOperator.EQ, value: filter.is }
+	} else if ("not" in filter) {
+		return { name, operator: AnalyticsQueryOperator.NE, value: filter.not }
+	} else if ("has" in filter) {
+		return { name, operator: AnalyticsQueryOperator.CONTAINS, value: filter.has }
+	} else if ("lacks" in filter) {
+		return { name, operator: AnalyticsQueryOperator.NOTCONTAINS, value: filter.lacks }
+	} else if ("min" in filter) {
+		return { name, operator: AnalyticsQueryOperator.GTE, value: filter.min }
+	} else if ("max" in filter) {
+		return { name, operator: AnalyticsQueryOperator.LTE, value: filter.max }
+	} else if ("above" in filter) {
+		return { name, operator: AnalyticsQueryOperator.GT, value: filter.above }
+	} else if ("below" in filter) {
+		return { name, operator: AnalyticsQueryOperator.LT, value: filter.below }
+	} else if ("in" in filter) {
+		return { name, operator: AnalyticsQueryOperator.IN, value: filter.in }
+	}
+
+	return undefined;
 }

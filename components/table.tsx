@@ -1,11 +1,12 @@
+import "server-only";
+
 import { Suspense } from "react";
 import {
-	Attribute,
-	OperatorKey,
+	AttributeKey,
 	fetchImpression,
 	fetchImpressions,
 } from "@/server/bitmovin";
-import Filter, { mapFilter } from "@/components/filter";
+import { Ops, mapFilter } from "@/components/filter";
 import ClientTable from "@/components/client/Table";
 import { Route } from "next";
 import { TableProps } from "@cloudscape-design/components/table";
@@ -13,29 +14,36 @@ import { TableProps } from "@cloudscape-design/components/table";
 type Item = Record<string, string | number>;
 type Cell = Partial<Record<string, JSX.Element>>;
 
-type Column = {
-	header: JSX.Element;
+type Attribute = Lowercase<AttributeKey>;
+type ColumnProps<A extends Attribute> = {
+	id: A;
+	filters?: Ops[] | undefined;
+	children: JSX.Element | string;
 } & (
-	| {
-			type: "date";
-	  }
-	| {
-			type: "text";
-	  }
-	| {
-			type: "link";
-			href: Route;
-	  }
+	| { type: "date" }
+	| { type: "text" }
+	| { type: "link"; href: Route }
+	| { type?: undefined }
 );
 
-type ColumnList = Partial<Record<Lowercase<Attribute>, Column>>;
+type ColumnElement<A extends Attribute = Attribute> = CustomElement<
+	ColumnProps<A>
+>;
+
+export function Column<A extends Attribute>(
+	props: ColumnElement<A>["props"]
+): ColumnElement<A> {
+	return {
+		type: null as JSX.Element["type"],
+		key: null as JSX.Element["key"],
+		props,
+	} as ColumnElement<A>;
+}
 
 export type AnalyticsTableProps = {
 	licenseKey: string;
 	orgId: string;
-	dimension: Attribute;
-	columns: ColumnList;
-	children: ReturnType<typeof Filter>[];
+	children: ColumnElement[];
 	limit: number;
 	footer?: JSX.Element;
 } & Partial<TableProps>;
@@ -53,6 +61,7 @@ export function Fallback(props: AnalyticsTableProps) {
 	return (
 		<ClientTable
 			{...props}
+			columns={props.children.map(({ props }) => props)}
 			loading={true}
 			loadingText="Loading sessions"
 			items={[{}]}
@@ -68,6 +77,7 @@ async function Component(props: AnalyticsTableProps) {
 	return (
 		<ClientTable
 			{...props}
+			columns={props.children.map(({ props }) => props)}
 			loading={false}
 			items={items}
 			resizableColumns
@@ -77,8 +87,18 @@ async function Component(props: AnalyticsTableProps) {
 }
 async function updateProps(props: AnalyticsTableProps) {
 	const { licenseKey, orgId, limit } = props;
-	const filters = [props.children].flat().map(mapFilter);
-
+	const filters = props.children
+		.flatMap(
+			({ props }) =>
+				props.filters?.map((ops) => ({
+					field: props.id.toUpperCase() as AttributeKey,
+					...ops,
+				})) ?? []
+		)
+		.flat()
+		.map(mapFilter)
+		.flatMap((filter) => (filter ? [filter] : []));
+	console.log(filters);
 	const now = Date.now();
 	const start = new Date(now - 1000 * 60 * 60);
 	const end = new Date(now);
@@ -118,16 +138,16 @@ async function updateProps(props: AnalyticsTableProps) {
 			for (const d in impression.details) {
 				const detail = impression.details[d];
 				for (const sample of detail as Item[]) {
-					for (const column in props.columns) {
-						const value = sample[column as Lowercase<Attribute>];
+					for (const column of props.children.map(
+						(c) => c.props.id
+					)) {
+						const value = sample[column];
 						//const value = sample[key];
 						if (
 							typeof value === "number" ||
 							typeof value === "string"
 						) {
-							item[column] ??= (
-								<>{sample[column as Lowercase<Attribute>]}</>
-							);
+							item[column] ??= <>{sample[column]}</>;
 						}
 					}
 				}

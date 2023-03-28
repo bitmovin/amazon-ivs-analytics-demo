@@ -1,17 +1,21 @@
-import Table, { Column } from "@/components/table";
-import { redirect } from "next/navigation";
+import { Column, Fallback as Table } from "@/components/table";
 import Header from "@/components/client/Header";
-import { PageProps } from "@/types/page";
-import Filter from "@/components/filter";
+import Spinner from "@/components/client/Spinner";
 
-export default async function Page(props: PageProps<"/dashboard/sessions">) {
+export default async function Loading() {
 	return (
 		<Table
-			{...props.searchParams}
-			header="Errors"
+			header={
+				<Header variant="h2">
+					<Spinner />
+				</Header>
+			}
 			stickyHeader
+			loading
 			variant="container"
 			limit={100}
+			licenseKey={""}
+			orgId={""}
 		>
 			<Column id="impression_id" filters={[{ not: "null" }]}>
 				ID

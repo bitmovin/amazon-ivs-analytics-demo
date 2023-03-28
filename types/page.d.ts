@@ -1,7 +1,7 @@
 import { Attribute } from "../components/filter";
 
 declare type PageProps<T extends Route<string>> = {
-	searchParams: Partial<SearchParams<T>>;
+	searchParams: SearchParams<T>;
 };
 
 declare type SearchParams<T extends Route<string>> = T extends "/"

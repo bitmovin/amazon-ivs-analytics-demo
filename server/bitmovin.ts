@@ -166,7 +166,7 @@ export const fetchImpressions = cache(
 );
 export type Order = keyof typeof AnalyticsOrder;
 export type Interval = keyof typeof AnalyticsInterval;
-export type Attribute = keyof typeof AnalyticsAttribute;
+export type AttributeKey = keyof typeof AnalyticsAttribute;
 
 export type Operator = typeof AnalyticsQueryOperator;
 export type OperatorKey = keyof Operator;

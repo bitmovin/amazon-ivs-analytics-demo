@@ -6,34 +6,26 @@ import AreaChart from "@/components/area-chart";
 import { redirect } from "next/navigation";
 import { PageProps } from "@/types/page";
 import Header from "@/components/client/Header";
-import Filter, { contains, greaterThan } from "@/components/filter";
+import Filter from "@/components/filter";
 import Area from "@/components/area";
+import Table, { Column } from "@/components/table";
+import Link from "next/link";
 
 export default async function Page(props: PageProps<"/dashboard">) {
-	const orgId = props.searchParams.orgId;
-	const licenseKey = props.searchParams.licenseKey;
-
-	if (!licenseKey || !orgId) {
-		redirect("/");
-	}
+	const params = getParams(props);
 
 	return (
 		<Board>
 			<BoardItem
 				id="area-chart"
 				header={<Header>Error Rate</Header>}
-				columnSpan={3}
-				rowSpan={2}
+				columnSpan={2}
+				rowSpan={3}
 			>
-				<AreaChart
-					licenseKey={licenseKey}
-					orgId={orgId}
-					xScaleType="time"
-				>
+				<AreaChart {...params} xScaleType="time">
 					<Area
-						id="Error %"
 						query="avg"
-						dimension="ERROR_RATE"
+						field="ERROR_RATE"
 						interval="MINUTE"
 						factor={1000}
 						limit={100}
@@ -41,48 +33,77 @@ export default async function Page(props: PageProps<"/dashboard">) {
 				</AreaChart>
 			</BoardItem>
 			<BoardItem
+				{...params}
 				id="bar-chart"
 				header={<Header>Video Codecs</Header>}
-				rowSpan={3}
 				columnSpan={2}
+				rowSpan={3}
 			>
-				<BarChart
-					licenseKey={licenseKey}
-					orgId={orgId}
-					query={"count"}
-					interval="DAY"
-					limit={100}
-				>
-					<Bar query="count" id="AVC" dimension="IMPRESSION_ID">
-						<Filter
-							name="SUPPORTED_VIDEO_CODECS"
-							{...contains("avc")}
-						/>
-						<Filter name="VIDEO_STARTUPTIME" {...greaterThan(0)} />
+				<BarChart {...params} interval="DAY" limit={100}>
+					<Bar id="AVC" query="count" dimension="IMPRESSION_ID">
+						<Filter field="SUPPORTED_VIDEO_CODECS" has="avc" />
+						<Filter field="VIDEO_STARTUPTIME" above={0} />
 					</Bar>
-					<Bar query="count" id="HEVC" dimension="IMPRESSION_ID">
-						<Filter
-							name="SUPPORTED_VIDEO_CODECS"
-							{...contains("hevc")}
-						/>
-						<Filter name="VIDEO_STARTUPTIME" {...greaterThan(0)} />
+					<Bar id="HEVC" query="count" dimension="IMPRESSION_ID">
+						<Filter field="SUPPORTED_VIDEO_CODECS" has="hevc" />
+						<Filter field="VIDEO_STARTUPTIME" above={0} />
 					</Bar>
-					<Bar query="count" id="VP9" dimension="IMPRESSION_ID">
-						<Filter
-							name="SUPPORTED_VIDEO_CODECS"
-							{...contains("vp9")}
-						/>
-						<Filter name="VIDEO_STARTUPTIME" {...greaterThan(0)} />
+					<Bar id="VP9" query="count" dimension="IMPRESSION_ID">
+						<Filter field="SUPPORTED_VIDEO_CODECS" has="vp9" />
+						<Filter field="VIDEO_STARTUPTIME" above={0} />
 					</Bar>
-					<Bar query="count" id="AV1" dimension="IMPRESSION_ID">
-						<Filter
-							name="SUPPORTED_VIDEO_CODECS"
-							{...contains("av1")}
-						/>
-						<Filter name="VIDEO_STARTUPTIME" {...greaterThan(0)} />
+					<Bar id="AV1" query="count" dimension="IMPRESSION_ID">
+						<Filter field="SUPPORTED_VIDEO_CODECS" has="av1" />
+						<Filter field="VIDEO_STARTUPTIME" above={0} />
 					</Bar>
 				</BarChart>
+			</BoardItem>
+			<BoardItem
+				{...params}
+				id="table"
+				header={<Header>Error Sessions</Header>}
+				footer={
+					<Link
+						href={{
+							pathname: "/dashboard/sessions",
+							query: params,
+						}}
+					>
+						View all
+					</Link>
+				}
+				columnSpan={2}
+				rowSpan={4}
+			>
+				<Table {...params} variant="embedded" stickyHeader limit={100}>
+					<Column id="impression_id" filters={[{ not: "null" }]}>
+						ID
+					</Column>
+					<Column
+						id="error_code"
+						filters={[{ above: 0 }, { not: 10000 }]}
+					>
+						Error
+					</Column>
+					<Column id="path">Path</Column>
+					<Column id="video_title">Video</Column>
+					<Column id="operatingsystem">OS</Column>
+					<Column id="browser">Browser</Column>
+				</Table>
 			</BoardItem>
 		</Board>
 	);
 }
+
+function getParams(props: PageProps<"/dashboard">) {
+	const orgId = props.searchParams.orgId;
+	const licenseKey = props.searchParams.licenseKey;
+
+	if (!licenseKey || !orgId) {
+		redirect("/");
+	}
+
+	const params = { orgId, licenseKey };
+	return params;
+}
+

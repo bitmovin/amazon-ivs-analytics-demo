@@ -1,27 +1,25 @@
 import "server-only";
 
 import type {
-	Attribute,
+	AttributeKey,
 	Interval,
-	OperatorKey,
 	QueryParams,
 	QueryType,
 } from "@/server/bitmovin";
-import Filter from "./filter";
+import type { FilterElement } from "./filter";
 
 export type AreaProps<K extends QueryType> = {
-	id: string;
-	dimension: Attribute;
+	field: AttributeKey;
 	interval?: Interval;
 	type?: "area";
-	groupBy?: Attribute[];
+	groupBy?: AttributeKey[];
 	query?: K;
 	params?: QueryParams<K>;
 	factor?: number;
 	limit?: number;
 	hidden?: boolean;
 	color?: string;
-	children?: ReturnType<typeof Filter> | ReturnType<typeof Filter>[];
+	children?: FilterElement | FilterElement[];
 };
 
 export type AreaElement<K extends QueryType> = CustomElement<AreaProps<K>>;

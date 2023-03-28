@@ -1,9 +1,8 @@
 "use client";
 
 import React, { useState } from "react";
-
 import AreaChart from "./AreaChart";
-
+import Spinner from "./Spinner";
 import type { AreaChartProps } from "@cloudscape-design/components";
 import type { ChartDataTypes } from "@cloudscape-design/components/mixed-line-bar-chart/interfaces";
 import { useContainerQuery } from "@cloudscape-design/component-toolkit";
@@ -13,13 +12,12 @@ if (typeof window === "undefined") {
 }
 
 export default function AreaChartItem({
-	fallback,
 	...props
-}: AreaChartProps<ChartDataTypes> & { fallback: JSX.Element }) {
+}: AreaChartProps<ChartDataTypes>) {
 	const [hideFilter, setHideFilter] = useState(props.hideFilter ?? false);
 	const [hideLegend, setHideLegend] = useState(props.hideLegend ?? false);
 
-	const [height, containerQueryRef] = useContainerQuery(
+	const [height, ref] = useContainerQuery(
 		(entry) => {
 			const height = entry.contentBoxHeight;
 
@@ -36,7 +34,7 @@ export default function AreaChartItem({
 
 	return (
 		<div
-			ref={containerQueryRef}
+			ref={ref}
 			{...{
 				style: {
 					height: "100%",
@@ -48,7 +46,12 @@ export default function AreaChartItem({
 				{...props}
 				hideFilter={hideFilter}
 				hideLegend={hideLegend}
-				fallback={fallback}
+				fallback={
+					<div>
+						<Spinner />
+						Loading sessions
+					</div>
+				}
 				height={(height ?? 200) - 90}
 			/>
 		</div>
