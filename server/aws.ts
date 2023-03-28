@@ -3,6 +3,7 @@ import "server-only";
 import { 
   ListStreamSessionsCommand,
   IvsClient,
+  GetStreamSessionCommand,
 } from "@aws-sdk/client-ivs";
 
 import { requireEnv } from "./env";
@@ -38,4 +39,19 @@ export const fetchStreamSessionsForChannel = async (
   const listStreamSessionsResponse = await getClient().send(listStreamSessionsRequest);
 
   return listStreamSessionsResponse;
+}
+
+export const fetchStreamSessionDetails = async (
+  requestInit: RequestInit,
+  channelArn: string,
+  streamId: string,
+) => {
+  const getStreamSessionInput = {
+    channelArn: channelArn,
+    streamId: streamId,
+  };
+  const getStreamSessionRequest = new GetStreamSessionCommand(getStreamSessionInput);
+  const getStreamSessionResponse = await getClient().send(getStreamSessionRequest);
+
+  return getStreamSessionResponse;
 }
