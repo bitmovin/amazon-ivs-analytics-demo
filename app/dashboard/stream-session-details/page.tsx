@@ -19,7 +19,27 @@ export default async function Page(props: PageProps<"/dashboard/stream-session-d
     redirect("/");
   }
 
-  const details = await fetchStreamSessionDetails({}, channelArn, streamId);
+  const details = await fetchStreamSessionDetails({ next: { revalidate: 60 } }, channelArn, streamId);
+
+  const encodingConfig = details.streamSession?.ingestConfiguration;
+  const encodingConfigItems = [];
+
+  if (encodingConfig?.video) {
+    for (const key of Object.keys(encodingConfig?.video)) {
+      encodingConfigItems.push({
+        name: <>{key}</>,
+        value: <>{(encodingConfig.video as any)[key]}</>,
+      });
+    }
+  }
+  if (encodingConfig?.audio) {
+    for (const key of Object.keys(encodingConfig?.audio)) {
+      encodingConfigItems.push({
+        name: <>{key}</>,
+        value: <>{(encodingConfig.audio as any)[key]}</>,
+      });
+    }
+  }
 
   return (
     <Board
@@ -100,7 +120,7 @@ export default async function Page(props: PageProps<"/dashboard/stream-session-d
             id: 'IngestCodecConfiguration' as const,
             definition: {
               minColumnSpan: 1,
-              minRowSpan: 3,
+              minRowSpan: 6,
             },
             data: {
               header: (
@@ -110,12 +130,28 @@ export default async function Page(props: PageProps<"/dashboard/stream-session-d
                     <Spinner fallback={<p>Loading...</p>} />
                   }
                 >
-                  Codec Configuration
+                  Encoding Configuration
                 </Header>
               ),
               footer: <></>,
               element: (
-                <h5>Test</h5>
+                <Table
+                  fallback={
+                    <Spinner fallback={<p>Loading...</p>} />
+                  }
+                  columnDefinitions={[]}
+                  items={(
+                    encodingConfigItems
+                  )}
+                  columns={{
+                    name: {
+                      header: <>{"Name"}</>,
+                    },
+                    value: {
+                      header: <>{"Value"}</>,
+                    }
+                  }}
+                />
               ),
               disableContentPaddings: false,
             }
