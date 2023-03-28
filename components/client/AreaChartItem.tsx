@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 
 import AreaChart from "./AreaChart";
 
@@ -16,13 +16,26 @@ export default function AreaChartItem({
 	fallback,
 	...props
 }: AreaChartProps<ChartDataTypes> & { fallback: JSX.Element }) {
-	const [size, containerQueryRef] = useContainerQuery((entry) => ({
-		height: entry.contentBoxHeight,
-		width: entry.contentBoxWidth,
-	}));
+	const [hideFilter, setHideFilter] = useState(props.hideFilter ?? false);
+	const [hideLegend, setHideLegend] = useState(props.hideLegend ?? false);
+
+	const [height, containerQueryRef] = useContainerQuery(
+		(entry) => {
+			const height = entry.contentBoxHeight;
+
+			const filter = props.hideFilter ?? height > 300;
+			const legend = props.hideLegend ?? height > 140;
+
+			setHideFilter(!filter);
+			setHideLegend(!legend);
+
+			return height + (filter ? -30 : 30) + (legend ? -10 : 30);
+		},
+		[props.hideFilter, props.hideLegend]
+	);
+
 	return (
 		<div
-			className="chart-container"
 			ref={containerQueryRef}
 			{...{
 				style: {
@@ -33,8 +46,10 @@ export default function AreaChartItem({
 		>
 			<AreaChart
 				{...props}
+				hideFilter={hideFilter}
+				hideLegend={hideLegend}
 				fallback={fallback}
-				height={(size?.height || props.height || 200) - 100}
+				height={(height ?? 200) - 90}
 			/>
 		</div>
 	);

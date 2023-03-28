@@ -3,6 +3,7 @@
 import React, { Suspense, lazy } from "react";
 
 import type { TableProps } from "@cloudscape-design/components/table";
+import Spinner from "./Spinner";
 
 const LazyTable = lazy(() => import("@cloudscape-design/components/table"));
 
@@ -10,16 +11,22 @@ if (typeof window === "undefined") {
 	React.useLayoutEffect = () => ({});
 }
 
-export default function Table<T extends { [x: string]: JSX.Element | undefined }>({
-	fallback,
-	...props
-}: Omit<TableProps<unknown>, "trackBy" | "isItemDisabled"> & {
-	fallback: JSX.Element;
-} & {
-	columns: Record<string, { header: JSX.Element }>;
-}) {
+export default function Table<
+	T extends { [x: string]: JSX.Element | undefined }
+>(
+	props: Omit<TableProps<unknown>, "trackBy" | "isItemDisabled"> & {
+		columns: Record<string, { header: JSX.Element }>;
+	}
+) {
 	return (
-		<Suspense fallback={fallback}>
+		<Suspense
+			fallback={
+				<div>
+					<Spinner />
+					Loading sessions
+				</div>
+			}
+		>
 			<LazyTable
 				{...props}
 				items={props.items}

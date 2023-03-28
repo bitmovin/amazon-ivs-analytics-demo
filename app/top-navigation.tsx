@@ -1,5 +1,5 @@
 import { login } from "@/server/login";
-import ClientTopNavigation from "@/client/TopNavigation";
+import ClientTopNavigation from "@/components/client/TopNavigation";
 import { Suspense } from "react";
 
 export default function TopNavigation() {

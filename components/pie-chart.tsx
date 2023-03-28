@@ -1,16 +1,18 @@
+import "server-only";
+
 import { Suspense } from "react";
-import PieChartItem from "@/client/PieChartItem";
+import PieChartItem from "@/components/client/PieChartItem";
 import { fetchImpressions } from "@/server/bitmovin";
 import {
 	AnalyticsAttribute,
 	AnalyticsNotEqualFilter,
 	AnalyticsQueryOperator,
 } from "@bitmovin/api-sdk";
-import Spinner from "@/client/Spinner";
+import Spinner from "@/components/client/Spinner";
 
-export type SessionsChartProps = { licenseKey: string; orgId: string };
+export type PieChartProps = { licenseKey: string; orgId: string };
 
-export default function SessionsChart(props: SessionsChartProps) {
+export default function PieChart(props: PieChartProps) {
 	return (
 		<Suspense fallback={<Fallback />}>
 			{/* @ts-expect-error suspense */}
@@ -25,13 +27,7 @@ function Fallback() {
 			loadingText="Loading sessions"
 			empty={
 				<div>
-					<Spinner fallback={<p>Loading sessions</p>} />
-					Loading sessions
-				</div>
-			}
-			fallback={
-				<div>
-					<Spinner fallback={<p>Loading sessions</p>} />
+					<Spinner />
 					Loading sessions
 				</div>
 			}
@@ -40,7 +36,7 @@ function Fallback() {
 	);
 }
 
-async function Component(props: SessionsChartProps) {
+async function Component(props: PieChartProps) {
 	const now = Date.now();
 	const start = new Date(now - 1000 * 60 * 10);
 	const end = new Date(now);
@@ -89,7 +85,6 @@ async function Component(props: SessionsChartProps) {
 
 	return (
 		<PieChartItem
-			fallback={<p>Loading...</p>}
 			empty={<p>Empty</p>}
 			hideFilter={true}
 			hideDescriptions={true}

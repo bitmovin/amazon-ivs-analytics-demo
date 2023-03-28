@@ -7,3 +7,5 @@ const dictionaries = {
 export default async function getDictionary(key: keyof typeof dictionaries) {
 	return dictionaries[key]();
 }
+
+export type Dictionary = Awaited<ReturnType<typeof dictionaries["en"]>>;

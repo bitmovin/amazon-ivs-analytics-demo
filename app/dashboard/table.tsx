@@ -1,13 +1,12 @@
 import { Suspense } from "react";
 import {
 	Attribute,
-	Filter,
+	OperatorKey,
 	fetchImpression,
 	fetchImpressions,
-	mapFilters,
 } from "@/server/bitmovin";
-import ClientTable from "@/client/Table";
-import Spinner from "@/client/Spinner";
+import Filter, { mapFilter } from "@/components/filter";
+import ClientTable from "@/components/client/Table";
 import { Route } from "next";
 import { TableProps } from "@cloudscape-design/components/table";
 
@@ -36,7 +35,7 @@ export type AnalyticsTableProps = {
 	orgId: string;
 	dimension: Attribute;
 	columns: ColumnList;
-	filters: Filter[];
+	children: ReturnType<typeof Filter>[];
 	limit: number;
 	footer?: JSX.Element;
 } & Partial<TableProps>;
@@ -50,7 +49,7 @@ export default function Table(props: AnalyticsTableProps) {
 	);
 }
 
-function Fallback(props: AnalyticsTableProps) {
+export function Fallback(props: AnalyticsTableProps) {
 	return (
 		<ClientTable
 			{...props}
@@ -59,12 +58,6 @@ function Fallback(props: AnalyticsTableProps) {
 			items={[{}]}
 			resizableColumns
 			columnDefinitions={[]}
-			fallback={
-				<div>
-					<Spinner fallback={<p>Loading...</p>} />
-					Loading sessions
-				</div>
-			}
 		/>
 	);
 }
@@ -79,18 +72,12 @@ async function Component(props: AnalyticsTableProps) {
 			items={items}
 			resizableColumns
 			columnDefinitions={[]}
-			fallback={
-				<div>
-					<Spinner fallback={<p>Loading...</p>} />
-					Loading sessions
-				</div>
-			}
 		/>
 	);
 }
 async function updateProps(props: AnalyticsTableProps) {
 	const { licenseKey, orgId, limit } = props;
-	const filters = props.filters.map(mapFilters);
+	const filters = [props.children].flat().map(mapFilter);
 
 	const now = Date.now();
 	const start = new Date(now - 1000 * 60 * 60);

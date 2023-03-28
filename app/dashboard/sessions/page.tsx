@@ -1,41 +1,26 @@
-import { PageProps } from "@/app/types";
-import Table from "../analytics-table";
+import Table from "../table";
 import { redirect } from "next/navigation";
-import Header from "@/client/Header";
+import Header from "@/components/client/Header";
+import { PageProps } from "@/types/page";
+import Filter, { equals, notEquals } from "@/components/filter";
 
 export default async function Page(props: PageProps<"/dashboard/sessions">) {
 	const licenseKey = props.searchParams.licenseKey;
 	const orgId = props.searchParams.orgId;
-	const dimension = props.searchParams.dimension || "ERROR_CODE";
+	const dimension = props.searchParams.dimension;
 
-	if (!orgId || !licenseKey) {
+	if (!orgId || !licenseKey || !dimension) {
 		redirect("/");
 	}
 
 	return (
 		<Table
-			header={
-				<Header variant="h2" fallback={<h2>{dimension}</h2>}>
-					{dimension}
-				</Header>
-			}
+			header={<Header variant="h2">{dimension}</Header>}
 			licenseKey={licenseKey}
 			orgId={orgId}
 			dimension={dimension}
 			stickyHeader
 			variant="container"
-			filters={[
-				{
-					name: dimension,
-					operator: "NE",
-					value: null,
-				},
-				{
-					name: dimension,
-					operator: "NE",
-					value: 10000,
-				},
-			]}
 			limit={100}
 			columns={{
 				time: {
@@ -63,6 +48,9 @@ export default async function Page(props: PageProps<"/dashboard/sessions">) {
 					type: "text",
 				},
 			}}
-		/>
+		>
+			<Filter name={dimension} {...notEquals("null")} />
+			<Filter name={dimension} {...notEquals(10000)} />
+		</Table>
 	);
 }
