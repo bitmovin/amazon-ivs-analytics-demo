@@ -4,6 +4,7 @@ import {
   ListStreamSessionsCommand,
   IvsClient,
   GetStreamSessionCommand,
+  Ivs,
 } from "@aws-sdk/client-ivs";
 
 import { requireEnv } from "./env";
@@ -16,14 +17,30 @@ const awsCredentials = {
 
 const awsRegion = requireEnv("AWS_REGION") || 'us-east-1';
 
-function getClient() {
-  const ivsClient = new IvsClient({
+function getIvsClient() {
+  return new IvsClient({
     credentials: awsCredentials,
     region: awsRegion
   });
-
-  return ivsClient;
 }
+
+function getIvs() {
+  return new Ivs({
+    credentials: awsCredentials,
+    region: awsRegion
+  });
+}
+
+export const fetchChannels = cache(
+  async (
+    requestInit?: RequestInit
+  ) => {
+    const ivs = getIvs();
+    const channels = await ivs.listChannels({});
+
+    return channels;
+  }
+);
 
 export const fetchStreamSessionsForChannel = async (
   requestInit: RequestInit,
@@ -36,7 +53,7 @@ export const fetchStreamSessionsForChannel = async (
   };
 
   const listStreamSessionsRequest = new ListStreamSessionsCommand(listStreamSessionsInput);
-  const listStreamSessionsResponse = await getClient().send(listStreamSessionsRequest);
+  const listStreamSessionsResponse = await getIvsClient().send(listStreamSessionsRequest);
 
   return listStreamSessionsResponse;
 }
@@ -51,7 +68,7 @@ export const fetchStreamSessionDetails = async (
     streamId: streamId,
   };
   const getStreamSessionRequest = new GetStreamSessionCommand(getStreamSessionInput);
-  const getStreamSessionResponse = await getClient().send(getStreamSessionRequest);
+  const getStreamSessionResponse = await getIvsClient().send(getStreamSessionRequest);
 
   return getStreamSessionResponse;
 }

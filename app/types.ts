@@ -8,11 +8,11 @@ export type PageProps<T extends Route<string>> = {
 export type SearchParams<T extends Route<string>> = T extends "/"
 	? never
 	: T extends "/dashboard"
-	? { orgId: string; licenseKey: string }
+	? { orgId: string; licenseKey: string, channelArn: string }
 	: T extends "/dashboard/sessions"
 	? SearchParams<"/dashboard"> & { dimension: Attribute }
   : T extends "/dashboard/stream-sessions"
-  ? SearchParams<"/dashboard"> & { channelArn: string }
+  ? SearchParams<"/dashboard">
   : T extends "/dashboard/stream-session-details"
-  ? SearchParams<"/dashboard"> & { channelArn: string, streamId: string }
+  ? SearchParams<"/dashboard"> & { streamId: string }
 	: never;
