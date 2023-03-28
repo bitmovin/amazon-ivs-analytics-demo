@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import {
-	fetchStreamSessionsForChannel,
+  fetchStreamSessionsForChannel,
 } from "@/server/aws";
 import ClientTable from "@/client/Table";
 import Spinner from "@/client/Spinner";
@@ -11,7 +11,7 @@ import Link from "next/link";
 type Cell = Partial<Record<string, JSX.Element>>;
 
 type Column = {
-	header: JSX.Element;
+  header: JSX.Element;
 } & (
   | {
       type: "text";
@@ -19,16 +19,16 @@ type Column = {
   | {
       type: "text";
     }
-	| {
-			type: "text";
-	  }
-	| {
-			type: "text";
-	  }
-	| {
-			type: "link";
-			href: Route;
-	  }
+  | {
+      type: "text";
+    }
+  | {
+      type: "text";
+    }
+  | {
+      type: "link";
+      href: Route;
+    }
 );
 
 export declare enum StreamSessionDetail {
@@ -49,60 +49,60 @@ export type IvsStreamSessionsProps = {
 } & Partial<TableProps>;
 
 export default function Table(props: IvsStreamSessionsProps) {
-	return (
-		<Suspense fallback={<Fallback {...props} />}>
-			{/* @ts-expect-error suspense */}
-			<Component {...props} />
-		</Suspense>
-	);
+  return (
+    <Suspense fallback={<Fallback {...props} />}>
+      {/* @ts-expect-error suspense */}
+      <Component {...props} />
+    </Suspense>
+  );
 }
 
 function Fallback(props: IvsStreamSessionsProps) {
-	return (
-		<ClientTable
-			{...props}
-			loading={true}
-			loadingText="Loading stream sessions"
-			items={[{}]}
-			resizableColumns
-			columnDefinitions={[]}
-			fallback={
-				<div>
-					<Spinner fallback={<p>Loading...</p>} />
-					Loading stream sessions
-				</div>
-			}
-		/>
-	);
+  return (
+    <ClientTable
+      {...props}
+      loading={true}
+      loadingText="Loading stream sessions"
+      items={[{}]}
+      resizableColumns
+      columnDefinitions={[]}
+      fallback={
+        <div>
+          <Spinner fallback={<p>Loading...</p>} />
+          Loading stream sessions
+        </div>
+      }
+    />
+  );
 }
 
 async function Component(props: IvsStreamSessionsProps) {
-	const items = await updateProps(props);
+  const items = await updateProps(props);
 
-	return (
-		<ClientTable
-			{...props}
-			loading={false}
-			items={items}
-			resizableColumns
-			columnDefinitions={[]}
-			fallback={
-				<div>
-					<Spinner fallback={<p>Loading...</p>} />
-					Loading stream sessions
-				</div>
-			}
-		/>
-	);
+  return (
+    <ClientTable
+      {...props}
+      loading={false}
+      items={items}
+      resizableColumns
+      columnDefinitions={[]}
+      fallback={
+        <div>
+          <Spinner fallback={<p>Loading...</p>} />
+          Loading stream sessions
+        </div>
+      }
+    />
+  );
 }
 async function updateProps(props: IvsStreamSessionsProps) {
-	const { channelArn, limit } = props;
+  const { channelArn, limit } = props;
 
-	const result = await fetchStreamSessionsForChannel({ next: { revalidate: 60 }}, channelArn, limit)
+  const result = await fetchStreamSessionsForChannel({ next: { revalidate: 60 }}, channelArn, limit)
 
-	const cells: Cell[] = [];
+  const cells: Cell[] = [];
 
-	if(result.streamSessions && result.streamSessions.length > 0) {
+  if(result.streamSessions && result.streamSessions.length > 0) {
     for (const streamSession of result.streamSessions) {
       const item: Cell = {};
 
@@ -122,7 +122,8 @@ async function updateProps(props: IvsStreamSessionsProps) {
       >View Details</Link>
 
       cells.push(item);
-	}
+    }
+  }
 
-	return cells;
+  return cells;
 }
