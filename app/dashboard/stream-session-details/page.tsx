@@ -148,7 +148,7 @@ export default async function Page(props: PageProps<"/dashboard/stream-session-d
                       header: <>{"Name"}</>,
                     },
                     value: {
-                      header: <>{"Value"}</>,
+                      header: <>{"Details"}</>,
                     }
                   }}
                 />
