@@ -8,7 +8,6 @@ import Board from "@/client/Board";
 import getDictionary from "@/server/dictionaries";
 import Spinner from "@/client/Spinner";
 import Header from "@/client/Header";
-import BoardItem from "@/client/BoardItem";
 import Table from "@/client/Table";
 
 export default async function Page(props: PageProps<"/dashboard/stream-session-details">) {
@@ -31,7 +30,7 @@ export default async function Page(props: PageProps<"/dashboard/stream-session-d
           {
             id: 'StreamSessionEvents' as const,
             definition: {
-              minColumnSpan: 1,
+              minColumnSpan: 2,
               minRowSpan: 3,
             },
             data: {
@@ -47,7 +46,28 @@ export default async function Page(props: PageProps<"/dashboard/stream-session-d
               ),
               footer: <></>,
               element: (
-                <h5>Test</h5>
+                <Table
+                  fallback={
+                    <Spinner fallback={<p>Loading...</p>} />
+                  }
+                  columnDefinitions={[]}
+                  items={(
+                    details.streamSession?.truncatedEvents?.map(event => {
+                      return {
+                        name: <>{event.name || ''}</>,
+                        time: <>{event.eventTime?.toISOString() || ''}</>,
+                      }
+                    }) || []
+                  )}
+                  columns={{
+                    name: {
+                      header: <>{"Event"}</>,
+                    },
+                    time: {
+                      header: <>{"Time"}</>,
+                    }
+                  }}
+                />
               ),
               disableContentPaddings: false,
             }
