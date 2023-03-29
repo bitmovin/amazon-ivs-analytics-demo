@@ -1,7 +1,7 @@
 import "@cloudscape-design/global-styles/index.css";
 import "./globals.scss";
 import TopNavigation from "./top-navigation";
-import AppLayout from "@/client/AppLayout";
+import AppLayout from "@/components/client/AppLayout";
 
 export const metadata = {
 	title: {

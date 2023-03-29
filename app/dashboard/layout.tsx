@@ -1,5 +1,5 @@
-import ContentLayout from "@/client/ContentLayout";
-import Header from "@/client/Header";
+import ContentLayout from "@/components/client/ContentLayout";
+import Header from "@/components/client/Header";
 
 export const metadata = {
 	title: {
@@ -17,7 +17,7 @@ export default async function DashboardLayout(props: {
 	return (
 		<ContentLayout
 			fallback={props.children}
-			header={<Header fallback={<h1>Dashboard</h1>}>Dashboard</Header>}
+			header={<Header>Dashboard</Header>}
 		>
 			{props.children}
 		</ContentLayout>

@@ -1,20 +1,9 @@
 import "server-only";
 
 import BitmovinApi, {
-	AnalyticsAbstractFilter,
 	AnalyticsAttribute,
-	AnalyticsAvgQueryRequest,
-	AnalyticsContainsFilter,
-	AnalyticsEqualFilter,
-	AnalyticsGreaterThanFilter,
-	AnalyticsGreaterThanOrEqualFilter,
 	AnalyticsImpressionsQuery,
-	AnalyticsInFilter,
 	AnalyticsInterval,
-	AnalyticsLessThanFilter,
-	AnalyticsLessThanOrEqualFilter,
-	AnalyticsNotContainsFilter,
-	AnalyticsNotEqualFilter,
 	AnalyticsOrder,
 	AnalyticsQueryOperator,
 } from "@bitmovin/api-sdk";
@@ -49,15 +38,19 @@ function getClient(requestInit?: RequestInit, tenantOrgId?: string) {
 	}
 }
 
+export type QueryType = keyof QueriesApi;
+export type QueryParams<K extends QueryType> = Parameters<
+	QueriesApi[K]["create"]
+>[0];
 export const fetchQuery = cache(
-	async <K extends keyof QueriesApi>(
-		type: K,
+	async <K extends QueryType>(
+		query: K,
 		requestInit?: RequestInit,
 		tenantOrgId?: string,
 		params?: Parameters<QueriesApi[K]["create"]>[0]
 	) => {
 		const client = getClient(requestInit, tenantOrgId);
-		return await client.analytics.queries[type].create(params);
+		return await client.analytics.queries[query].create(params);
 	}
 );
 
@@ -173,76 +166,14 @@ export const fetchImpressions = cache(
 );
 export type Order = keyof typeof AnalyticsOrder;
 export type Interval = keyof typeof AnalyticsInterval;
-export type Attribute = keyof typeof AnalyticsAttribute;
+export type AttributeKey = keyof typeof AnalyticsAttribute;
 
 export type Operator = typeof AnalyticsQueryOperator;
+export type OperatorKey = keyof Operator;
 export type GroupOperators = "IN";
 export type ElementOperator = keyof Omit<Operator, GroupOperators>;
 export type ListOperator = keyof Pick<Operator, GroupOperators>;
 
-export type ElementFilter = {
-	name: Attribute;
-	operator: ElementOperator;
-	value: unknown;
-};
 
-export type ListFilter = {
-	name: Attribute;
-	operator: ListOperator;
-	value: unknown[];
-};
 
-export type Filter = ElementFilter | ListFilter;
 
-export function mapFilters(filter: Filter) {
-	const name = AnalyticsAttribute[filter.name];
-	const operator = AnalyticsQueryOperator[filter.operator];
-	const value = filter.value;
-	const obj = { name, operator, value };
-
-	if (filter.operator === "NE") {
-		return new AnalyticsNotEqualFilter(obj);
-	}
-
-	if (filter.operator === "CONTAINS") {
-		return new AnalyticsContainsFilter(obj);
-	}
-
-	if (filter.operator === "GT") {
-		return new AnalyticsGreaterThanFilter(obj);
-	}
-
-	if (filter.operator === "GTE") {
-		return new AnalyticsGreaterThanOrEqualFilter(obj);
-	}
-
-	if (filter.operator === "LT") {
-		return new AnalyticsLessThanFilter(obj);
-	}
-
-	if (filter.operator === "LTE") {
-		return new AnalyticsLessThanOrEqualFilter(obj);
-	}
-
-	if (filter.operator === "EQ") {
-		return new AnalyticsEqualFilter(obj);
-	}
-
-	if (filter.operator === "IN") {
-		return new AnalyticsInFilter({
-			name,
-			operator,
-			value: filter.value,
-		});
-	}
-
-	if (filter.operator === "NOTCONTAINS") {
-		return new AnalyticsNotContainsFilter({
-			name,
-			operator,
-			value: filter.value,
-		});
-	}
-
-	return new AnalyticsAbstractFilter(obj);
-}

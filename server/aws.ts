@@ -6,7 +6,6 @@ import {
 } from "@aws-sdk/client-ivs";
 
 import { requireEnv } from "./env";
-import { cache } from "react";
 
 const awsCredentials = {
 	accessKeyId: requireEnv("AWS_ACCESS_KEY"),

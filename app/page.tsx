@@ -1,6 +1,6 @@
 import { login } from "@/server/login";
+import { SearchParams } from "@/types/page";
 import { redirect, notFound } from "next/navigation";
-import { SearchParams } from "./types";
 
 export const metadata = {
 	title: {
