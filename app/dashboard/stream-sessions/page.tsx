@@ -1,21 +1,18 @@
 import Table, { Column } from "../ivs-stream-sessions-table";
 import { redirect } from "next/navigation";
 import Header from "@/components/client/Header";
-import { PageProps } from "@/types/page";
+import { z } from "zod";
 
-export default async function Page(
-	props: PageProps<"/dashboard/stream-sessions">
-) {
-	const channelArn = props.searchParams.channelArn;
+const Params = z.object({
+	channelArn: z.string(),
+});
 
-	if (!channelArn) {
-		redirect("/");
-	}
-
+export default async function Page(props: { searchParams: unknown }) {
+	const params = Params.parse(props.searchParams);
 	return (
 		<Table
 			header={<Header variant="h2">Stream Sessions</Header>}
-			channelArn={channelArn}
+			channelArn={params.channelArn}
 			stickyHeader
 			variant="container"
 			limit={100}

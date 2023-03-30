@@ -1,4 +1,9 @@
 {
+    "titles": {
+        "/": "Login",
+        "/dashboard": "Dashboard",
+        "/dashboard/sessions": ""
+    },
     "dimensions": {
         "REBUFFER_PERCENTAGE": "Rebuffer %",
         "ERROR_RATE": "Error %",

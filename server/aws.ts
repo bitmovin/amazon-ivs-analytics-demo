@@ -14,27 +14,32 @@ const awsCredentials = {
 
 const awsRegion = requireEnv("AWS_REGION") || 'us-east-1';
 
-function getClient() {
-  const ivsClient = new IvsClient({
-    credentials: awsCredentials,
-    region: awsRegion
-  });
 
-  return ivsClient;
+function getClient(awsRegion: string) {
+	const ivsClient = new IvsClient({
+		credentials: awsCredentials,
+		region: awsRegion.toString(),
+	});
+
+	return ivsClient;
 }
 
 export const fetchStreamSessionsForChannel = async (
-  requestInit: RequestInit,
-  channelArn: string,
-  limit: number = 100
+	requestInit: RequestInit,
+	channelArn: string,
+	limit: number = 100
 ) => {
-  const listStreamSessionsInput = {
-    channelArn: channelArn,
-    maxResults: limit,
-  };
+	const listStreamSessionsInput = {
+		channelArn: channelArn,
+		maxResults: limit,
+	};
 
-  const listStreamSessionsRequest = new ListStreamSessionsCommand(listStreamSessionsInput);
-  const listStreamSessionsResponse = await getClient().send(listStreamSessionsRequest);
+	const listStreamSessionsRequest = new ListStreamSessionsCommand(
+		listStreamSessionsInput
+	);
+	const listStreamSessionsResponse = await getClient(awsRegion).send(
+		listStreamSessionsRequest
+	);
 
-  return listStreamSessionsResponse;
-}
+	return listStreamSessionsResponse;
+};

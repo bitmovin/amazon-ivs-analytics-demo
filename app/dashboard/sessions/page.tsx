@@ -1,13 +1,18 @@
 import Table, { Column } from "@/components/table";
-import { redirect } from "next/navigation";
-import Header from "@/components/client/Header";
-import { PageProps } from "@/types/page";
-import Filter from "@/components/filter";
+// import { PageProps } from "@/types/page";
+import { z } from "zod";
 
-export default async function Page(props: PageProps<"/dashboard/sessions">) {
+const Params = z.object({
+	orgId: z.string().uuid(),
+	licenseKey: z.string().uuid(),
+});
+
+export default async function Page(props: { searchParams: unknown }) {
+	const params = Params.parse(props.searchParams);
 	return (
 		<Table
-			{...props.searchParams}
+			orgId={params.orgId}
+			licenseKey={params.licenseKey}
 			header="Errors"
 			stickyHeader
 			variant="container"
