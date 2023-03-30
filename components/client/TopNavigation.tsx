@@ -13,11 +13,7 @@ if (typeof window === "undefined") {
 	React.useLayoutEffect = React.useEffect;
 }
 
-export default function TopNavigation({
-	identity,
-	fallback,
-	...props
-}: TopNavigationProps & { fallback: JSX.Element }) {
+export default function TopNavigation({ identity, ...props }: TopNavigationProps) {
 	const router = useRouter();
 
 	for (const utility of props.utilities || []) {
@@ -51,7 +47,7 @@ export default function TopNavigation({
 	};
 
 	return (
-		<Suspense fallback={fallback}>
+		<Suspense fallback={<p>Loading...</p>}>
 			<LazyTopNavigation
 				identity={{
 					...identity,

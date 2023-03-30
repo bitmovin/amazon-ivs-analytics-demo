@@ -6,44 +6,18 @@ import {
 	fetchImpression,
 	fetchImpressions,
 } from "@/server/bitmovin";
-import { Ops, mapFilter } from "@/components/filter";
-import ClientTable from "@/components/client/Table";
-import { Route } from "next";
+import { mapFilter } from "@/components/filter";
+import ClientTable from "./client/Table";
 import { TableProps } from "@cloudscape-design/components/table";
+import { Cell, ColumnElement, Item, TableColumn } from "./column";
+import { z } from "zod";
+import { Alert } from "./alert";
 
-type Item = Record<string, string | number>;
-type Cell = Partial<Record<string, JSX.Element>>;
-
-type Attribute = Lowercase<AttributeKey>;
-type ColumnProps<A extends Attribute> = {
-	id: A;
-	filters?: Ops[] | undefined;
-	children: JSX.Element | string;
-} & (
-	| { type: "date" }
-	| { type: "text" }
-	| { type: "link"; href: Route }
-	| { type?: undefined }
-);
-
-type ColumnElement<A extends Attribute = Attribute> = CustomElement<
-	ColumnProps<A>
->;
-
-export function Column<A extends Attribute>(
-	props: ColumnElement<A>["props"]
-): ColumnElement<A> {
-	return {
-		type: null as JSX.Element["type"],
-		key: null as JSX.Element["key"],
-		props,
-	} as ColumnElement<A>;
-}
+export const Column = TableColumn<AttributeKey>;
 
 export type AnalyticsTableProps = {
-	licenseKey: string;
-	orgId: string;
-	children: ColumnElement[];
+	params: unknown;
+	children: ColumnElement<AttributeKey>[];
 	limit: number;
 	footer?: JSX.Element;
 } & Partial<TableProps>;
@@ -62,43 +36,63 @@ export function Fallback(props: AnalyticsTableProps) {
 		<ClientTable
 			{...props}
 			columns={props.children.map(({ props }) => props)}
-			loading={true}
+			loading
 			loadingText="Loading sessions"
-			items={[{}]}
+			items={[]}
 			resizableColumns
-			columnDefinitions={[]}
 		/>
 	);
 }
 
 async function Component(props: AnalyticsTableProps) {
-	const items = await updateProps(props);
+	const columns = props.children.map(({ props }) => props);
+	try {
+		const results = await fetchData(props);
 
-	return (
-		<ClientTable
-			{...props}
-			columns={props.children.map(({ props }) => props)}
-			loading={false}
-			items={items}
-			resizableColumns
-			columnDefinitions={[]}
-		/>
-	);
+		return (
+			<ClientTable
+				{...props}
+				columns={columns}
+				items={results}
+				resizableColumns
+			/>
+		);
+	} catch (e) {
+		const safeError = z.instanceof(Error).parse(e);
+
+		return (
+			<ClientTable
+				{...props}
+				columns={props.children.map(({ props }) => props)}
+				items={[]}
+				resizableColumns
+				empty={<Alert error={safeError} />}
+			/>
+		);
+	}
 }
-async function updateProps(props: AnalyticsTableProps) {
-	const { licenseKey, orgId, limit } = props;
+
+async function fetchData(props: AnalyticsTableProps) {
+	const Params = z.object({
+		orgId: z.string().uuid(),
+		licenseKey: z.string().uuid(),
+	});
+	const { orgId, licenseKey } = Params.parse(props.params);
+	const columns = props.children.map(
+		(c) => c.props.id.toLowerCase() as Lowercase<AttributeKey>
+	);
 	const filters = props.children
 		.flatMap(
 			({ props }) =>
 				props.filters?.map((ops) => ({
-					field: props.id.toUpperCase() as AttributeKey,
+					field: props.id,
 					...ops,
 				})) ?? []
 		)
 		.flat()
 		.map(mapFilter)
 		.flatMap((filter) => (filter ? [filter] : []));
-	console.log(filters);
+
 	const now = Date.now();
 	const start = new Date(now - 1000 * 60 * 60);
 	const end = new Date(now);
@@ -108,7 +102,7 @@ async function updateProps(props: AnalyticsTableProps) {
 		start,
 		end,
 		filters,
-		limit,
+		limit: props.limit,
 	});
 
 	const cells: Cell[] = [];
@@ -119,7 +113,7 @@ async function updateProps(props: AnalyticsTableProps) {
 				if (impression.impressionId) {
 					return fetchImpression(
 						impression.impressionId,
-						props.licenseKey,
+						licenseKey,
 						{ next: { revalidate: 10000 } },
 						orgId
 					).then((details) => ({
@@ -138,16 +132,16 @@ async function updateProps(props: AnalyticsTableProps) {
 			for (const d in impression.details) {
 				const detail = impression.details[d];
 				for (const sample of detail as Item[]) {
-					for (const column of props.children.map(
-						(c) => c.props.id
-					)) {
+					for (const column of columns) {
 						const value = sample[column];
 						//const value = sample[key];
 						if (
 							typeof value === "number" ||
 							typeof value === "string"
 						) {
-							item[column] ??= <>{sample[column]}</>;
+							item[column.toUpperCase()] ??= (
+								<>{sample[column]}</>
+							);
 						}
 					}
 				}

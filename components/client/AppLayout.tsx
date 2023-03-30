@@ -12,14 +12,11 @@ if (typeof window === "undefined") {
 	React.useLayoutEffect = React.useEffect;
 }
 
-export default function AppLayout({
-	fallback,
-	...props
-}: AppLayoutProps & { fallback: JSX.Element }) {
+export default function AppLayout(props: AppLayoutProps) {
 	const [navigationOpen, setNavigationOpen] = useState(false);
 	const [toolsOpen, setToolsOpen] = useState(false);
 	return (
-		<Suspense fallback={fallback}>
+		<Suspense fallback={props.content}>
 			<LazyAppLayout
 				{...props}
 				navigationOpen={

@@ -7,10 +7,8 @@ import {
 } from "./bitmovin";
 import type { Organization } from "@bitmovin/api-sdk";
 
-export async function fetchOrgs() {
-	const response = await fetchOrganizations({
-		next: { revalidate: 10000 },
-	});
+export async function fetchOrgs(init: RequestInit) {
+	const response = await fetchOrganizations(init);
 
 	const orgs = (response.items || []).flatMap((org) =>
 		org.id ? [{ ...org, orgId: org.id }] : []
@@ -44,13 +42,9 @@ export async function fetchOrgLicenses(org: Organization & { orgId: string }) {
 	};
 }
 
-export async function fetchInfo() {
-	return await fetchInformation({ next: { revalidate: 10000 } });
-}
-
 export async function login() {
-	const information = await fetchInfo();
-	const response = await fetchOrgs();
+	const information = await fetchInformation({ next: { revalidate: 10000 } });
+	const response = await fetchOrgs({ next: { revalidate: 10000 } });
 	const orgs = await Promise.all(response.orgs.map(fetchOrgLicenses));
-	return { information, orgs: orgs };
+	return { information, orgs };
 }

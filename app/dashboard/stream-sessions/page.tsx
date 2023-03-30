@@ -1,5 +1,4 @@
-import Table, { Column } from "../ivs-stream-sessions-table";
-import { redirect } from "next/navigation";
+import Table, { Column } from "@/components/ivs-table";
 import Header from "@/components/client/Header";
 import { z } from "zod";
 

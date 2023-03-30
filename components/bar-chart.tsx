@@ -9,16 +9,16 @@ import {
 	AnalyticsOrder,
 } from "@bitmovin/api-sdk";
 import Spinner from "@/components/client/Spinner";
-import QueriesApi from "@bitmovin/api-sdk/dist/analytics/queries/QueriesApi";
 import { BarChartProps } from "@cloudscape-design/components/bar-chart";
 import { ChartDataTypes } from "@cloudscape-design/components/mixed-line-bar-chart/interfaces";
-import { Query, QueryType, mapFilter } from "./filter";
+import { QueryType, mapFilter } from "./filter";
 import type { BarElement } from "./bar";
 import React from "react";
+import { z } from "zod";
+import { Alert } from "./alert";
 
-export type ChartProps<K extends QueryType> = {
-	licenseKey: string;
-	orgId: string;
+export type ChartProps = {
+	params: unknown;
 	limit: number;
 	factor?: number;
 	interval?: Interval;
@@ -29,7 +29,7 @@ export type ChartProps<K extends QueryType> = {
 	children: BarElement<QueryType>[];
 } & Partial<BarChartProps<ChartDataTypes>>;
 
-export default function BarChart<K extends QueryType>(props: ChartProps<K>) {
+export default function BarChart(props: ChartProps) {
 	return (
 		<Suspense fallback={<Fallback {...props} />}>
 			{/* @ts-expect-error suspense */}
@@ -38,9 +38,7 @@ export default function BarChart<K extends QueryType>(props: ChartProps<K>) {
 	);
 }
 
-export function Fallback<K extends keyof QueriesApi>(
-	props: Partial<ChartProps<K>>
-) {
+export function Fallback(props: Partial<ChartProps>) {
 	return (
 		<ClientBarChart
 			{...props}
@@ -55,12 +53,36 @@ export function Fallback<K extends keyof QueriesApi>(
 	);
 }
 
-async function Component<K extends keyof QueriesApi>(props: ChartProps<K>) {
+async function Component(props: ChartProps) {
+	try {
+		const results = await fetchData(props);
+
+		return (
+			<ClientBarChart
+				{...props}
+				xScaleType="categorical"
+				series={results}
+				visibleSeries={results.filter((visible) => !visible.hidden)}
+				statusType="finished"
+			/>
+		);
+	} catch (e) {
+		const safeError = z.instanceof(Error).parse(e);
+		return (
+			<ClientBarChart series={[]} empty={<Alert error={safeError} />} />
+		);
+	}
+}
+
+async function fetchData(props: ChartProps) {
+	const Params = z.object({
+		orgId: z.string().uuid(),
+		licenseKey: z.string().uuid(),
+	});
+	const { orgId, licenseKey } = Params.parse(props.params);
 	const now = Date.now();
 	const start = new Date(now - 1000 * 60 * 60 * 3);
 	const end = new Date(now);
-	const orgId = props.orgId;
-	const licenseKey = props.licenseKey;
 	const factor = props.factor || 1;
 	const interval = AnalyticsInterval[props.interval ?? "DAY"];
 	const limit = props.limit;
@@ -100,13 +122,6 @@ async function Component<K extends keyof QueriesApi>(props: ChartProps<K>) {
 			}))
 		)
 	);
-
-	return (
-		<ClientBarChart
-			{...props}
-			xScaleType="categorical"
-			series={results}
-			visibleSeries={results.filter((visible) => !visible.hidden)}
-		/>
-	);
+	return results;
 }
+

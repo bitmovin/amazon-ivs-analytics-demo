@@ -1,7 +1,7 @@
 import "server-only";
 
 import ClientBoardItem from "@/components/client/BoardItem";
-import { BoardItemDefinition } from "@cloudscape-design/board-components/internal/interfaces";
+import type { BoardItemDefinition } from "@cloudscape-design/board-components/internal/interfaces";
 
 export type Size = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9;
 

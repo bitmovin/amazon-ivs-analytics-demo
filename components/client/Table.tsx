@@ -12,7 +12,10 @@ if (typeof window === "undefined") {
 }
 
 export default function Table(
-	props: Omit<TableProps<unknown>, "trackBy" | "isItemDisabled"> & {
+	props: Omit<
+		TableProps<unknown>,
+		"trackBy" | "isItemDisabled" | "columnDefinitions"
+	> & {
 		columns: { id: string; children?: JSX.Element | string }[];
 	}
 ) {
@@ -27,7 +30,6 @@ export default function Table(
 		>
 			<LazyTable
 				{...props}
-				items={props.items}
 				columnDefinitions={
 					(props.columns.map((column) => ({
 						header: column.children ? (

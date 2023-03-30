@@ -13,10 +13,11 @@ import { AreaChartProps } from "@cloudscape-design/components";
 import { ChartDataTypes } from "@cloudscape-design/components/internal/components/cartesian-chart/interfaces";
 import { AreaElement } from "./area";
 import { QueryType, mapFilter } from "./filter";
+import { z } from "zod";
+import { Alert } from "./alert";
 
 export type ChartProps = {
-	licenseKey: string;
-	orgId: string;
+	params: unknown;
 	children: AreaElement<QueryType> | AreaElement<QueryType>[];
 } & Partial<AreaChartProps<ChartDataTypes>>;
 
@@ -45,11 +46,26 @@ export function Fallback(props: Partial<ChartProps>) {
 }
 
 async function Component(props: ChartProps) {
+	try {
+		const results = await fetchData(props);
+
+		return <AreaChartItem {...props} series={results[0]} />;
+	} catch (e) {
+		const safeError = z.instanceof(Error).parse(e);
+		return (
+			<AreaChartItem series={[]} empty={<Alert error={safeError} />} />
+		);
+	}
+}
+async function fetchData(props: ChartProps) {
+	const Params = z.object({
+		orgId: z.string().uuid(),
+		licenseKey: z.string().uuid(),
+	});
+	const { orgId, licenseKey } = Params.parse(props.params);
 	const now = Date.now();
 	const start = new Date(now - 1000 * 60 * 60 * 3);
 	const end = new Date(now);
-	const orgId = props.orgId;
-	const licenseKey = props.licenseKey;
 
 	const results = await Promise.all(
 		[props.children]
@@ -140,6 +156,6 @@ async function Component(props: ChartProps) {
 					})
 			)
 	);
-
-	return <AreaChartItem {...props} series={results[0]} />;
+	return results;
 }
+

@@ -5,6 +5,7 @@ import Spinner from "@/components/client/Spinner";
 export default async function Loading() {
 	return (
 		<Table
+			params={{}}
 			header={
 				<Header variant="h2">
 					<Spinner />
@@ -14,19 +15,17 @@ export default async function Loading() {
 			loading
 			variant="container"
 			limit={100}
-			licenseKey={""}
-			orgId={""}
 		>
-			<Column id="impression_id" filters={[{ not: "null" }]}>
+			<Column id="IMPRESSION_ID" filters={[{ not: "null" }]}>
 				ID
 			</Column>
-			<Column id="error_code" filters={[{ above: 0 }, { not: 10000 }]}>
+			<Column id="ERROR_CODE" filters={[{ above: 0 }, { not: 10000 }]}>
 				Error
 			</Column>
-			<Column id="path">Path</Column>
-			<Column id="video_title">Video</Column>
-			<Column id="operatingsystem">OS</Column>
-			<Column id="browser">Browser</Column>
+			<Column id="PATH">Path</Column>
+			<Column id="VIDEO_TITLE">Video</Column>
+			<Column id="OPERATINGSYSTEM">OS</Column>
+			<Column id="BROWSER">Browser</Column>
 		</Table>
 	);
 }

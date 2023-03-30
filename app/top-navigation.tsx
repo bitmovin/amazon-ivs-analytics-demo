@@ -14,7 +14,6 @@ export default function TopNavigation() {
 function Fallback() {
 	return (
 		<ClientTopNavigation
-			fallback={<p>Loading...</p>}
 			identity={{
 				href: "#",
 				title: "Bitmovin",
@@ -43,7 +42,6 @@ async function Component() {
 
 	return (
 		<ClientTopNavigation
-			fallback={<p>Loading...</p>}
 			identity={{
 				href: "#",
 				title: "Bitmovin",

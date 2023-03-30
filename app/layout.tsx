@@ -23,12 +23,8 @@ export default function RootLayout(props: { children: JSX.Element }) {
 				<AppLayout
 					toolsHide={true}
 					navigationHide={true}
-					fallback={<p>Loading...</p>}
 					content={
-						<ContentLayout
-							fallback={props.children}
-							header={<Header>Dashboard</Header>}
-						>
+						<ContentLayout header={<Header>Dashboard</Header>}>
 							{props.children}
 						</ContentLayout>
 					}

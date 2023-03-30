@@ -4,7 +4,7 @@ import Alert from "@/components/client/Alert";
 
 export default function NotFoundPage() {
 	return (
-		<Alert type="error" fallback={<p>Tenant not Found</p>}>
+		<Alert type="error">
 			<p>Tenant not Found</p>
 		</Alert>
 	);

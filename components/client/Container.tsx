@@ -1,14 +1,18 @@
 "use client";
 
-import React from "react";
-import Container, {
-	ContainerProps,
-} from "@cloudscape-design/components/container";
+import React, { Suspense, lazy } from "react";
+import type { ContainerProps } from "@cloudscape-design/components/container";
+
+const Container = lazy(() => import("@cloudscape-design/components/container"));
 
 if (typeof window === "undefined") {
-	React.useLayoutEffect = React.useEffect;
+	React.useLayoutEffect = () => ({});
 }
 
 export default function ClientContainer(props: ContainerProps) {
-	return <Container {...props} />;
+	return (
+		<Suspense fallback={<div>{props.children}</div>}>
+			<Container {...props} />
+		</Suspense>
+	);
 }

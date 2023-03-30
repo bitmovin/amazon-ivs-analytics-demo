@@ -3,21 +3,12 @@ import BoardItem from "@/components/board-item";
 import BarChart from "@/components/bar-chart";
 import Bar from "@/components/bar";
 import AreaChart from "@/components/area-chart";
-import { z } from "zod";
 import Header from "@/components/client/Header";
 import Filter from "@/components/filter";
 import Area from "@/components/area";
 import Table, { Column } from "@/components/table";
-import Link from "next/link";
 
-const Params = z.object({
-	orgId: z.string().uuid(),
-	licenseKey: z.string().uuid(),
-});
-
-export default async function Page(props: { searchParams: unknown }) {
-	const params = Params.parse(props.searchParams);
-
+export default function Page(props: { searchParams: unknown }) {
 	return (
 		<Board>
 			<BoardItem
@@ -26,7 +17,7 @@ export default async function Page(props: { searchParams: unknown }) {
 				columnSpan={2}
 				rowSpan={3}
 			>
-				<AreaChart {...params} xScaleType="time">
+				<AreaChart params={props.searchParams} xScaleType="time">
 					<Area
 						query="avg"
 						field="ERROR_RATE"
@@ -37,13 +28,16 @@ export default async function Page(props: { searchParams: unknown }) {
 				</AreaChart>
 			</BoardItem>
 			<BoardItem
-				{...params}
 				id="bar-chart"
 				header={<Header>Video Codecs</Header>}
 				columnSpan={2}
 				rowSpan={3}
 			>
-				<BarChart {...params} interval="DAY" limit={100}>
+				<BarChart
+					params={props.searchParams}
+					interval="DAY"
+					limit={100}
+				>
 					<Bar id="AVC" query="count" dimension="IMPRESSION_ID">
 						<Filter field="SUPPORTED_VIDEO_CODECS" has="avc" />
 						<Filter field="VIDEO_STARTUPTIME" above={0} />
@@ -63,36 +57,30 @@ export default async function Page(props: { searchParams: unknown }) {
 				</BarChart>
 			</BoardItem>
 			<BoardItem
-				{...params}
 				id="table"
 				header={<Header>Error Sessions</Header>}
-				footer={
-					<Link
-						href={{
-							pathname: "/dashboard/sessions",
-							query: params,
-						}}
-					>
-						View all
-					</Link>
-				}
 				columnSpan={2}
 				rowSpan={4}
 			>
-				<Table {...params} variant="embedded" stickyHeader limit={100}>
-					<Column id="impression_id" filters={[{ not: "null" }]}>
+				<Table
+					params={props.searchParams}
+					variant="embedded"
+					stickyHeader
+					limit={100}
+				>
+					<Column id="IMPRESSION_ID" filters={[{ not: "null" }]}>
 						ID
 					</Column>
 					<Column
-						id="error_code"
+						id="ERROR_CODE"
 						filters={[{ above: 0 }, { not: 10000 }]}
 					>
 						Error
 					</Column>
-					<Column id="path">Path</Column>
-					<Column id="video_title">Video</Column>
-					<Column id="operatingsystem">OS</Column>
-					<Column id="browser">Browser</Column>
+					<Column id="PATH">Path</Column>
+					<Column id="VIDEO_TITLE">Video</Column>
+					<Column id="OPERATINGSYSTEM">OS</Column>
+					<Column id="BROWSER">Browser</Column>
 				</Table>
 			</BoardItem>
 		</Board>
