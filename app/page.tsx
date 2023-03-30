@@ -1,5 +1,4 @@
 import { login } from "@/server/login";
-import { SearchParams } from "@/types/page";
 import { redirect, notFound } from "next/navigation";
 
 export const metadata = {
@@ -14,12 +13,8 @@ export const metadata = {
 
 export default async function RootPage() {
 	const params = await login();
-	const org = params.orgs.at(0) ?? notFound();
-	const license = org.licenses.at(0) ?? notFound();
-	const query: SearchParams<"/dashboard"> = {
-		orgId: org.orgId,
-		licenseKey: license.licenseKey,
-	};
+	const { orgId, licenses } = params.orgs.at(0) ?? notFound();
+	const { licenseKey } = licenses.at(0) ?? notFound();
 
-	redirect(`/dashboard?orgId=${query.orgId}&licenseKey=${query.licenseKey}`);
+	redirect(`/dashboard?orgId=${orgId}&licenseKey=${licenseKey}`);
 }

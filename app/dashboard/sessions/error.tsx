@@ -1,7 +1,6 @@
 "use client";
 
 import Alert from "@/components/client/Alert";
-import { ErrorProps } from "@/types/page";
 
 export default function ErrorPage(props: ErrorProps) {
 	return (

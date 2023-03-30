@@ -3,16 +3,20 @@ import BoardItem from "@/components/board-item";
 import BarChart from "@/components/bar-chart";
 import Bar from "@/components/bar";
 import AreaChart from "@/components/area-chart";
-import { redirect } from "next/navigation";
-import { PageProps } from "@/types/page";
+import { z } from "zod";
 import Header from "@/components/client/Header";
 import Filter from "@/components/filter";
 import Area from "@/components/area";
 import Table, { Column } from "@/components/table";
 import Link from "next/link";
 
-export default async function Page(props: PageProps<"/dashboard">) {
-	const params = getParams(props);
+const Params = z.object({
+	orgId: z.string().uuid(),
+	licenseKey: z.string().uuid(),
+});
+
+export default async function Page(props: { searchParams: unknown }) {
+	const params = Params.parse(props.searchParams);
 
 	return (
 		<Board>
@@ -95,15 +99,4 @@ export default async function Page(props: PageProps<"/dashboard">) {
 	);
 }
 
-function getParams(props: PageProps<"/dashboard">) {
-	const orgId = props.searchParams.orgId;
-	const licenseKey = props.searchParams.licenseKey;
-
-	if (!licenseKey || !orgId) {
-		redirect("/");
-	}
-
-	const params = { orgId, licenseKey };
-	return params;
-}
 

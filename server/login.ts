@@ -52,5 +52,5 @@ export async function login() {
 	const information = await fetchInfo();
 	const response = await fetchOrgs();
 	const orgs = await Promise.all(response.orgs.map(fetchOrgLicenses));
-	return { information, orgs };
+	return { information, orgs: orgs };
 }

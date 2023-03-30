@@ -2,6 +2,8 @@ import "@cloudscape-design/global-styles/index.css";
 import "./globals.scss";
 import TopNavigation from "./top-navigation";
 import AppLayout from "@/components/client/AppLayout";
+import ContentLayout from "@/components/client/ContentLayout";
+import Header from "@/components/client/Header";
 
 export const metadata = {
 	title: {
@@ -22,7 +24,14 @@ export default function RootLayout(props: { children: JSX.Element }) {
 					toolsHide={true}
 					navigationHide={true}
 					fallback={<p>Loading...</p>}
-					content={props.children}
+					content={
+						<ContentLayout
+							fallback={props.children}
+							header={<Header>Dashboard</Header>}
+						>
+							{props.children}
+						</ContentLayout>
+					}
 				/>
 			</body>
 		</html>

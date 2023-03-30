@@ -13,7 +13,7 @@ if (typeof window === "undefined") {
 
 export default function Table(
 	props: Omit<TableProps<unknown>, "trackBy" | "isItemDisabled"> & {
-		columns: { id: string; children: JSX.Element | string }[];
+		columns: { id: string; children?: JSX.Element | string }[];
 	}
 ) {
 	return (
@@ -30,7 +30,11 @@ export default function Table(
 				items={props.items}
 				columnDefinitions={
 					(props.columns.map((column) => ({
-						header: <>{column.children}</>,
+						header: column.children ? (
+							<>{column.children}</>
+						) : (
+							<></>
+						),
 						ariaLabel: (data) => `${data}${column}`,
 						cell: <T extends { [x: string]: JSX.Element }>(
 							item: T
