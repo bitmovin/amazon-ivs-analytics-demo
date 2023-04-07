@@ -3,15 +3,13 @@
 import type { PieChartProps } from "@cloudscape-design/components/pie-chart";
 import React from "react";
 import PieChart from "./PieChart";
+import Spinner from "./Spinner";
 
 if (typeof window === "undefined") {
 	React.useLayoutEffect = React.useEffect;
 }
 
-export default function PieChartItem({
-	fallback,
-	...props
-}: PieChartProps & { fallback: JSX.Element }) {
+export default function PieChartItem(props: PieChartProps) {
 	return (
 		<div
 			className="pie-chart-container"
@@ -22,7 +20,15 @@ export default function PieChartItem({
 				},
 			}}
 		>
-			<PieChart {...props} fallback={fallback} />
+			<PieChart
+				{...props}
+				fallback={
+					<div>
+						<Spinner />
+						Loading data
+					</div>
+				}
+			/>
 		</div>
 	);
 }

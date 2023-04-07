@@ -1,48 +1,26 @@
-import { PageProps } from "@/app/types";
-import Table from "../ivs-stream-sessions-table";
-import { redirect } from "next/navigation";
-import Header from "@/client/Header";
+import Table, { Column } from "@/components/ivs-table";
+import Header from "@/components/client/Header";
+import { z } from "zod";
 
-export default async function Page(props: PageProps<"/dashboard/stream-sessions">) {
-	const channelArn = props.searchParams.channelArn;
+const Params = z.object({
+	channelArn: z.string(),
+});
 
-	if (!channelArn) {
-		redirect("/");
-	}
-
+export default async function Page(props: { searchParams: unknown }) {
+	const params = Params.parse(props.searchParams);
 	return (
 		<Table
-			header={
-				<Header variant="h2" fallback={<h2>{"Stream Sessions"}</h2>}>
-					Stream Sessions
-				</Header>
-			}
-      channelArn={channelArn}
+			header={<Header variant="h2">Stream Sessions</Header>}
+			channelArn={params.channelArn}
 			stickyHeader
 			variant="container"
 			limit={100}
-			columns={{
-        streamId: {
-          header: <>{"Stream ID"}</>,
-          type: "text",
-        },
-        startTime: {
-					header: <>{"Start Time"}</>,
-					type: "text",
-				},
-        endTime: {
-					header: <>{"End Time"}</>,
-					type: "text",
-				},
-				error: {
-					header: <>{"Error"}</>,
-					type: "text",
-				},
-				detailLink: {
-					header: <>{""}</>,
-					type: "text",
-				},
-			}}
-		/>
+		>
+			<Column id="streamId">Path</Column>
+			<Column id="startTime">Video</Column>
+			<Column id="endTime">OS</Column>
+			<Column id="error">Browser</Column>
+			<Column id="detailLink" />
+		</Table>
 	);
 }

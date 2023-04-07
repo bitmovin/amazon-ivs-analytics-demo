@@ -11,12 +11,9 @@ if (typeof window === "undefined") {
 	React.useLayoutEffect = () => ({});
 }
 
-export default function ClientContentLayout({
-	fallback,
-	...props
-}: ContentLayoutProps & { fallback: JSX.Element }) {
+export default function ClientContentLayout(props: ContentLayoutProps) {
 	return (
-		<Suspense fallback={fallback}>
+		<Suspense fallback={props.children}>
 			<ContentLayout {...props} />
 		</Suspense>
 	);

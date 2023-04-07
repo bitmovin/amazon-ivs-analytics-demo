@@ -17,17 +17,17 @@ const awsCredentials = {
 
 const awsRegion = requireEnv("AWS_REGION") || 'us-east-1';
 
-function getIvsClient() {
+function getIvsClient(awsRegion: string) {
   return new IvsClient({
     credentials: awsCredentials,
-    region: awsRegion
+    region: awsRegion,
   });
 }
 
-function getIvs() {
+function getIvs(awsRegion: string) {
   return new Ivs({
     credentials: awsCredentials,
-    region: awsRegion
+    region: awsRegion,
   });
 }
 
@@ -35,8 +35,7 @@ export const fetchChannels = cache(
   async (
     requestInit?: RequestInit
   ) => {
-    const ivs = getIvs();
-    const channels = await ivs.listChannels({});
+    const channels = await getIvs(awsRegion).listChannels({});
 
     return channels;
   }
@@ -53,7 +52,7 @@ export const fetchStreamSessionsForChannel = async (
   };
 
   const listStreamSessionsRequest = new ListStreamSessionsCommand(listStreamSessionsInput);
-  const listStreamSessionsResponse = await getIvsClient().send(listStreamSessionsRequest);
+  const listStreamSessionsResponse = await getIvsClient(awsRegion).send(listStreamSessionsRequest);
 
   return listStreamSessionsResponse;
 }
@@ -68,7 +67,7 @@ export const fetchStreamSessionDetails = async (
     streamId: streamId,
   };
   const getStreamSessionRequest = new GetStreamSessionCommand(getStreamSessionInput);
-  const getStreamSessionResponse = await getIvsClient().send(getStreamSessionRequest);
+  const getStreamSessionResponse = await getIvsClient(awsRegion).send(getStreamSessionRequest);
 
   return getStreamSessionResponse;
 }

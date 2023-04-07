@@ -9,12 +9,9 @@ if (typeof window === "undefined") {
 	React.useLayoutEffect = () => ({});
 }
 
-export default function Spinner({
-	fallback,
-	...props
-}: SpinnerProps & { fallback: JSX.Element }) {
+export default function Spinner({ ...props }: SpinnerProps) {
 	return (
-		<Suspense fallback={fallback}>
+		<Suspense fallback={<p>Loading...</p>}>
 			<LazySpinner {...props} />
 		</Suspense>
 	);

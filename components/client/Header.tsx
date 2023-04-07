@@ -9,12 +9,9 @@ if (typeof window === "undefined") {
 	React.useLayoutEffect = () => ({});
 }
 
-export default function Header({
-	fallback,
-	...props
-}: HeaderProps & { fallback: JSX.Element }) {
+export default function Header(props: HeaderProps) {
 	return (
-		<Suspense fallback={fallback}>
+		<Suspense fallback={props.children}>
 			<LazyHeader {...props} />
 		</Suspense>
 	);

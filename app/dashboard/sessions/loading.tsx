@@ -1,19 +1,18 @@
+import { Column, Fallback as Table } from "@/components/table";
 import Header from "@/components/client/Header";
-import Table, { Column } from "@/components/table";
-// import { PageProps } from "@/types/page";
-import { z } from "zod";
+import Spinner from "@/components/client/Spinner";
 
-const Params = z.object({
-	orgId: z.string().uuid(),
-	licenseKey: z.string().uuid(),
-});
-
-export default async function Page(props: { searchParams: unknown }) {
+export default async function Loading() {
 	return (
 		<Table
-			params={props.searchParams}
-			header={<Header variant="h2">Errors</Header>}
+			params={{}}
+			header={
+				<Header variant="h2">
+					<Spinner />
+				</Header>
+			}
 			stickyHeader
+			loading
 			variant="container"
 			limit={100}
 		>

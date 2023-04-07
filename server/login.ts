@@ -8,10 +8,8 @@ import {
 import type { Organization } from "@bitmovin/api-sdk";
 import { fetchChannels } from "./aws";
 
-export async function fetchOrgs() {
-	const response = await fetchOrganizations({
-		next: { revalidate: 10000 },
-	});
+export async function fetchOrgs(init: RequestInit) {
+	const response = await fetchOrganizations(init);
 
 	const orgs = (response.items || []).flatMap((org) =>
 		org.id ? [{ ...org, orgId: org.id }] : []
@@ -45,18 +43,10 @@ export async function fetchOrgLicenses(org: Organization & { orgId: string }) {
 	};
 }
 
-export async function fetchInfo() {
-	return await fetchInformation({ next: { revalidate: 10000 } });
-}
-
-export async function fetchIvsChannels() {
-  return await fetchChannels();
-};
-
 export async function login() {
-	const information = await fetchInfo();
-	const response = await fetchOrgs();
+	const information = await fetchInformation({ next: { revalidate: 10000 } });
+	const response = await fetchOrgs({ next: { revalidate: 10000 } });
 	const orgs = await Promise.all(response.orgs.map(fetchOrgLicenses));
-	const ivsChannels = await fetchIvsChannels();
+	const ivsChannels = await fetchChannels();
 	return { information, orgs, ivsChannels };
 }
