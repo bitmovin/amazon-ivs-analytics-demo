@@ -18,6 +18,9 @@ import {
 
 export enum ImageMetric {
   IngestFramerate = 'IngestFramerate',
+  IngestAudioBitrate = 'IngestAudioBitrate',
+  KeyframeInterval = 'KeyframeInterval',
+  IngestVideoBitrate = 'IngestVideoBitrate',
 };
 
 type AwsClientConfig = IvsClientConfig | CloudWatchClientConfig;
@@ -83,17 +86,17 @@ export const fetchStreamSessionDetails = async (
   return getStreamSessionResponse;
 }
 
-export const getMetricImage = async (channelArn: string, startDate: Date, endDate: Date, metric: ImageMetric) => {
+export const getMetricImage = async (channelArn: string, startDate: Date, endDate: Date, metrics: ImageMetric[]) => {
   const getMetricWidgetImageInput = {
     MetricWidget: JSON.stringify({
-      metrics: [
-        [
+      metrics: metrics.map(metric => {
+        return [
           "AWS/IVS",
-          metric.toString(),
+          metric,
           "Channel",
           channelArn.split("/")[1]
-        ]
-      ],
+        ];
+      }),
       start: startDate,
       end: endDate,
       // TODO: Adapt period based on how long ago the data was
@@ -106,7 +109,7 @@ export const getMetricImage = async (channelArn: string, startDate: Date, endDat
   if (getMetricWidgetImageResponse.MetricWidgetImage) {
     const buffer = Buffer.from(getMetricWidgetImageResponse.MetricWidgetImage);
     const base64Image = buffer.toString('base64');
-    return base64Image;
+    return `data:image/png;base64,${base64Image}`;
   } else {
     return null;
   }

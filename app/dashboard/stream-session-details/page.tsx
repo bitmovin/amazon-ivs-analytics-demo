@@ -31,7 +31,7 @@ export default async function Page(props: { searchParams: unknown }) {
 
   const encodingConfigItems = getEncodingConfigItems(details.streamSession?.ingestConfiguration);
 
-  const ingestFrameRateImg = await getIngestFramerateImage(
+  const streamHealthImages = await getStreamHealthMetricImages(
     channelArn,
     details.streamSession?.startTime || getFallbackDateNowMinusDaysAgo(14),
     details.streamSession?.endTime || new Date(),
@@ -98,13 +98,25 @@ export default async function Page(props: { searchParams: unknown }) {
         id="StreamSessionHealth"
         header={<Header variant="h3">Stream Health</Header>}
         columnSpan={2}
-        rowSpan={3}
+        rowSpan={12}
       >
-        <Image
-          src={ingestFrameRateImg ? `data:image/png;base64,${ingestFrameRateImg}` : ''}
-          alt="Ingest Frame Rate"
-          fill
-        ></Image>
+        <>
+          <img
+            src={streamHealthImages[0] ? streamHealthImages[0] : ''}
+            alt="Ingest Frame Rate"
+            width={'100%'}
+          ></img>
+          <img
+            src={streamHealthImages[1] ? streamHealthImages[1] : ''}
+            alt="Ingest Video Bitrate"
+            width={'100%'}
+          ></img>
+          <img
+            src={streamHealthImages[2] ? streamHealthImages[2] : ''}
+            alt="Ingest Audio Bitrate"
+            width={'100%'}
+          ></img>
+        </>
       </BoardItem>
       <BoardItem
         id="PlaybackHealth"
@@ -149,9 +161,34 @@ function getEncodingConfigItems(encodingConfig: IngestConfiguration | undefined)
   return encodingConfigItems;
 }
 
-async function getIngestFramerateImage(channelArn: string, startTime: Date, endTime: Date): Promise<string | null> {
-  const base64imageOrNull = await getMetricImage(channelArn, startTime, endTime, ImageMetric.IngestFramerate);
-  return base64imageOrNull
+async function getStreamHealthMetricImages(channelArn: string, startTime: Date, endTime: Date): Promise<(string | null)[]> {
+  const promises = [
+    getMetricImage(
+      channelArn,
+      startTime,
+      endTime,
+      [
+        ImageMetric.IngestFramerate
+      ]
+    ),
+    getMetricImage(
+      channelArn,
+      startTime,
+      endTime,
+      [
+        ImageMetric.IngestVideoBitrate,
+      ]
+    ),
+    getMetricImage(
+      channelArn,
+      startTime,
+      endTime,
+      [
+        ImageMetric.IngestAudioBitrate,
+      ]
+    ),
+  ]
+  return Promise.all(promises);
 }
 
 function getFallbackDateNowMinusDaysAgo(days: number = 14): Date {
