@@ -5,29 +5,28 @@ import {
   IvsClient,
   GetStreamSessionCommand,
   Ivs,
+  IvsClientConfig,
 } from "@aws-sdk/client-ivs";
 
 import { requireEnv } from "./env";
 import { cache } from "react";
 
-const awsCredentials = {
-	accessKeyId: requireEnv("AWS_ACCESS_KEY"),
-	secretAccessKey: requireEnv("AWS_SECRET_KEY"),
+type AwsClientConfig = IvsClientConfig;
+
+const clientConfig: AwsClientConfig = {
+  credentials: {
+    accessKeyId: requireEnv("AWS_ACCESS_KEY"),
+    secretAccessKey: requireEnv("AWS_SECRET_KEY"),
+  },
+  region: requireEnv("AWS_REGION") || 'us-east-1',
 };
 
-const awsRegion = requireEnv("AWS_REGION") || 'us-east-1';
-
-const clientConfig = {
-  credentials: awsCredentials,
-  region: awsRegion,
-};
-
-function getIvsClient(clientConfig) {
+function getIvsClient(clientConfig: AwsClientConfig) {
   return new IvsClient(clientConfig);
 }
 
-function getIvs(awsRegion: string) {
-  return new Ivs(clientConfig});
+function getIvs(clientConfig: AwsClientConfig) {
+  return new Ivs(clientConfig);
 }
 
 export const fetchChannels = cache(
@@ -54,7 +53,7 @@ export const fetchStreamSessionsForChannel = async (
   const listStreamSessionsResponse = await getIvsClient(clientConfig).send(listStreamSessionsRequest);
 
   return listStreamSessionsResponse;
-}
+};
 
 export const fetchStreamSessionDetails = async (
   requestInit: RequestInit,
@@ -69,4 +68,4 @@ export const fetchStreamSessionDetails = async (
   const getStreamSessionResponse = await getIvsClient(clientConfig).send(getStreamSessionRequest);
 
   return getStreamSessionResponse;
-}
+};
