@@ -1,10 +1,10 @@
 "use client";
 
-import Alert from "@/client/Alert";
+import Alert from "@/components/client/Alert";
 
 export default function ErrorPage(props: { error: Error }) {
 	return (
-		<Alert type="error" fallback={<p>{props.error.message}</p>}>
+		<Alert type="error">
 			<p>{props.error.message}</p>
 		</Alert>
 	);

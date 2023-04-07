@@ -1,10 +1,10 @@
 "use client";
 
-import Alert from "@/client/Alert";
+import Alert from "@/components/client/Alert";
 
 export default function NotFoundPage() {
 	return (
-		<Alert type="error" fallback={<p>IVS Stream Session Details Not Found</p>}>
+		<Alert type="error">
 			<p>IVS Stream Session Details Not Found</p>
 		</Alert>
 	);

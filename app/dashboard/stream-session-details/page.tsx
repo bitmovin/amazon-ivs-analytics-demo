@@ -1,19 +1,24 @@
-import { PageProps } from "@/app/types";
 import { redirect } from "next/navigation";
 
 import {
   fetchStreamSessionDetails,
 } from "@/server/aws";
-import Board from "@/client/Board";
-import getDictionary from "@/server/dictionaries";
-import Spinner from "@/client/Spinner";
-import Header from "@/client/Header";
-import Table from "@/client/Table";
+import Board from "@/components/board";
+import BoardItem from "@/components/board-item";
+import Header from "@/components/client/Header";
+import Table from "@/components/client/Table";
+import type { IngestConfiguration } from "@aws-sdk/client-ivs";
+import { z } from "zod";
 
-export default async function Page(props: PageProps<"/dashboard/stream-session-details">) {
-  const dict = await getDictionary("en");
-  const channelArn = props.searchParams.channelArn;
-  const streamId = props.searchParams.streamId;
+const Params = z.object({
+	channelArn: z.string(),
+  streamId: z.string(),
+});
+
+export default async function Page(props: { searchParams: unknown }) {
+  const params = Params.parse(props.searchParams);
+  const channelArn = params.channelArn;
+  const streamId = params.streamId;
 
   if (!streamId || !channelArn) {
     redirect("/");
@@ -24,195 +29,87 @@ export default async function Page(props: PageProps<"/dashboard/stream-session-d
   const encodingConfigItems = getEncodingConfigItems(details.streamSession?.ingestConfiguration);
 
   return (
-    <Board
-      fallback={<Spinner fallback={<p>{dict.loading}</p>} />}
-      empty={<Spinner fallback={<p>{dict.loading}</p>} />}
-      items={(
-        [
-          {
-            id: 'StreamSessionEvents' as const,
-            definition: {
-              minColumnSpan: 2,
-              minRowSpan: 3,
+    <Board>
+      <BoardItem
+        id='StreamSessionEvents'
+        header={<Header variant="h3">Stream Events</Header>}
+        columnSpan={2}
+        rowSpan={3}
+      >
+        <Table
+            items={(
+              details.streamSession?.truncatedEvents?.map(event => {
+                return {
+                  name: <>{event.name || ''}</>,
+                  time: <>{event.eventTime?.toISOString() || ''}</>,
+                }
+              }) || []
+            )}
+            columns={[
+              {
+                id: 'name',
+                children: <>{"Event"}</>,
+              },
+              {
+                id: 'time',
+                children: <>{"Time"}</>,
+              }
+            ]}
+          />
+      </BoardItem>
+      <BoardItem
+        id="StreamSessionMetrics"
+        header={ <Header variant="h3">Stream Metrics</Header>}
+        columnSpan={1}
+        rowSpan={3}
+      >
+        <h5>No data yet</h5>
+      </BoardItem>
+      <BoardItem
+        id="IngestCodecConfiguration"
+        header={ <Header variant="h3">Encoding Configuration</Header>}
+        columnSpan={1}
+        rowSpan={6}
+      >
+        <Table
+          items={( encodingConfigItems )}
+          columns={[
+            {
+              id: 'name',
+              children: <>{"Name"}</>,
             },
-            data: {
-              header: (
-                <Header
-                  variant="h3"
-                  fallback={
-                    <Spinner fallback={<p>Loading...</p>} />
-                  }
-                >
-                  Stream Events
-                </Header>
-              ),
-              footer: <></>,
-              element: (
-                <Table
-                  fallback={
-                    <Spinner fallback={<p>Loading...</p>} />
-                  }
-                  columnDefinitions={[]}
-                  items={(
-                    details.streamSession?.truncatedEvents?.map(event => {
-                      return {
-                        name: <>{event.name || ''}</>,
-                        time: <>{event.eventTime?.toISOString() || ''}</>,
-                      }
-                    }) || []
-                  )}
-                  columns={{
-                    name: {
-                      header: <>{"Event"}</>,
-                    },
-                    time: {
-                      header: <>{"Time"}</>,
-                    }
-                  }}
-                />
-              ),
-              disableContentPaddings: false,
+            {
+              id: 'value',
+              children: <>{"Details"}</>,
             }
-          },
-          {
-            id: 'StreamSessionMetrics' as const,
-            definition: {
-              minColumnSpan: 1,
-              minRowSpan: 3,
-            },
-            data: {
-              header: (
-                <Header
-                  variant="h3"
-                  fallback={
-                    <Spinner fallback={<p>Loading...</p>} />
-                  }
-                >
-                  Stream Metrics
-                </Header>
-              ),
-              footer: <></>,
-              element: (
-                <h5>No data yet</h5>
-              ),
-              disableContentPaddings: false,
-            }
-          },
-          {
-            id: 'IngestCodecConfiguration' as const,
-            definition: {
-              minColumnSpan: 1,
-              minRowSpan: 6,
-            },
-            data: {
-              header: (
-                <Header
-                  variant="h3"
-                  fallback={
-                    <Spinner fallback={<p>Loading...</p>} />
-                  }
-                >
-                  Encoding Configuration
-                </Header>
-              ),
-              footer: <></>,
-              element: (
-                <Table
-                  fallback={
-                    <Spinner fallback={<p>Loading...</p>} />
-                  }
-                  columnDefinitions={[]}
-                  items={(
-                    encodingConfigItems
-                  )}
-                  columns={{
-                    name: {
-                      header: <>{"Name"}</>,
-                    },
-                    value: {
-                      header: <>{"Details"}</>,
-                    }
-                  }}
-                />
-              ),
-              disableContentPaddings: false,
-            }
-          },
-          {
-            id: 'StreamSessionHealth' as const,
-            definition: {
-              minColumnSpan: 1,
-              minRowSpan: 3,
-            },
-            data: {
-              header: (
-                <Header
-                  variant="h3"
-                  fallback={
-                    <Spinner fallback={<p>Loading...</p>} />
-                  }
-                >
-                  Stream Health
-                </Header>
-              ),
-              footer: <></>,
-              element: (
-                <h5>No data yet</h5>
-              ),
-              disableContentPaddings: false,
-            }
-          },
-          {
-            id: 'PlaybackHealth' as const,
-            definition: {
-              minColumnSpan: 1,
-              minRowSpan: 3,
-            },
-            data: {
-              header: (
-                <Header
-                  variant="h3"
-                  fallback={
-                    <Spinner fallback={<p>Loading...</p>} />
-                  }
-                >
-                  Playback Health
-                </Header>
-              ),
-              footer: <></>,
-              element: (
-                <h5>No data yet</h5>
-              ),
-              disableContentPaddings: false,
-            }
-          },
-          {
-            id: 'PlaybackSessionList' as const,
-            definition: {
-              minColumnSpan: 1,
-              minRowSpan: 3,
-            },
-            data: {
-              header: (
-                <Header
-                  variant="h3"
-                  fallback={
-                    <Spinner fallback={<p>Loading...</p>} />
-                  }
-                >
-                  Playback Session List
-                </Header>
-              ),
-              footer: <></>,
-              element: (
-                <h5>No data yet</h5>
-              ),
-              disableContentPaddings: false,
-            }
-          },
-        ]
-      )}
-    />
+          ]}
+        />
+      </BoardItem>
+      <BoardItem
+        id="StreamSessionHealth"
+        header={<Header variant="h3">Stream Health</Header>}
+        columnSpan={1}
+        rowSpan={3}
+      >
+        <h5>No data yet</h5>
+      </BoardItem>
+      <BoardItem
+        id="PlaybackHealth"
+        header={ <Header variant="h3">Playback Health</Header>}
+        columnSpan={1}
+        rowSpan={3}
+      >
+        <h5>No data yet</h5>
+      </BoardItem>
+      <BoardItem
+        id="PlaybackSessionList"
+        header={ <Header variant="h3">Playback Session List</Header>}
+        columnSpan={1}
+        rowSpan={3}
+      >
+        <h5>No data yet</h5>
+      </BoardItem>
+    </Board>
   );
 }
 
