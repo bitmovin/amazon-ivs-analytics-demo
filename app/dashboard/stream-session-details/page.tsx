@@ -21,25 +21,7 @@ export default async function Page(props: PageProps<"/dashboard/stream-session-d
 
   const details = await fetchStreamSessionDetails({ next: { revalidate: 60 } }, channelArn, streamId);
 
-  const encodingConfig = details.streamSession?.ingestConfiguration;
-  const encodingConfigItems = [];
-
-  if (encodingConfig?.video) {
-    for (const key of Object.keys(encodingConfig?.video)) {
-      encodingConfigItems.push({
-        name: <>{key}</>,
-        value: <>{(encodingConfig.video as any)[key]}</>,
-      });
-    }
-  }
-  if (encodingConfig?.audio) {
-    for (const key of Object.keys(encodingConfig?.audio)) {
-      encodingConfigItems.push({
-        name: <>{key}</>,
-        value: <>{(encodingConfig.audio as any)[key]}</>,
-      });
-    }
-  }
+  const encodingConfigItems = getEncodingConfigItems(details.streamSession?.ingestConfiguration);
 
   return (
     <Board
@@ -111,7 +93,7 @@ export default async function Page(props: PageProps<"/dashboard/stream-session-d
               ),
               footer: <></>,
               element: (
-                <h5>Test</h5>
+                <h5>No data yet</h5>
               ),
               disableContentPaddings: false,
             }
@@ -175,7 +157,7 @@ export default async function Page(props: PageProps<"/dashboard/stream-session-d
               ),
               footer: <></>,
               element: (
-                <h5>Test</h5>
+                <h5>No data yet</h5>
               ),
               disableContentPaddings: false,
             }
@@ -199,7 +181,7 @@ export default async function Page(props: PageProps<"/dashboard/stream-session-d
               ),
               footer: <></>,
               element: (
-                <h5>Test</h5>
+                <h5>No data yet</h5>
               ),
               disableContentPaddings: false,
             }
@@ -223,7 +205,7 @@ export default async function Page(props: PageProps<"/dashboard/stream-session-d
               ),
               footer: <></>,
               element: (
-                <h5>Test</h5>
+                <h5>No data yet</h5>
               ),
               disableContentPaddings: false,
             }
@@ -232,4 +214,27 @@ export default async function Page(props: PageProps<"/dashboard/stream-session-d
       )}
     />
   );
+}
+
+function getEncodingConfigItems(encodingConfig: IngestConfiguration | undefined) {
+  const encodingConfigItems = [];
+
+  if (encodingConfig?.video) {
+    for (const key of Object.keys(encodingConfig?.video)) {
+      encodingConfigItems.push({
+        name: <>{key}</>,
+        value: <>{(encodingConfig.video as any)[key]}</>,
+      });
+    }
+  }
+  if (encodingConfig?.audio) {
+    for (const key of Object.keys(encodingConfig?.audio)) {
+      encodingConfigItems.push({
+        name: <>{key}</>,
+        value: <>{(encodingConfig.audio as any)[key]}</>,
+      });
+    }
+  }
+
+  return encodingConfigItems;
 }
