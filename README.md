@@ -40,3 +40,11 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+
+## Permissions
+
+### Amazon Web Services
+For the IVS stream data to fully work, access key and secret key of a user with access to IVS and Cloudwatch must be provided.
+
+### Bitmovin
+The API key of a user with Read access to Analytics data must be provided.

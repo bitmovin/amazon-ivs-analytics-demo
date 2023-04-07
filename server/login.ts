@@ -6,6 +6,7 @@ import {
 	fetchOrganizations,
 } from "./bitmovin";
 import type { Organization } from "@bitmovin/api-sdk";
+import { fetchChannels } from "./aws";
 
 export async function fetchOrgs(init: RequestInit) {
 	const response = await fetchOrganizations(init);
@@ -46,5 +47,6 @@ export async function login() {
 	const information = await fetchInformation({ next: { revalidate: 10000 } });
 	const response = await fetchOrgs({ next: { revalidate: 10000 } });
 	const orgs = await Promise.all(response.orgs.map(fetchOrgLicenses));
-	return { information, orgs };
+	const ivsChannels = await fetchChannels();
+	return { information, orgs, ivsChannels };
 }

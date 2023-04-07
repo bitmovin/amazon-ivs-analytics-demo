@@ -15,6 +15,9 @@ export default async function RootPage() {
 	const params = await login();
 	const { orgId, licenses } = params.orgs.at(0) ?? notFound();
 	const { licenseKey } = licenses.at(0) ?? notFound();
+	const ivsChannel = params.ivsChannels.channels && params.ivsChannels.channels.length > 0 
+    ? params.ivsChannels.channels[0] 
+    : notFound()
 
-	redirect(`/dashboard?orgId=${orgId}&licenseKey=${licenseKey}`);
+	redirect(`/dashboard?orgId=${orgId}&licenseKey=${licenseKey}&channelArn=${ivsChannel.arn}`);
 }
