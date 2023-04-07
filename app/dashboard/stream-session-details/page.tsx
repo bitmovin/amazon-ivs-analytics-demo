@@ -1,13 +1,16 @@
 import { redirect } from "next/navigation";
 
 import {
+  ImageMetric,
   fetchStreamSessionDetails,
+  getMetricImage,
 } from "@/server/aws";
 import Board from "@/components/board";
 import BoardItem from "@/components/board-item";
 import Header from "@/components/client/Header";
 import Table from "@/components/client/Table";
 import type { IngestConfiguration } from "@aws-sdk/client-ivs";
+import Image from "next/image";
 import { z } from "zod";
 
 const Params = z.object({
@@ -27,6 +30,12 @@ export default async function Page(props: { searchParams: unknown }) {
   const details = await fetchStreamSessionDetails({ next: { revalidate: 60 } }, channelArn, streamId);
 
   const encodingConfigItems = getEncodingConfigItems(details.streamSession?.ingestConfiguration);
+
+  const ingestFrameRateImg = await getIngestFramerateImage(
+    channelArn,
+    details.streamSession?.startTime || getFallbackDateNowMinusDaysAgo(14),
+    details.streamSession?.endTime || new Date(),
+  );
 
   return (
     <Board>
@@ -91,7 +100,11 @@ export default async function Page(props: { searchParams: unknown }) {
         columnSpan={1}
         rowSpan={3}
       >
-        <h5>No data yet</h5>
+        <Image
+          src={ingestFrameRateImg ? `data:image/png;base64,${ingestFrameRateImg}` : ''}
+          alt="Ingest Frame Rate"
+          fill
+        ></Image>
       </BoardItem>
       <BoardItem
         id="PlaybackHealth"
@@ -134,4 +147,16 @@ function getEncodingConfigItems(encodingConfig: IngestConfiguration | undefined)
   }
 
   return encodingConfigItems;
+}
+
+async function getIngestFramerateImage(channelArn: string, startTime: Date, endTime: Date): Promise<string | null> {
+  const base64imageOrNull = await getMetricImage(channelArn, startTime, endTime, ImageMetric.IngestFramerate);
+  return base64imageOrNull
+}
+
+function getFallbackDateNowMinusDaysAgo(days: number = 14): Date {
+  const date = new Date();
+  const day = date.getDate() - days;
+  date.setDate(day)
+  return date;
 }

@@ -10,7 +10,15 @@ import {
 
 import { requireEnv } from "./env";
 import { cache } from "react";
-import { CloudWatchClient, CloudWatchClientConfig } from "@aws-sdk/client-cloudwatch";
+import { 
+  CloudWatchClient,
+  CloudWatchClientConfig,
+  GetMetricWidgetImageCommand
+} from "@aws-sdk/client-cloudwatch";
+
+export enum ImageMetric {
+  IngestFramerate = 'IngestFramerate',
+};
 
 type AwsClientConfig = IvsClientConfig | CloudWatchClientConfig;
 
@@ -73,4 +81,33 @@ export const fetchStreamSessionDetails = async (
   const getStreamSessionResponse = await getIvsClient(clientConfig).send(getStreamSessionRequest);
 
   return getStreamSessionResponse;
+}
+
+export const getMetricImage = async (channelArn: string, startDate: Date, endDate: Date, metric: ImageMetric) => {
+  const getMetricWidgetImageInput = {
+    MetricWidget: JSON.stringify({
+      metrics: [
+        [
+          "AWS/IVS",
+          metric.toString(),
+          "Channel",
+          channelArn.split("/")[1]
+        ]
+      ],
+      start: startDate,
+      end: endDate,
+      // TODO: Adapt period based on how long ago the data was
+      period: 60,
+    })
+  };
+  const getMetricWidgetImageRequest = new GetMetricWidgetImageCommand(getMetricWidgetImageInput);
+  const getMetricWidgetImageResponse = await getCloudwatchClient(clientConfig).send(getMetricWidgetImageRequest);
+
+  if (getMetricWidgetImageResponse.MetricWidgetImage) {
+    const buffer = Buffer.from(getMetricWidgetImageResponse.MetricWidgetImage);
+    const base64Image = buffer.toString('base64');
+    return base64Image;
+  } else {
+    return null;
+  }
 };
