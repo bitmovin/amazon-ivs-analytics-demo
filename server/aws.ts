@@ -1,6 +1,6 @@
 import "server-only";
 
-import { 
+import {
   ListStreamSessionsCommand,
   IvsClient,
   GetStreamSessionCommand,
@@ -10,8 +10,9 @@ import {
 
 import { requireEnv } from "./env";
 import { cache } from "react";
+import { CloudWatchClient, CloudWatchClientConfig } from "@aws-sdk/client-cloudwatch";
 
-type AwsClientConfig = IvsClientConfig;
+type AwsClientConfig = IvsClientConfig | CloudWatchClientConfig;
 
 const clientConfig: AwsClientConfig = {
   credentials: {
@@ -27,6 +28,10 @@ function getIvsClient(clientConfig: AwsClientConfig) {
 
 function getIvs(clientConfig: AwsClientConfig) {
   return new Ivs(clientConfig);
+}
+
+function getCloudwatchClient(clientConfig: AwsClientConfig) {
+  return new CloudWatchClient(clientConfig);
 }
 
 export const fetchChannels = cache(
