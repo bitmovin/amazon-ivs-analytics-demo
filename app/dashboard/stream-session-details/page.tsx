@@ -97,7 +97,7 @@ export default async function Page(props: { searchParams: unknown }) {
       <BoardItem
         id="StreamSessionHealth"
         header={<Header variant="h3">Stream Health</Header>}
-        columnSpan={1}
+        columnSpan={2}
         rowSpan={3}
       >
         <Image
