@@ -40,6 +40,8 @@ function Fallback() {
 async function Component() {
 	const log = await login();
 
+  // TODO show option to switch IVS channels
+
 	return (
 		<ClientTopNavigation
 			identity={{
