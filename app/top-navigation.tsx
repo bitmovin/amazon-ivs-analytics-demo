@@ -12,66 +12,25 @@ export default function TopNavigation() {
 }
 
 function Fallback() {
-	return (
-		<ClientTopNavigation
-			identity={{
-				href: "#",
-				title: "Bitmovin",
-				logo: { src: "/favicon.ico", alt: "logo" },
-			}}
-			i18nStrings={{
-				overflowMenuTitleText: "Title",
-				overflowMenuTriggerText: "Trigger",
-			}}
-			utilities={[
-				{
-					type: "menu-dropdown",
-					text: "Loading...",
-					iconName: "user-profile",
-					disableTextCollapse: true,
-					disableUtilityCollapse: true,
-					items: [],
-				},
-			]}
-		/>
-	);
+	return <ClientTopNavigation username={"Loading..."} organizations={[]} />;
 }
 
 async function Component() {
 	const log = await login();
 
-  // TODO show option to switch IVS channels
+	// TODO show option to switch IVS channels
 
 	return (
 		<ClientTopNavigation
-			identity={{
-				href: "#",
-				title: "Bitmovin",
-				logo: { src: "/favicon.ico", alt: "logo" },
-			}}
-			i18nStrings={{
-				overflowMenuTitleText: "Title",
-				overflowMenuTriggerText: "Trigger",
-			}}
-			utilities={[
-				{
-					type: "menu-dropdown",
-					text: log.information.firstName ?? "",
-					iconName: "user-profile",
-					disableTextCollapse: true,
-					disableUtilityCollapse: true,
-					items: log.orgs.map((org) => ({
-						id: org.id || "id",
-						text: org.name || "name",
-						items: org.licenses.map((license) => ({
-							id: license.licenseKey,
-							text: license.name || "name",
-							href: `/dashboard?orgId=${org.orgId}&licenseKey=${license.licenseKey}`,
-							items: undefined,
-						})),
-					})),
-				},
-			]}
+			username={`${log.information.firstName} ${log.information.lastName}`}
+			organizations={log.organizations.map((org) => ({
+				id: org.id ?? "[error]",
+				name: org.name ?? "[error]",
+				licenses: org.licenses.map((license) => ({
+					name: license.name ?? "[error]",
+					licenseKey: license.licenseKey ?? "[error]",
+				})),
+			}))}
 		/>
 	);
 }

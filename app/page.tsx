@@ -13,7 +13,7 @@ export const metadata = {
 
 export default async function RootPage() {
 	const params = await login();
-	const { orgId, licenses } = params.orgs.at(0) ?? notFound();
+	const { orgId, licenses } = params.organizations.at(0) ?? notFound();
 	const { licenseKey } = licenses.at(0) ?? notFound();
 	const ivsChannel = params.ivsChannels.channels && params.ivsChannels.channels.length > 0 
     ? params.ivsChannels.channels[0] 
