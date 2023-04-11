@@ -1,4 +1,4 @@
-import { login } from "@/server/login";
+import { getSession } from "@/server/session";
 import { redirect, notFound } from "next/navigation";
 
 export const metadata = {
@@ -12,12 +12,10 @@ export const metadata = {
 };
 
 export default async function RootPage() {
-	const params = await login();
-	const { orgId, licenses } = params.organizations.at(0) ?? notFound();
-	const { licenseKey } = licenses.at(0) ?? notFound();
-	const ivsChannel = params.ivsChannels.channels && params.ivsChannels.channels.length > 0 
-    ? params.ivsChannels.channels[0] 
-    : notFound()
+	const { searchParams } = await getSession();
+	const { orgId, licenseKey, channelArn } = searchParams;
 
-	redirect(`/dashboard?orgId=${orgId}&licenseKey=${licenseKey}&channelArn=${ivsChannel.arn}`);
+	redirect(
+		`/dashboard?orgId=${orgId}&licenseKey=${licenseKey}&channelArn=${channelArn}`
+	);
 }

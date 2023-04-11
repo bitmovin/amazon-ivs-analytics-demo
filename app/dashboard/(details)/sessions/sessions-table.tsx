@@ -1,15 +1,15 @@
-import "server-only";
-
 import { Suspense } from "react";
 import { fetchStreamSessionsForChannel } from "@/server/aws";
 import ClientTable from "@/components/client/Table";
 import { TableProps } from "@cloudscape-design/components/table";
 import Link from "next/link";
 import { Cell, ColumnElement, TableColumn } from "@/components/column";
-import { Alert } from "./alert";
+import { Alert } from "@/components/alert";
 import { z } from "zod";
+import { Route } from "next";
 
-export const Column = TableColumn<keyof typeof StreamSessionDetail>;
+export const SessionsColumn = TableColumn<keyof typeof StreamSessionDetail>;
+
 export type IvsTableProps = {
 	licenseKey: string;
 	orgId: string;
@@ -28,12 +28,12 @@ export enum StreamSessionDetail {
 
 export type IvsStreamSessionsProps = {
 	channelArn: string;
+	limit?: number;
 	children: ColumnElement<keyof typeof StreamSessionDetail>[];
-	limit: number;
 	footer?: JSX.Element;
 } & Partial<TableProps>;
 
-export default function Table(props: IvsStreamSessionsProps) {
+export default function SessionsTable(props: IvsStreamSessionsProps) {
 	return (
 		<Suspense fallback={<Fallback {...props} />}>
 			{/* @ts-expect-error suspense */}
@@ -75,7 +75,7 @@ async function Component(props: IvsStreamSessionsProps) {
 		return (
 			<ClientTable
 				{...props}
-				columns={props.children.map(({ props }) => props)}
+				columns={columns}
 				loading={false}
 				items={[]}
 				resizableColumns
@@ -87,8 +87,7 @@ async function Component(props: IvsStreamSessionsProps) {
 
 async function fetchData(props: IvsStreamSessionsProps) {
 	const { channelArn, limit } = props;
-
-	const result = await fetchStreamSessionsForChannel(
+	const { streamSessions } = await fetchStreamSessionsForChannel(
 		{ next: { revalidate: 60 } },
 		channelArn,
 		limit
@@ -96,37 +95,27 @@ async function fetchData(props: IvsStreamSessionsProps) {
 
 	const cells: Cell[] = [];
 
-	if (result.streamSessions && result.streamSessions.length > 0) {
-		for (const streamSession of result.streamSessions) {
-			const item: Cell = {};
-
-			item["streamId"] = <>{streamSession.streamId}</>;
-			item["startTime"] = <>{streamSession.startTime?.toISOString()}</>;
-			item["endTime"] = (
-				<>{streamSession.endTime?.toISOString() || "Live now"}</>
-			);
-			item["error"] = (
-				<>
-					{streamSession.hasErrorEvent
-						? "Error occurred"
-						: "No error"}
-				</>
-			);
-			item["detailLink"] = (
-				<Link
-					href={{
-						pathname: "/dashboard/stream-session-details",
-						query: {
-							channelArn: channelArn,
-							streamId: streamSession.streamId,
-						},
-					}}
-				>
-					View Details
-				</Link>
-			);
-
-			cells.push(item);
+	if (streamSessions && streamSessions.length > 0) {
+		for (const {
+			streamId,
+			startTime,
+			endTime,
+			hasErrorEvent,
+		} of streamSessions) {
+			const pathname = "/dashboard/session-details" satisfies Route;
+			const query = { channelArn, streamId };
+			const href = { pathname, query };
+			cells.push({
+				streamId: <>{streamId}</>,
+				startTime: startTime ? (
+					<>{startTime.toISOString()}</>
+				) : (
+					<>{"Missing"}</>
+				),
+				endTime: endTime ? <>{endTime.toISOString()}</> : <>{"Live"}</>,
+				error: hasErrorEvent ? <>{"Error"}</> : <>{"None"}</>,
+				detailLink: <Link href={href}>{"View Details"}</Link>,
+			});
 		}
 	}
 
