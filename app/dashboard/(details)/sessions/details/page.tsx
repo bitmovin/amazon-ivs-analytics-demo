@@ -79,7 +79,7 @@ export default async function Page(props: {
   );
 
   return (
-    <ContentLayout header={<Header description={description}>{channelName}</Header>}>
+    <ContentLayout header={<Header description={description}>Stream: {streamSession.streamId}</Header>}>
       <Board>
         <BoardItem
           id="StreamSessionEvents"
