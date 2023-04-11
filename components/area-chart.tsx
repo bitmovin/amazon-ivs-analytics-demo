@@ -17,7 +17,8 @@ import { z } from "zod";
 import { Alert } from "./alert";
 
 export type ChartProps = {
-	params: unknown;
+	orgId: string;
+	licenseKey: string;
 	children: AreaElement<QueryType> | AreaElement<QueryType>[];
 } & Partial<AreaChartProps<ChartDataTypes>>;
 
@@ -58,11 +59,7 @@ async function Component(props: ChartProps) {
 	}
 }
 async function fetchData(props: ChartProps) {
-	const Params = z.object({
-		orgId: z.string().uuid(),
-		licenseKey: z.string().uuid(),
-	});
-	const { orgId, licenseKey } = Params.parse(props.params);
+	const { orgId, licenseKey } = props;
 	const now = Date.now();
 	const start = new Date(now - 1000 * 60 * 60 * 3);
 	const end = new Date(now);
@@ -130,10 +127,6 @@ async function fetchData(props: ChartProps) {
 							contextDescription: contextDescription ?? [],
 						})
 					)
-					.then((p) => {
-						console.log(p);
-						return p;
-					})
 					.then((r) => {
 						const groups = r.rows.map((r) => r.group);
 						const uniqueGroups = groups.filter(

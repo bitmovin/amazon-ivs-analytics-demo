@@ -1,8 +1,4 @@
-import { redirect } from "next/navigation";
-
-import {
-  fetchStreamSessionDetails,
-} from "@/server/aws";
+import { fetchStreamSessionDetails } from "@/server/aws";
 import Board from "@/components/board";
 import BoardItem from "@/components/board-item";
 import Header from "@/components/client/Header";
@@ -37,6 +33,7 @@ export default async function Page(props: {
 				rowSpan={3}
 			>
 				<Table
+					variant="embedded"
 					items={
 						details.streamSession?.truncatedEvents?.map((event) => {
 							return {
@@ -74,6 +71,7 @@ export default async function Page(props: {
 				rowSpan={6}
 			>
 				<Table
+					variant="embedded"
 					items={encodingConfigItems}
 					columns={[
 						{
@@ -115,25 +113,27 @@ export default async function Page(props: {
 	);
 }
 
-function getEncodingConfigItems(encodingConfig: IngestConfiguration | undefined) {
-  const encodingConfigItems = [];
+function getEncodingConfigItems(
+	encodingConfig: IngestConfiguration | undefined
+) {
+	const encodingConfigItems = [];
 
-  if (encodingConfig?.video) {
-    for (const key of Object.keys(encodingConfig?.video)) {
-      encodingConfigItems.push({
-        name: <>{key}</>,
-        value: <>{(encodingConfig.video as any)[key]}</>,
-      });
-    }
-  }
-  if (encodingConfig?.audio) {
-    for (const key of Object.keys(encodingConfig?.audio)) {
-      encodingConfigItems.push({
-        name: <>{key}</>,
-        value: <>{(encodingConfig.audio as any)[key]}</>,
-      });
-    }
-  }
+	if (encodingConfig?.video) {
+		for (const key of Object.keys(encodingConfig?.video)) {
+			encodingConfigItems.push({
+				name: <>{key}</>,
+				value: <>{(encodingConfig.video as any)[key]}</>,
+			});
+		}
+	}
+	if (encodingConfig?.audio) {
+		for (const key of Object.keys(encodingConfig?.audio)) {
+			encodingConfigItems.push({
+				name: <>{key}</>,
+				value: <>{(encodingConfig.audio as any)[key]}</>,
+			});
+		}
+	}
 
-  return encodingConfigItems;
+	return encodingConfigItems;
 }

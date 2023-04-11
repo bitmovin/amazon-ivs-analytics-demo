@@ -18,7 +18,8 @@ import { z } from "zod";
 import { Alert } from "./alert";
 
 export type ChartProps = {
-	params: unknown;
+	orgId: string;
+	licenseKey: string;
 	limit: number;
 	factor?: number;
 	interval?: Interval;
@@ -79,7 +80,7 @@ async function fetchData(props: ChartProps) {
 		orgId: z.string().uuid(),
 		licenseKey: z.string().uuid(),
 	});
-	const { orgId, licenseKey } = Params.parse(props.params);
+	const { orgId, licenseKey } = props;
 	const now = Date.now();
 	const start = new Date(now - 1000 * 60 * 60 * 3);
 	const end = new Date(now);

@@ -3,9 +3,8 @@
 import { useRouter } from "next/navigation";
 import React, { Suspense, lazy } from "react";
 
-import type { TopNavigationProps } from "@cloudscape-design/components/top-navigation";
 import { Route } from "next";
-import { ButtonDropdownProps } from "@cloudscape-design/components";
+import { usePath } from "./hooks/usePath";
 
 const LazyTopNavigation = lazy(
 	() => import("@cloudscape-design/components/top-navigation")
@@ -16,7 +15,17 @@ if (typeof window === "undefined") {
 }
 
 export default function TopNavigation(props: {
-	username: string;
+	title: string;
+	href: Route;
+	firstName: string;
+	channelArn: string;
+	licenseKey: string;
+	orgId: string;
+	channelName: {};
+	channels: {
+		arn: string;
+		name: string;
+	}[];
 	organizations: {
 		id: string;
 		name: string;
@@ -27,17 +36,23 @@ export default function TopNavigation(props: {
 	}[];
 }) {
 	const router = useRouter();
+	const pathname = usePath();
+	const { orgId, channelArn, licenseKey } = props;
+
+	function setQuery(arg0: { orgId: string; licenseKey: string | undefined }) {
+		throw new Error("Function not implemented.");
+	}
 
 	return (
 		<Suspense fallback={<p>Loading...</p>}>
 			<LazyTopNavigation
 				identity={{
-					href: "/dashboard",
-					title: "Bitmovin",
+					href: props.href,
+					title: props.title,
 					logo: { src: "/favicon.ico", alt: "logo" },
 					onFollow: (event) => {
-						event.preventDefault;
-						router.push("/dashboard");
+						event.preventDefault();
+						router.push(props.href);
 					},
 				}}
 				i18nStrings={{
@@ -47,23 +62,47 @@ export default function TopNavigation(props: {
 				utilities={[
 					{
 						type: "menu-dropdown",
-						text: props.username,
+						text: "Channels",
+						iconName: "video-on",
+						disableTextCollapse: true,
+						disableUtilityCollapse: true,
+						onItemClick: (event) => {
+							const href = event.detail.href;
+							if (href) {
+								event.preventDefault();
+								router.push(href as Route);
+							}
+						},
+						items: props.channels.map((channel) => ({
+							id: channel.arn,
+							text: channel.name,
+							href: `${pathname}?orgId=${orgId}&licenseKey=${licenseKey}&channelArn=${channel.arn}`,
+						})),
+					},
+					{
+						type: "menu-dropdown",
+						text: props.firstName,
 						iconName: "user-profile",
 						disableTextCollapse: true,
 						disableUtilityCollapse: true,
 						onItemClick: (event) => {
-							event.preventDefault();
-							router.push(`/dashboard?${event.detail.href}`);
+							const href = event.detail.href;
+							if (href) {
+								event.preventDefault();
+								router.push(href as Route);
+							}
 						},
-						items: props.organizations.map((org) => ({
-							id: org.id,
-							text: org.name,
-							items: org.licenses.map((license) => ({
-								id: license.licenseKey,
-								text: license.name,
-								href: `orgId=${org.id}&licenseKey=${license.licenseKey}` as Route,
-							})),
-						})),
+						items: props.organizations.map(
+							({ id, name, licenses }) => ({
+								id,
+								text: name,
+								items: licenses.map(({ licenseKey, name }) => ({
+									id: licenseKey,
+									text: name,
+									href: `${pathname}?orgId=${id}&licenseKey=${licenseKey}&channelArn=${channelArn}`,
+								})),
+							})
+						),
 					},
 				]}
 			/>
