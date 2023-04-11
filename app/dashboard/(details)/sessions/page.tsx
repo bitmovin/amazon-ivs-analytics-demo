@@ -28,7 +28,6 @@ export default async function Page(props: {
 				stickyHeader
 				variant="container"
 				maxResults={100}
-				footer={<Link href={href}>View Details</Link>}
 			>
 				<SessionsColumn id="streamId">Path</SessionsColumn>
 				<SessionsColumn id="startTime">Video</SessionsColumn>

@@ -13,6 +13,7 @@ import SessionsTable, { SessionsColumn } from "./(details)/sessions/table";
 import ContentLayout from "@/components/client/ContentLayout";
 import { getSession } from "@/server/session";
 import Link from "next/link";
+import { ButtonDropdown } from "@cloudscape-design/components";
 
 export default async function Page(props: {
 	searchParams: {
@@ -22,15 +23,20 @@ export default async function Page(props: {
 	};
 }) {
 	const { searchParams, aws } = await getSession(props.searchParams);
-	const { orgId, licenseKey, channelArn } = searchParams;
+	const { orgId, licenseKey } = searchParams;
 	const { channelName } = aws;
-
-	const href =
-		`/dashboard/sessions?orgId=${orgId}&licenseKey=${licenseKey}&channelArn=${channelArn}` as const;
 
 	return (
 		<ContentLayout header={<Header>{channelName}</Header>}>
 			<Board>
+				<BoardItem
+					id="sessions-table"
+					header={<Header>Stream Sessions</Header>}
+					columnSpan={4}
+					rowSpan={2}
+				>
+					<SessionsItem {...searchParams} />
+				</BoardItem>
 				<BoardItem
 					id="area-chart"
 					header={<Header>Error Rate</Header>}
@@ -118,31 +124,32 @@ export default async function Page(props: {
 						</ImpressionsColumn>
 					</ImpressionsTable>
 				</BoardItem>
-				<BoardItem
-					id="sessions-table"
-					header={<Header>Stream Sessions</Header>}
-					columnSpan={2}
-					rowSpan={4}
-				>
-					<SessionsTable
-						channelArn={channelArn}
-						footer={<Link href={href}>View Details</Link>}
-						variant="embedded"
-						stickyHeader
-						maxResults={100}
-					>
-						<SessionsColumn id="streamId">Stream ID</SessionsColumn>
-						<SessionsColumn id="startTime">
-							Start Time
-						</SessionsColumn>
-						<SessionsColumn id="endTime">End Time</SessionsColumn>
-						<SessionsColumn id="error">Error</SessionsColumn>
-						<SessionsColumn id="detailLink" />
-					</SessionsTable>
-				</BoardItem>
 			</Board>
 		</ContentLayout>
 	);
 }
 
+function SessionsItem(props: {
+	orgId: string;
+	licenseKey: string;
+	channelArn: string;
+}) {
+	const { orgId, licenseKey, channelArn } = props;
+	const href =
+		`/dashboard/sessions?orgId=${orgId}&licenseKey=${licenseKey}&channelArn=${channelArn}` as const;
+	return (
+		<SessionsTable
+			channelArn={channelArn}
+			variant="embedded"
+			stickyHeader
+			maxResults={100}
+		>
+			<SessionsColumn id="streamId">Stream ID</SessionsColumn>
+			<SessionsColumn id="startTime">Start Time</SessionsColumn>
+			<SessionsColumn id="endTime">End Time</SessionsColumn>
+			<SessionsColumn id="error">Error</SessionsColumn>
+			<SessionsColumn id="detailLink" />
+		</SessionsTable>
+	);
+}
 
