@@ -52,7 +52,7 @@ export const getSession = cache(async function (params?: {
   const information = await fetchInformation();
   const response = await fetchOrgs();
   const organizations = await Promise.all(response.orgs.map((org) => fetchOrgLicenses(org)));
-  const { channels } = await fetchChannels({}, {});
+  const { channels } = await fetchChannels();
 
   const orgId = params?.orgId ?? organizations?.at(0)?.id;
   const licenseKey = params?.licenseKey ?? organizations?.at(0)?.licenses.at(0)?.licenseKey;
@@ -62,20 +62,14 @@ export const getSession = cache(async function (params?: {
     redirect("/");
   }
 
-  const { channel } = await getChannel({}, { arn: channelArn });
+  const { channel } = await getChannel(channelArn);
 
-  const { streamSessions } = await fetchStreamSessionsForChannel({}, { channelArn });
+  const { streamSessions } = await fetchStreamSessionsForChannel(channelArn);
 
   const streamId = params?.streamId ?? streamSessions?.at(0)?.streamId;
 
   const { streamSession } = streamId
-    ? await fetchStreamSessionDetails(
-        {},
-        {
-          channelArn,
-          streamId,
-        }
-      )
+    ? await fetchStreamSessionDetails(channelArn, streamId)
     : { streamSession: undefined };
 
   const channelName = channel?.name ? getTitle(channel.name) : "Channel (no name)";

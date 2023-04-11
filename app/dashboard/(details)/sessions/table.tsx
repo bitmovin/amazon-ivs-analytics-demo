@@ -79,7 +79,7 @@ async function Component(props: IvsStreamSessionsProps) {
 
 async function fetchData(props: IvsStreamSessionsProps) {
   const { channelArn, maxResults } = props;
-  const { streamSessions } = await fetchStreamSessionsForChannel({}, { channelArn, maxResults });
+  const { streamSessions } = await fetchStreamSessionsForChannel(channelArn, maxResults);
 
   const cells: Cell[] = [];
 
