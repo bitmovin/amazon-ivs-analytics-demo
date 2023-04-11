@@ -3,11 +3,17 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "prepare": "husky install",
     "dev": "next dev",
     "debug": "NODE_OPTIONS='--inspect' next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "format": "prettier --write app/"
+  },
+  "lint-staged": {
+    "**/*.{ts,js}": "prettier --write --ignore-unknown",
+    "CHANGELOG.md": "kacl lint --filename"
   },
   "dependencies": {
     "@aws-sdk/client-ivs": "3.309.0",
@@ -45,6 +51,9 @@
     "eslint-plugin-react-hooks": "4.6.0",
     "eslint-plugin-security": "1.7.1",
     "eslint-plugin-unicorn": "46.0.0",
+    "husky": "^8.0.3",
+    "lint-staged": "^13.2.1",
+    "prettier": "^2.8.7",
     "typescript": "5.0.4"
   }
 }
