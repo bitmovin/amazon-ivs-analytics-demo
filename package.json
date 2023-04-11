@@ -9,7 +9,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "format": "prettier --write app/"
+    "format": "prettier --write ."
   },
   "lint-staged": {
     "**/*.{ts,js}": "prettier --write --ignore-unknown",
