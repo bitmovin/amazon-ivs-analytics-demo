@@ -11,6 +11,7 @@ import {
 	fetchOrganizations,
 } from "./bitmovin";
 import { redirect } from "next/navigation";
+import { cache } from "react";
 
 async function fetchOrgs() {
 	const response = await fetchOrganizations();
@@ -55,7 +56,7 @@ function getTitle(name: string) {
 	return title;
 }
 
-export async function getSession(params?: {
+export const getSession = cache(async function (params?: {
 	orgId?: string;
 	channelArn?: string;
 	licenseKey?: string;
@@ -120,4 +121,4 @@ export async function getSession(params?: {
 			...params,
 		},
 	};
-}
+});

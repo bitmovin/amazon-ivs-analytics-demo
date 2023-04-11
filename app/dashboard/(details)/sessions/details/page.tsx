@@ -17,7 +17,7 @@ export default async function Page(props: {
 	};
 }) {
 	const {
-		aws: { streamSession, channelName, channel },
+		aws: { streamSession, channelName },
 	} = await getSession(props.searchParams);
 
 	if (!streamSession) {
