@@ -28,7 +28,7 @@ export enum StreamSessionDetail {
 
 export type IvsStreamSessionsProps = {
 	channelArn: string;
-	limit?: number;
+	maxResults: number;
 	children: ColumnElement<keyof typeof StreamSessionDetail>[];
 	footer?: JSX.Element;
 } & Partial<TableProps>;
@@ -86,11 +86,10 @@ async function Component(props: IvsStreamSessionsProps) {
 }
 
 async function fetchData(props: IvsStreamSessionsProps) {
-	const { channelArn, limit } = props;
+	const { channelArn, maxResults } = props;
 	const { streamSessions } = await fetchStreamSessionsForChannel(
-		{ next: { revalidate: 60 } },
-		channelArn,
-		limit
+		{},
+		{ channelArn, maxResults }
 	);
 
 	const cells: Cell[] = [];
@@ -102,7 +101,7 @@ async function fetchData(props: IvsStreamSessionsProps) {
 			endTime,
 			hasErrorEvent,
 		} of streamSessions) {
-			const pathname = "/dashboard/session-details" satisfies Route;
+			const pathname = "/dashboard/sessions/details" satisfies Route;
 			const query = { channelArn, streamId };
 			const href = { pathname, query };
 			cells.push({

@@ -1,11 +1,12 @@
 import "server-only";
 
-import { 
-  ListStreamSessionsCommand,
-  IvsClient,
-  GetStreamSessionCommand,
-  Ivs,
-  IvsClientConfig,
+import {
+	Ivs,
+	IvsClientConfig,
+	GetChannelCommandInput,
+	ListChannelsCommandInput,
+	ListStreamSessionsCommandInput,
+	GetStreamSessionCommandInput,
 } from "@aws-sdk/client-ivs";
 
 import { requireEnv } from "./env";
@@ -13,59 +14,49 @@ import { cache } from "react";
 
 type AwsClientConfig = IvsClientConfig;
 
-const clientConfig: AwsClientConfig = {
-  credentials: {
-    accessKeyId: requireEnv("AWS_ACCESS_KEY"),
-    secretAccessKey: requireEnv("AWS_SECRET_KEY"),
-  },
-  region: requireEnv("AWS_REGION") || 'us-east-1',
+const defaultConfig: AwsClientConfig = {
+	credentials: {
+		accessKeyId: requireEnv("AWS_ACCESS_KEY"),
+		secretAccessKey: requireEnv("AWS_SECRET_KEY"),
+	},
+	region: requireEnv("AWS_REGION") || "us-east-1",
 };
 
-function getIvsClient(clientConfig: AwsClientConfig) {
-  return new IvsClient(clientConfig);
+function getIvs(config: AwsClientConfig = {}) {
+	return new Ivs({ ...defaultConfig, ...config });
 }
 
-function getIvs(clientConfig: AwsClientConfig) {
-  return new Ivs(clientConfig);
-}
+export const getChannel = cache(
+	async (config: AwsClientConfig = {}, input: GetChannelCommandInput) => {
+		const channels = await getIvs(config).getChannel(input);
 
-export const fetchChannels = cache(
-  async (
-    requestInit?: RequestInit
-  ) => {
-    const channels = await getIvs(clientConfig).listChannels({});
-
-    return channels;
-  }
+		return channels;
+	}
 );
 
-export const fetchStreamSessionsForChannel = async (
-  requestInit: RequestInit,
-  channelArn: string,
-  limit: number = 100
-) => {
-  const listStreamSessionsInput = {
-    channelArn: channelArn,
-    maxResults: limit,
-  };
+export const fetchChannels = cache(
+	async (
+		config: AwsClientConfig = {},
+		args: ListChannelsCommandInput = {}
+	) => {
+		return await getIvs(config).listChannels(args);
+	}
+);
 
-  const listStreamSessionsRequest = new ListStreamSessionsCommand(listStreamSessionsInput);
-  const listStreamSessionsResponse = await getIvsClient(clientConfig).send(listStreamSessionsRequest);
+export const fetchStreamSessionsForChannel = cache(
+	async (
+		config: AwsClientConfig = {},
+		input: ListStreamSessionsCommandInput
+	) => {
+		return await getIvs(config).listStreamSessions(input);
+	}
+);
 
-  return listStreamSessionsResponse;
-};
-
-export const fetchStreamSessionDetails = async (
-  requestInit: RequestInit,
-  channelArn: string,
-  streamId: string,
-) => {
-  const getStreamSessionInput = {
-    channelArn: channelArn,
-    streamId: streamId,
-  };
-  const getStreamSessionRequest = new GetStreamSessionCommand(getStreamSessionInput);
-  const getStreamSessionResponse = await getIvsClient(clientConfig).send(getStreamSessionRequest);
-
-  return getStreamSessionResponse;
-};
+export const fetchStreamSessionDetails = cache(
+	async (
+		config: AwsClientConfig = {},
+		input: GetStreamSessionCommandInput
+	) => {
+		return await getIvs(config).getStreamSession(input);
+	}
+);

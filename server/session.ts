@@ -1,5 +1,10 @@
 import { Organization } from "@bitmovin/api-sdk";
-import { fetchChannels } from "./aws";
+import {
+	fetchChannels,
+	fetchStreamSessionDetails,
+	fetchStreamSessionsForChannel,
+	getChannel,
+} from "./aws";
 import {
 	fetchInformation,
 	fetchLicenses,
@@ -35,17 +40,33 @@ async function fetchOrgLicenses(org: Organization & { id: string }) {
 	};
 }
 
+function capitalizeString<T extends string>(literal: T): Capitalize<T> {
+	const firstLetter = literal.charAt(0);
+	const otherLetters = literal.slice(1);
+	const letter = firstLetter.toUpperCase();
+	return `${letter}${otherLetters}` as Capitalize<T>;
+}
+
+function getTitle(name: string) {
+	const parts = name?.split("-");
+
+	const uppercase = parts?.map(capitalizeString);
+	const title = uppercase?.join(" ");
+	return title;
+}
+
 export async function getSession(params?: {
 	orgId?: string;
 	channelArn?: string;
 	licenseKey?: string;
+	streamId?: string;
 }) {
 	const information = await fetchInformation();
 	const response = await fetchOrgs();
 	const organizations = await Promise.all(
 		response.orgs.map((org) => fetchOrgLicenses(org))
 	);
-	const { channels } = await fetchChannels();
+	const { channels } = await fetchChannels({}, {});
 
 	const orgId = params?.orgId ?? organizations?.at(0)?.id;
 	const licenseKey =
@@ -56,13 +77,28 @@ export async function getSession(params?: {
 		redirect("/");
 	}
 
-	const selectedChannel = channels.find(
-		(channel) => channel.arn === channelArn
+	const { channel } = await getChannel({}, { arn: channelArn });
+
+	const { streamSessions } = await fetchStreamSessionsForChannel(
+		{},
+		{ channelArn }
 	);
 
-	if (!selectedChannel) {
-		redirect("/");
-	}
+	const streamId = params?.streamId ?? streamSessions?.at(0)?.streamId;
+
+	const { streamSession } = streamId
+		? await fetchStreamSessionDetails(
+				{},
+				{
+					channelArn,
+					streamId,
+				}
+		  )
+		: { streamSession: undefined };
+
+	const channelName = channel?.name
+		? getTitle(channel.name)
+		: "Channel (no name)";
 
 	return {
 		bitmovin: {
@@ -70,13 +106,17 @@ export async function getSession(params?: {
 			organizations,
 		},
 		aws: {
-			selectedChannel,
+			channel,
+			channelName,
 			channels,
+			streamSession,
+			streamSessions,
 		},
 		searchParams: {
 			orgId,
 			licenseKey,
 			channelArn,
+			streamId,
 			...params,
 		},
 	};

@@ -7,20 +7,12 @@ import Header from "@/components/client/Header";
 import Filter from "@/components/filter";
 import Area from "@/components/area";
 import ImpressionsTable, {
-	ImpressionsColumn as ImpressionsColumn,
-} from "./(details)/impressions/impressions-table";
-import SessionsTable, {
-	SessionsColumn,
-} from "./(details)/sessions/sessions-table";
+	ImpressionsColumn,
+} from "./(details)/impressions/table";
+import SessionsTable, { SessionsColumn } from "./(details)/sessions/table";
 import ContentLayout from "@/components/client/ContentLayout";
 import { getSession } from "@/server/session";
-
-function capitalizeString<T extends string>(literal: T): Capitalize<T> {
-	const firstLetter = literal.charAt(0);
-	const otherLetters = literal.slice(1);
-	const letter = firstLetter.toUpperCase();
-	return `${letter}${otherLetters}` as Capitalize<T>;
-}
+import Link from "next/link";
 
 export default async function Page(props: {
 	searchParams: {
@@ -31,16 +23,13 @@ export default async function Page(props: {
 }) {
 	const { searchParams, aws } = await getSession(props.searchParams);
 	const { orgId, licenseKey, channelArn } = searchParams;
-	const { selectedChannel } = aws;
+	const { channelName } = aws;
 
-	const name = selectedChannel.name;
-	const parts = name?.split("-");
-
-	const uppercase = parts?.map(capitalizeString);
-	const title = uppercase?.join(" ");
+	const href =
+		`/dashboard/sessions?orgId=${orgId}&licenseKey=${licenseKey}&channelArn=${channelArn}` as const;
 
 	return (
-		<ContentLayout header={<Header>{title}</Header>}>
+		<ContentLayout header={<Header>{channelName}</Header>}>
 			<Board>
 				<BoardItem
 					id="area-chart"
@@ -137,9 +126,10 @@ export default async function Page(props: {
 				>
 					<SessionsTable
 						channelArn={channelArn}
+						footer={<Link href={href}>View Details</Link>}
 						variant="embedded"
 						stickyHeader
-						limit={100}
+						maxResults={100}
 					>
 						<SessionsColumn id="streamId">Stream ID</SessionsColumn>
 						<SessionsColumn id="startTime">
@@ -154,3 +144,5 @@ export default async function Page(props: {
 		</ContentLayout>
 	);
 }
+
+
