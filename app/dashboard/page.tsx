@@ -78,7 +78,7 @@ function SessionsItem(props: { orgId: string; licenseKey: string; channelArn: st
   const { orgId, licenseKey, channelArn } = props;
   const href = `/dashboard/sessions?orgId=${orgId}&licenseKey=${licenseKey}&channelArn=${channelArn}` as const;
   return (
-    <SessionsTable channelArn={channelArn} variant="embedded" stickyHeader maxResults={100}>
+    <SessionsTable orgId={orgId} licenseKey={licenseKey} channelArn={channelArn} variant="embedded" stickyHeader maxResults={100}>
       <SessionsColumn id="streamId">Stream ID</SessionsColumn>
       <SessionsColumn id="startTime">Start Time</SessionsColumn>
       <SessionsColumn id="endTime">End Time</SessionsColumn>
