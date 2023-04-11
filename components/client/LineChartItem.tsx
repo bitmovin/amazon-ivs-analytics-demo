@@ -7,34 +7,30 @@ import React from "react";
 import LineChart from "./LineChart";
 
 if (typeof window === "undefined") {
-	React.useLayoutEffect = React.useEffect;
+  React.useLayoutEffect = React.useEffect;
 }
 
 export default function LineChartItem({
-	fallback,
-	...props
+  fallback,
+  ...props
 }: LineChartProps<ChartDataTypes> & { fallback: JSX.Element }) {
-	const [size, containerQueryRef] = useContainerQuery((entry) => ({
-		height: entry.contentBoxHeight,
-		width: entry.contentBoxWidth,
-	}));
+  const [size, containerQueryRef] = useContainerQuery((entry) => ({
+    height: entry.contentBoxHeight,
+    width: entry.contentBoxWidth,
+  }));
 
-	return (
-		<div
-			className="chart-container"
-			ref={containerQueryRef}
-			{...{
-				style: {
-					height: "100%",
-					width: "100%",
-				},
-			}}
-		>
-			<LineChart
-				{...props}
-				height={(size?.height || props.height || 200) - 100}
-				fallback={fallback}
-			/>
-		</div>
-	);
+  return (
+    <div
+      className="chart-container"
+      ref={containerQueryRef}
+      {...{
+        style: {
+          height: "100%",
+          width: "100%",
+        },
+      }}
+    >
+      <LineChart {...props} height={(size?.height || props.height || 200) - 100} fallback={fallback} />
+    </div>
+  );
 }

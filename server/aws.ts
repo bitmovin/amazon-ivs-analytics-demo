@@ -11,18 +11,14 @@ import {
 
 import { requireEnv } from "./env";
 import { cache } from "react";
-import { 
-  CloudWatchClient,
-  CloudWatchClientConfig,
-  GetMetricWidgetImageCommand
-} from "@aws-sdk/client-cloudwatch";
+import { CloudWatchClient, CloudWatchClientConfig, GetMetricWidgetImageCommand } from "@aws-sdk/client-cloudwatch";
 
 export enum ImageMetric {
-  IngestFramerate = 'IngestFramerate',
-  IngestAudioBitrate = 'IngestAudioBitrate',
-  KeyframeInterval = 'KeyframeInterval',
-  IngestVideoBitrate = 'IngestVideoBitrate',
-};
+  IngestFramerate = "IngestFramerate",
+  IngestAudioBitrate = "IngestAudioBitrate",
+  KeyframeInterval = "KeyframeInterval",
+  IngestVideoBitrate = "IngestVideoBitrate",
+}
 
 export type AwsClientConfig = IvsClientConfig | CloudWatchClientConfig;
 
@@ -42,33 +38,21 @@ function getCloudwatchClient(config: AwsClientConfig = {}) {
   return new CloudWatchClient({ ...defaultConfig, ...config });
 }
 
-export const getChannel = cache(
-  async (
-    channelArn: string,
-    config: AwsClientConfig = {}
-  ) => {
-    const input: GetChannelCommandInput = {
-      arn: channelArn
-    };
-    return await getIvs(config).getChannel(input);
-  }
-);
+export const getChannel = cache(async (channelArn: string, config: AwsClientConfig = {}) => {
+  const input: GetChannelCommandInput = {
+    arn: channelArn,
+  };
+  return await getIvs(config).getChannel(input);
+});
 
 export const fetchChannels = cache(
-  async (
-    listChannelInput: ListChannelsCommandInput = {},
-    config: AwsClientConfig = {},
-  ) => {
+  async (listChannelInput: ListChannelsCommandInput = {}, config: AwsClientConfig = {}) => {
     return await getIvs(config).listChannels(listChannelInput);
   }
 );
 
 export const fetchStreamSessionsForChannel = cache(
-  async (
-    channelArn: string,
-    limit: number = 100,
-    config: AwsClientConfig = {},
-  ) => {
+  async (channelArn: string, limit: number = 100, config: AwsClientConfig = {}) => {
     const input: ListStreamSessionsCommandInput = {
       channelArn: channelArn,
       maxResults: limit,
@@ -79,11 +63,7 @@ export const fetchStreamSessionsForChannel = cache(
 );
 
 export const fetchStreamSessionDetails = cache(
-  async (
-    channelArn: string,
-    streamId: string,
-    config: AwsClientConfig = {},
-  ) => {
+  async (channelArn: string, streamId: string, config: AwsClientConfig = {}) => {
     const input: GetStreamSessionCommandInput = {
       channelArn: channelArn,
       streamId: streamId,
@@ -93,7 +73,13 @@ export const fetchStreamSessionDetails = cache(
   }
 );
 
-export const getMetricImage = async (channelArn: string, startDate: Date, endDate: Date, metrics: ImageMetric[], config: AwsClientConfig = {}) => {
+export const getMetricImage = async (
+  channelArn: string,
+  startDate: Date,
+  endDate: Date,
+  metrics: ImageMetric[],
+  config: AwsClientConfig = {}
+) => {
   const period = calculateCloudwatchPeriod(startDate);
 
   if (!period) {
@@ -102,25 +88,20 @@ export const getMetricImage = async (channelArn: string, startDate: Date, endDat
 
   const getMetricWidgetImageInput = {
     MetricWidget: JSON.stringify({
-      metrics: metrics.map(metric => {
-        return [
-          "AWS/IVS",
-          metric,
-          "Channel",
-          channelArn.split("/")[1]
-        ];
+      metrics: metrics.map((metric) => {
+        return ["AWS/IVS", metric, "Channel", channelArn.split("/")[1]];
       }),
       start: startDate,
       end: endDate,
       period: period,
-    })
+    }),
   };
   const getMetricWidgetImageRequest = new GetMetricWidgetImageCommand(getMetricWidgetImageInput);
   const getMetricWidgetImageResponse = await getCloudwatchClient(config).send(getMetricWidgetImageRequest);
 
   if (getMetricWidgetImageResponse.MetricWidgetImage) {
     const buffer = Buffer.from(getMetricWidgetImageResponse.MetricWidgetImage);
-    const base64Image = buffer.toString('base64');
+    const base64Image = buffer.toString("base64");
     return `data:image/png;base64,${base64Image}`;
   } else {
     return null;
@@ -145,7 +126,7 @@ const calculateCloudwatchPeriod = (startDate: Date, endDate = new Date()): numbe
     // 1-hour metrics are available for 455 days (15 months).
     return 60 * 60;
   } else {
-    console.error('Data out of range, metrics not available anymore');
+    console.error("Data out of range, metrics not available anymore");
     return null;
   }
-}
+};

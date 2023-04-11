@@ -6,13 +6,13 @@ import type { BoxProps } from "@cloudscape-design/components/box";
 const Box = lazy(() => import("@cloudscape-design/components/box"));
 
 if (typeof window === "undefined") {
-	React.useLayoutEffect = () => ({});
+  React.useLayoutEffect = () => ({});
 }
 
 export default function ClientBox(props: BoxProps) {
-	return (
-		<Suspense fallback={<div>{props.children}</div>}>
-			<Box {...props} />
-		</Suspense>
-	);
+  return (
+    <Suspense fallback={<div>{props.children}</div>}>
+      <Box {...props} />
+    </Suspense>
+  );
 }
