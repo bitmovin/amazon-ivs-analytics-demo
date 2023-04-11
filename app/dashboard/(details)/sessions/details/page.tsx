@@ -20,7 +20,7 @@ export default async function Page(props: {
 }) {
   const {
     aws: { streamSession, channelName },
-    searchParams
+    searchParams,
   } = await getSession(props.searchParams);
 
   const { channelArn, orgId, licenseKey } = searchParams;
@@ -146,8 +146,16 @@ export default async function Page(props: {
         >
           <>
             <img src={streamHealthImages[0] ? streamHealthImages[0] : ""} alt="Ingest Frame Rate" width={"90%"}></img>
-            <img src={streamHealthImages[1] ? streamHealthImages[1] : ""} alt="Ingest Video Bitrate" width={"90%"}></img>
-            <img src={streamHealthImages[2] ? streamHealthImages[2] : ""} alt="Ingest Audio Bitrate" width={"90%"}></img>
+            <img
+              src={streamHealthImages[1] ? streamHealthImages[1] : ""}
+              alt="Ingest Video Bitrate"
+              width={"90%"}
+            ></img>
+            <img
+              src={streamHealthImages[2] ? streamHealthImages[2] : ""}
+              alt="Ingest Audio Bitrate"
+              width={"90%"}
+            ></img>
           </>
         </BoardItem>
         <BoardItem
@@ -167,7 +175,15 @@ export default async function Page(props: {
           <h5>No data yet</h5>
         </BoardItem>
         <BoardItem id="impressions-table" header={<Header>Error Sessions</Header>} columnSpan={2} rowSpan={4}>
-          <ImpressionsTable orgId={orgId} licenseKey={licenseKey} startDate={streamSession.startTime.toISOString()} endDate={streamSession.endTime ? streamSession.endTime.toISOString() : undefined} variant="embedded" stickyHeader limit={100}>
+          <ImpressionsTable
+            orgId={orgId}
+            licenseKey={licenseKey}
+            startDate={streamSession.startTime.toISOString()}
+            endDate={streamSession.endTime ? streamSession.endTime.toISOString() : undefined}
+            variant="embedded"
+            stickyHeader
+            limit={100}
+          >
             <ImpressionsColumn id="IMPRESSION_ID" filters={[{ not: "null" }]}>
               ID
             </ImpressionsColumn>

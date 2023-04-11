@@ -12,7 +12,7 @@
     "format": "prettier --write ."
   },
   "lint-staged": {
-    "**/*.{ts,js}": "prettier --write --ignore-unknown",
+    "**/*.{ts,js,tsx,jsx,json}": "prettier --write --ignore-unknown",
     "CHANGELOG.md": "kacl lint --filename"
   },
   "dependencies": {
