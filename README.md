@@ -44,7 +44,9 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/deploym
 ## Permissions
 
 ### Amazon Web Services
+
 For the IVS stream data to fully work, access key and secret key of a user with access to IVS and Cloudwatch must be provided.
 
 ### Bitmovin
+
 The API key of a user with Read access to Analytics data must be provided.

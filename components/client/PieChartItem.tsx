@@ -6,29 +6,29 @@ import PieChart from "./PieChart";
 import Spinner from "./Spinner";
 
 if (typeof window === "undefined") {
-	React.useLayoutEffect = React.useEffect;
+  React.useLayoutEffect = React.useEffect;
 }
 
 export default function PieChartItem(props: PieChartProps) {
-	return (
-		<div
-			className="pie-chart-container"
-			{...{
-				style: {
-					height: "100%",
-					width: "100%",
-				},
-			}}
-		>
-			<PieChart
-				{...props}
-				fallback={
-					<div>
-						<Spinner />
-						Loading data
-					</div>
-				}
-			/>
-		</div>
-	);
+  return (
+    <div
+      className="pie-chart-container"
+      {...{
+        style: {
+          height: "100%",
+          width: "100%",
+        },
+      }}
+    >
+      <PieChart
+        {...props}
+        fallback={
+          <div>
+            <Spinner />
+            Loading data
+          </div>
+        }
+      />
+    </div>
+  );
 }

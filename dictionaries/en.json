@@ -1,17 +1,17 @@
 {
-    "titles": {
-        "/": "Login",
-        "/dashboard": "Dashboard",
-        "/dashboard/sessions": ""
-    },
-    "dimensions": {
-        "REBUFFER_PERCENTAGE": "Rebuffer %",
-        "ERROR_RATE": "Error %",
-        "DROPPED_FRAMES": "Dropped Frames",
-        "ERROR_SESSIONS": "Error Sessions",
-        "SUPPORTED_VIDEO_CODECS": "Video Codec Support",
-        "SESSIONS": "Sessions",
-        "ERROR_CODE": "Error Code"
-    },
-    "loading": "Loading..."
+  "titles": {
+    "/": "Login",
+    "/dashboard": "Dashboard",
+    "/dashboard/sessions": ""
+  },
+  "dimensions": {
+    "REBUFFER_PERCENTAGE": "Rebuffer %",
+    "ERROR_RATE": "Error %",
+    "DROPPED_FRAMES": "Dropped Frames",
+    "ERROR_SESSIONS": "Error Sessions",
+    "SUPPORTED_VIDEO_CODECS": "Video Codec Support",
+    "SESSIONS": "Sessions",
+    "ERROR_CODE": "Error Code"
+  },
+  "loading": "Loading..."
 }

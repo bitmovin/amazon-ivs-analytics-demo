@@ -9,24 +9,24 @@ import React, { Suspense, lazy } from "react";
 const Button = lazy(() => import("@cloudscape-design/components/button"));
 
 if (typeof window === "undefined") {
-	React.useLayoutEffect = () => ({});
+  React.useLayoutEffect = () => ({});
 }
 
 export default function ClientButton(props: ButtonProps & { href?: Route }) {
-	const router = useRouter();
-	const path = useSelectedLayoutSegments();
+  const router = useRouter();
+  const path = useSelectedLayoutSegments();
 
-	return (
-		<Suspense fallback={<button type="button">{props.children}</button>}>
-			<Button
-				onFollow={(event) => {
-					if (props.href) {
-						event.preventDefault();
-						router.push(props.href);
-					}
-				}}
-				{...props}
-			/>
-		</Suspense>
-	);
+  return (
+    <Suspense fallback={<button type="button">{props.children}</button>}>
+      <Button
+        onFollow={(event) => {
+          if (props.href) {
+            event.preventDefault();
+            router.push(props.href);
+          }
+        }}
+        {...props}
+      />
+    </Suspense>
+  );
 }
