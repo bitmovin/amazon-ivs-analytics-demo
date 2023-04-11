@@ -3,6 +3,7 @@ import BoardItem from "@/components/board-item";
 import Header from "@/components/client/Header";
 import Table from "@/components/client/Table";
 import type { IngestConfiguration } from "@aws-sdk/client-ivs";
+import { getMetricImage, ImageMetric } from "@/server/aws";
 import ContentLayout from "@/components/client/ContentLayout";
 import { getSession } from "@/server/session";
 import { intlFormat } from "date-fns";
@@ -19,11 +20,23 @@ export default async function Page(props: {
     aws: { streamSession, channelName },
   } = await getSession(props.searchParams);
 
+  const channelArn = props.searchParams.channelArn;
+
+  if (!channelArn) {
+    redirect("/dashboard");
+  }
+
   if (!streamSession) {
     redirect("/dashboard/sessions");
   }
 
   const encodingConfigItems = getEncodingConfigItems(streamSession.ingestConfiguration);
+
+  const streamHealthImages = await getStreamHealthMetricImages(
+    channelArn,
+    streamSession.startTime || getFallbackDateNowMinusDaysAgo(14),
+    streamSession.endTime || new Date()
+  );
 
   const { startTime, endTime } = streamSession;
 
@@ -119,10 +132,14 @@ export default async function Page(props: {
         <BoardItem
           id="StreamSessionHealth"
           header={<Header variant="h3">Stream Health</Header>}
-          columnSpan={1}
-          rowSpan={3}
+          columnSpan={2}
+          rowSpan={13}
         >
-          <h5>No data yet</h5>
+          <>
+            <img src={streamHealthImages[0] ? streamHealthImages[0] : ""} alt="Ingest Frame Rate" width={"90%"}></img>
+            <img src={streamHealthImages[1] ? streamHealthImages[1] : ""} alt="Ingest Video Bitrate" width={"90%"}></img>
+            <img src={streamHealthImages[2] ? streamHealthImages[2] : ""} alt="Ingest Audio Bitrate" width={"90%"}></img>
+          </>
         </BoardItem>
         <BoardItem
           id="PlaybackHealth"
@@ -166,4 +183,24 @@ function getEncodingConfigItems(encodingConfig: IngestConfiguration | undefined)
   }
 
   return encodingConfigItems;
+}
+
+async function getStreamHealthMetricImages(
+  channelArn: string,
+  startTime: Date,
+  endTime: Date
+): Promise<(string | null)[]> {
+  const promises = [
+    getMetricImage(channelArn, startTime, endTime, [ImageMetric.IngestFramerate]),
+    getMetricImage(channelArn, startTime, endTime, [ImageMetric.IngestVideoBitrate]),
+    getMetricImage(channelArn, startTime, endTime, [ImageMetric.IngestAudioBitrate]),
+  ];
+  return Promise.all(promises);
+}
+
+function getFallbackDateNowMinusDaysAgo(days: number = 14): Date {
+  const date = new Date();
+  const day = date.getDate() - days;
+  date.setDate(day);
+  return date;
 }
