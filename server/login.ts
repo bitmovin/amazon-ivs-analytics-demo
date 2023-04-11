@@ -46,7 +46,9 @@ export async function fetchOrgLicenses(org: Organization & { orgId: string }) {
 export async function login() {
 	const information = await fetchInformation({ next: { revalidate: 10000 } });
 	const response = await fetchOrgs({ next: { revalidate: 10000 } });
-	const orgs = await Promise.all(response.orgs.map(fetchOrgLicenses));
+	const organizations = await Promise.all(
+		response.orgs.map(fetchOrgLicenses)
+	);
 	const ivsChannels = await fetchChannels();
-	return { information, orgs, ivsChannels };
+	return { information, organizations, ivsChannels };
 }

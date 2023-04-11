@@ -1,17 +1,16 @@
 import Table, { Column } from "@/components/ivs-table";
 import Header from "@/components/client/Header";
-import { z } from "zod";
 
-const Params = z.object({
-	channelArn: z.string(),
-});
-
-export default async function Page(props: { searchParams: unknown }) {
-	const params = Params.parse(props.searchParams);
+export default async function Page(props: {
+	searchParams: {
+		channelArn: string;
+	};
+}) {
+	const { channelArn } = props.searchParams;
 	return (
 		<Table
 			header={<Header variant="h2">Stream Sessions</Header>}
-			channelArn={params.channelArn}
+			channelArn={channelArn}
 			stickyHeader
 			variant="container"
 			limit={100}

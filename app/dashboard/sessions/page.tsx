@@ -1,14 +1,12 @@
 import Header from "@/components/client/Header";
 import Table, { Column } from "@/components/table";
-// import { PageProps } from "@/types/page";
-import { z } from "zod";
 
-const Params = z.object({
-	orgId: z.string().uuid(),
-	licenseKey: z.string().uuid(),
-});
-
-export default async function Page(props: { searchParams: unknown }) {
+export default async function Page(props: {
+	searchParams: {
+		orgId: string;
+		licenseKey: string;
+	};
+}) {
 	return (
 		<Table
 			params={props.searchParams}

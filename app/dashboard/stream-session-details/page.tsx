@@ -1,33 +1,35 @@
 import { redirect } from "next/navigation";
 
 import {
-  ImageMetric,
   fetchStreamSessionDetails,
   getMetricImage,
+  ImageMetric,
 } from "@/server/aws";
 import Board from "@/components/board";
 import BoardItem from "@/components/board-item";
 import Header from "@/components/client/Header";
 import Table from "@/components/client/Table";
 import type { IngestConfiguration } from "@aws-sdk/client-ivs";
-import Image from "next/image";
-import { z } from "zod";
 
-const Params = z.object({
-	channelArn: z.string(),
-  streamId: z.string(),
-});
-
-export default async function Page(props: { searchParams: unknown }) {
-  const params = Params.parse(props.searchParams);
-  const channelArn = params.channelArn;
-  const streamId = params.streamId;
+export default async function Page(props: {
+  searchParams: {
+    streamId: string;
+    channelArn: string;
+  };
+}) {
+  const { streamId, channelArn } = props.searchParams;
 
   if (!streamId || !channelArn) {
     redirect("/");
   }
 
-  const details = await fetchStreamSessionDetails({ next: { revalidate: 60 } }, channelArn, streamId);
+  const details = await fetchStreamSessionDetails(
+    {
+      next: { revalidate: 60 },
+    },
+    channelArn,
+    streamId
+  );
 
   const encodingConfigItems = getEncodingConfigItems(details.streamSession?.ingestConfiguration);
 
@@ -40,35 +42,35 @@ export default async function Page(props: { searchParams: unknown }) {
   return (
     <Board>
       <BoardItem
-        id='StreamSessionEvents'
+        id="StreamSessionEvents"
         header={<Header variant="h3">Stream Events</Header>}
         columnSpan={2}
         rowSpan={3}
       >
         <Table
-            items={(
+            items={
               details.streamSession?.truncatedEvents?.map(event => {
                 return {
-                  name: <>{event.name || ''}</>,
-                  time: <>{event.eventTime?.toISOString() || ''}</>,
+                  name: <>{event.name || ""}</>,
+                  time: <>{event.eventTime?.toISOString() || ""}</>,
                 }
               }) || []
-            )}
+            }
             columns={[
               {
-                id: 'name',
+                id: "name",
                 children: <>{"Event"}</>,
               },
               {
-                id: 'time',
+                id: "time",
                 children: <>{"Time"}</>,
-              }
+              },
             ]}
           />
       </BoardItem>
       <BoardItem
         id="StreamSessionMetrics"
-        header={ <Header variant="h3">Stream Metrics</Header>}
+        header={<Header variant="h3">Stream Metrics</Header>}
         columnSpan={1}
         rowSpan={3}
       >
@@ -76,19 +78,19 @@ export default async function Page(props: { searchParams: unknown }) {
       </BoardItem>
       <BoardItem
         id="IngestCodecConfiguration"
-        header={ <Header variant="h3">Encoding Configuration</Header>}
+        header={<Header variant="h3">Encoding Configuration</Header>}
         columnSpan={1}
         rowSpan={6}
       >
         <Table
-          items={( encodingConfigItems )}
+          items={encodingConfigItems}
           columns={[
             {
-              id: 'name',
+              id: "name",
               children: <>{"Name"}</>,
             },
             {
-              id: 'value',
+              id: "value",
               children: <>{"Details"}</>,
             }
           ]}
@@ -120,7 +122,7 @@ export default async function Page(props: { searchParams: unknown }) {
       </BoardItem>
       <BoardItem
         id="PlaybackHealth"
-        header={ <Header variant="h3">Playback Health</Header>}
+        header={<Header variant="h3">Playback Health</Header>}
         columnSpan={1}
         rowSpan={3}
       >
@@ -128,7 +130,7 @@ export default async function Page(props: { searchParams: unknown }) {
       </BoardItem>
       <BoardItem
         id="PlaybackSessionList"
-        header={ <Header variant="h3">Playback Session List</Header>}
+        header={<Header variant="h3">Playback Session List</Header>}
         columnSpan={1}
         rowSpan={3}
       >
