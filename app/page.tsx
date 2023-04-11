@@ -2,20 +2,18 @@ import { getSession } from "@/server/session";
 import { redirect, notFound } from "next/navigation";
 
 export const metadata = {
-	title: {
-		default: "Bitmovin IVS",
-		template: "Bitmovin IVS",
-	},
-	applicationName: "Bitmovin IVS",
-	description: "Bitmovin and Amazon IVS Demo",
-	viewport: { width: "device-width", initialScale: 1 },
+  title: {
+    default: "Bitmovin IVS",
+    template: "Bitmovin IVS",
+  },
+  applicationName: "Bitmovin IVS",
+  description: "Bitmovin and Amazon IVS Demo",
+  viewport: { width: "device-width", initialScale: 1 },
 };
 
 export default async function RootPage() {
-	const { searchParams } = await getSession();
-	const { orgId, licenseKey, channelArn } = searchParams;
+  const { searchParams } = await getSession();
+  const { orgId, licenseKey, channelArn } = searchParams;
 
-	redirect(
-		`/dashboard?orgId=${orgId}&licenseKey=${licenseKey}&channelArn=${channelArn}`
-	);
+  redirect(`/dashboard?orgId=${orgId}&licenseKey=${licenseKey}&channelArn=${channelArn}`);
 }

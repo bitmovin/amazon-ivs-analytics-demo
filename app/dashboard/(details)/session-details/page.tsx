@@ -1,10 +1,6 @@
 import { redirect } from "next/navigation";
 
-import {
-  fetchStreamSessionDetails,
-  getMetricImage,
-  ImageMetric,
-} from "@/server/aws";
+import { fetchStreamSessionDetails, getMetricImage, ImageMetric } from "@/server/aws";
 import Board from "@/components/board";
 import BoardItem from "@/components/board-item";
 import Header from "@/components/client/Header";
@@ -23,20 +19,14 @@ export default async function Page(props: {
     redirect("/");
   }
 
-  const details = await fetchStreamSessionDetails(
-    {
-      next: { revalidate: 60 },
-    },
-    channelArn,
-    streamId
-  );
+  const details = await fetchStreamSessionDetails(channelArn, streamId);
 
   const encodingConfigItems = getEncodingConfigItems(details.streamSession?.ingestConfiguration);
 
   const streamHealthImages = await getStreamHealthMetricImages(
     channelArn,
     details.streamSession?.startTime || getFallbackDateNowMinusDaysAgo(14),
-    details.streamSession?.endTime || new Date(),
+    details.streamSession?.endTime || new Date()
   );
 
   return (
@@ -48,25 +38,25 @@ export default async function Page(props: {
         rowSpan={3}
       >
         <Table
-            items={
-              details.streamSession?.truncatedEvents?.map(event => {
-                return {
-                  name: <>{event.name || ""}</>,
-                  time: <>{event.eventTime?.toISOString() || ""}</>,
-                }
-              }) || []
-            }
-            columns={[
-              {
-                id: "name",
-                children: <>{"Event"}</>,
-              },
-              {
-                id: "time",
-                children: <>{"Time"}</>,
-              },
-            ]}
-          />
+          items={
+            details.streamSession?.truncatedEvents?.map((event) => {
+              return {
+                name: <>{event.name || ""}</>,
+                time: <>{event.eventTime?.toISOString() || ""}</>,
+              };
+            }) || []
+          }
+          columns={[
+            {
+              id: "name",
+              children: <>{"Event"}</>,
+            },
+            {
+              id: "time",
+              children: <>{"Time"}</>,
+            },
+          ]}
+        />
       </BoardItem>
       <BoardItem
         id="StreamSessionMetrics"
@@ -92,7 +82,7 @@ export default async function Page(props: {
             {
               id: "value",
               children: <>{"Details"}</>,
-            }
+            },
           ]}
         />
       </BoardItem>
@@ -103,29 +93,12 @@ export default async function Page(props: {
         rowSpan={12}
       >
         <>
-          <img
-            src={streamHealthImages[0] ? streamHealthImages[0] : ''}
-            alt="Ingest Frame Rate"
-            width={'100%'}
-          ></img>
-          <img
-            src={streamHealthImages[1] ? streamHealthImages[1] : ''}
-            alt="Ingest Video Bitrate"
-            width={'100%'}
-          ></img>
-          <img
-            src={streamHealthImages[2] ? streamHealthImages[2] : ''}
-            alt="Ingest Audio Bitrate"
-            width={'100%'}
-          ></img>
+          <img src={streamHealthImages[0] ? streamHealthImages[0] : ""} alt="Ingest Frame Rate" width={"100%"}></img>
+          <img src={streamHealthImages[1] ? streamHealthImages[1] : ""} alt="Ingest Video Bitrate" width={"100%"}></img>
+          <img src={streamHealthImages[2] ? streamHealthImages[2] : ""} alt="Ingest Audio Bitrate" width={"100%"}></img>
         </>
       </BoardItem>
-      <BoardItem
-        id="PlaybackHealth"
-        header={<Header variant="h3">Playback Health</Header>}
-        columnSpan={1}
-        rowSpan={3}
-      >
+      <BoardItem id="PlaybackHealth" header={<Header variant="h3">Playback Health</Header>} columnSpan={1} rowSpan={3}>
         <h5>No data yet</h5>
       </BoardItem>
       <BoardItem
@@ -163,39 +136,22 @@ function getEncodingConfigItems(encodingConfig: IngestConfiguration | undefined)
   return encodingConfigItems;
 }
 
-async function getStreamHealthMetricImages(channelArn: string, startTime: Date, endTime: Date): Promise<(string | null)[]> {
+async function getStreamHealthMetricImages(
+  channelArn: string,
+  startTime: Date,
+  endTime: Date
+): Promise<(string | null)[]> {
   const promises = [
-    getMetricImage(
-      channelArn,
-      startTime,
-      endTime,
-      [
-        ImageMetric.IngestFramerate
-      ]
-    ),
-    getMetricImage(
-      channelArn,
-      startTime,
-      endTime,
-      [
-        ImageMetric.IngestVideoBitrate,
-      ]
-    ),
-    getMetricImage(
-      channelArn,
-      startTime,
-      endTime,
-      [
-        ImageMetric.IngestAudioBitrate,
-      ]
-    ),
-  ]
+    getMetricImage(channelArn, startTime, endTime, [ImageMetric.IngestFramerate]),
+    getMetricImage(channelArn, startTime, endTime, [ImageMetric.IngestVideoBitrate]),
+    getMetricImage(channelArn, startTime, endTime, [ImageMetric.IngestAudioBitrate]),
+  ];
   return Promise.all(promises);
 }
 
 function getFallbackDateNowMinusDaysAgo(days: number = 14): Date {
   const date = new Date();
   const day = date.getDate() - days;
-  date.setDate(day)
+  date.setDate(day);
   return date;
 }

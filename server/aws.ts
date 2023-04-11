@@ -1,11 +1,12 @@
 import "server-only";
 
 import {
-  ListStreamSessionsCommand,
-  IvsClient,
-  GetStreamSessionCommand,
+  GetChannelCommandInput,
+  GetStreamSessionCommandInput,
   Ivs,
   IvsClientConfig,
+  ListChannelsCommandInput,
+  ListStreamSessionsCommandInput,
 } from "@aws-sdk/client-ivs";
 
 import { requireEnv } from "./env";
@@ -23,70 +24,76 @@ export enum ImageMetric {
   IngestVideoBitrate = 'IngestVideoBitrate',
 };
 
-type AwsClientConfig = IvsClientConfig | CloudWatchClientConfig;
+export type AwsClientConfig = IvsClientConfig | CloudWatchClientConfig;
 
-const clientConfig: AwsClientConfig = {
+const defaultConfig: AwsClientConfig = {
   credentials: {
     accessKeyId: requireEnv("AWS_ACCESS_KEY"),
     secretAccessKey: requireEnv("AWS_SECRET_KEY"),
   },
-  region: requireEnv("AWS_REGION") || 'us-east-1',
+  region: requireEnv("AWS_REGION") || "us-east-1",
 };
 
-function getIvsClient(clientConfig: AwsClientConfig) {
-  return new IvsClient(clientConfig);
+function getIvs(config: AwsClientConfig = {}) {
+  return new Ivs({ ...defaultConfig, ...config });
 }
 
-function getIvs(clientConfig: AwsClientConfig) {
-  return new Ivs(clientConfig);
+function getCloudwatchClient(config: AwsClientConfig = {}) {
+  return new CloudWatchClient({ ...defaultConfig, ...config });
 }
 
-function getCloudwatchClient(clientConfig: AwsClientConfig) {
-  return new CloudWatchClient(clientConfig);
-}
-
-export const fetchChannels = cache(
+export const getChannel = cache(
   async (
-    requestInit?: RequestInit
+    channelArn: string,
+    config: AwsClientConfig = {}
   ) => {
-    const channels = await getIvs(clientConfig).listChannels({});
-
-    return channels;
+    const input: GetChannelCommandInput = {
+      arn: channelArn
+    };
+    return await getIvs(config).getChannel(input);
   }
 );
 
-export const fetchStreamSessionsForChannel = async (
-  requestInit: RequestInit,
-  channelArn: string,
-  limit: number = 100
-) => {
-  const listStreamSessionsInput = {
-    channelArn: channelArn,
-    maxResults: limit,
-  };
+export const fetchChannels = cache(
+  async (
+    listChannelInput: ListChannelsCommandInput = {},
+    config: AwsClientConfig = {},
+  ) => {
+    return await getIvs(config).listChannels(listChannelInput);
+  }
+);
 
-  const listStreamSessionsRequest = new ListStreamSessionsCommand(listStreamSessionsInput);
-  const listStreamSessionsResponse = await getIvsClient(clientConfig).send(listStreamSessionsRequest);
+export const fetchStreamSessionsForChannel = cache(
+  async (
+    channelArn: string,
+    limit: number = 100,
+    config: AwsClientConfig = {},
+  ) => {
+    const input: ListStreamSessionsCommandInput = {
+      channelArn: channelArn,
+      maxResults: limit,
+    };
 
-  return listStreamSessionsResponse;
-};
+    return await getIvs(config).listStreamSessions(input);
+  }
+);
 
-export const fetchStreamSessionDetails = async (
-  requestInit: RequestInit,
-  channelArn: string,
-  streamId: string,
-) => {
-  const getStreamSessionInput = {
-    channelArn: channelArn,
-    streamId: streamId,
-  };
-  const getStreamSessionRequest = new GetStreamSessionCommand(getStreamSessionInput);
-  const getStreamSessionResponse = await getIvsClient(clientConfig).send(getStreamSessionRequest);
+export const fetchStreamSessionDetails = cache(
+  async (
+    channelArn: string,
+    streamId: string,
+    config: AwsClientConfig = {},
+  ) => {
+    const input: GetStreamSessionCommandInput = {
+      channelArn: channelArn,
+      streamId: streamId,
+    };
 
-  return getStreamSessionResponse;
-}
+    return await getIvs(config).getStreamSession(input);
+  }
+);
 
-export const getMetricImage = async (channelArn: string, startDate: Date, endDate: Date, metrics: ImageMetric[]) => {
+export const getMetricImage = async (channelArn: string, startDate: Date, endDate: Date, metrics: ImageMetric[], config: AwsClientConfig = {}) => {
   const period = calculateCloudwatchPeriod(startDate);
 
   if (!period) {
@@ -109,7 +116,7 @@ export const getMetricImage = async (channelArn: string, startDate: Date, endDat
     })
   };
   const getMetricWidgetImageRequest = new GetMetricWidgetImageCommand(getMetricWidgetImageInput);
-  const getMetricWidgetImageResponse = await getCloudwatchClient(clientConfig).send(getMetricWidgetImageRequest);
+  const getMetricWidgetImageResponse = await getCloudwatchClient(config).send(getMetricWidgetImageRequest);
 
   if (getMetricWidgetImageResponse.MetricWidgetImage) {
     const buffer = Buffer.from(getMetricWidgetImageResponse.MetricWidgetImage);
