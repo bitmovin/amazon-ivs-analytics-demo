@@ -8,21 +8,24 @@ import ContentLayout from "@/components/client/ContentLayout";
 import { getSession } from "@/server/session";
 import { intlFormat } from "date-fns";
 import { redirect } from "next/navigation";
+import ImpressionsTable, { ImpressionsColumn } from "../../impressions/table";
 
 export default async function Page(props: {
   searchParams: {
     streamId?: string;
     channelArn?: string;
+    orgId?: string;
     licenseKey?: string;
   };
 }) {
   const {
     aws: { streamSession, channelName },
+    searchParams
   } = await getSession(props.searchParams);
 
-  const channelArn = props.searchParams.channelArn;
+  const { channelArn, orgId, licenseKey } = searchParams;
 
-  if (!channelArn) {
+  if (!channelArn || !orgId || !licenseKey) {
     redirect("/dashboard");
   }
 
@@ -30,11 +33,17 @@ export default async function Page(props: {
     redirect("/dashboard/sessions");
   }
 
+  if (!streamSession.startTime) {
+    // Every session should have a start time, so this case should never occur.
+    // Types indicate `startTime` is optional though, so adding some value just in case.
+    streamSession.startTime = getFallbackDateNowMinusDaysAgo(14);
+  }
+
   const encodingConfigItems = getEncodingConfigItems(streamSession.ingestConfiguration);
 
   const streamHealthImages = await getStreamHealthMetricImages(
     channelArn,
-    streamSession.startTime || getFallbackDateNowMinusDaysAgo(14),
+    streamSession.startTime,
     streamSession.endTime || new Date()
   );
 
@@ -156,6 +165,20 @@ export default async function Page(props: {
           rowSpan={3}
         >
           <h5>No data yet</h5>
+        </BoardItem>
+        <BoardItem id="impressions-table" header={<Header>Error Sessions</Header>} columnSpan={2} rowSpan={4}>
+          <ImpressionsTable orgId={orgId} licenseKey={licenseKey} startDate={streamSession.startTime.toISOString()} endDate={streamSession.endTime ? streamSession.endTime.toISOString() : undefined} variant="embedded" stickyHeader limit={100}>
+            <ImpressionsColumn id="IMPRESSION_ID" filters={[{ not: "null" }]}>
+              ID
+            </ImpressionsColumn>
+            <ImpressionsColumn id="ERROR_CODE" filters={[{ above: 0 }, { not: 10000 }]}>
+              Error
+            </ImpressionsColumn>
+            <ImpressionsColumn id="PATH">Path</ImpressionsColumn>
+            <ImpressionsColumn id="VIDEO_TITLE">Video</ImpressionsColumn>
+            <ImpressionsColumn id="OPERATINGSYSTEM">OS</ImpressionsColumn>
+            <ImpressionsColumn id="BROWSER">Browser</ImpressionsColumn>
+          </ImpressionsTable>
         </BoardItem>
       </Board>
     </ContentLayout>
