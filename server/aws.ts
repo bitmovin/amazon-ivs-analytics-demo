@@ -87,6 +87,12 @@ export const fetchStreamSessionDetails = async (
 }
 
 export const getMetricImage = async (channelArn: string, startDate: Date, endDate: Date, metrics: ImageMetric[]) => {
+  const period = calculateCloudwatchPeriod(startDate);
+
+  if (!period) {
+    return null;
+  }
+
   const getMetricWidgetImageInput = {
     MetricWidget: JSON.stringify({
       metrics: metrics.map(metric => {
@@ -99,8 +105,7 @@ export const getMetricImage = async (channelArn: string, startDate: Date, endDat
       }),
       start: startDate,
       end: endDate,
-      // TODO: Adapt period based on how long ago the data was
-      period: 60,
+      period: period,
     })
   };
   const getMetricWidgetImageRequest = new GetMetricWidgetImageCommand(getMetricWidgetImageInput);
@@ -114,3 +119,26 @@ export const getMetricImage = async (channelArn: string, startDate: Date, endDat
     return null;
   }
 };
+
+const calculateCloudwatchPeriod = (startDate: Date, endDate = new Date()): number | null => {
+  const nowHours = endDate.getTime() / 1000 / 60 / 60;
+  const startHours = startDate.getTime() / 1000 / 60 / 60;
+
+  // TODO: Double-check values
+  if (nowHours - startHours < 3) {
+    // 1-second metrics are available for 3 hours.
+    return 1;
+  } else if (nowHours - startHours < 15 * 24) {
+    // 60-second metrics are available for 15 days.
+    return 60;
+  } else if (nowHours - startHours < 63 * 24) {
+    // 5-minute metrics are available for 63 days.
+    return 5 * 60;
+  } else if (nowHours - startHours < 455 * 24) {
+    // 1-hour metrics are available for 455 days (15 months).
+    return 60 * 60;
+  } else {
+    console.error('Data out of range, metrics not available anymore');
+    return null;
+  }
+}
