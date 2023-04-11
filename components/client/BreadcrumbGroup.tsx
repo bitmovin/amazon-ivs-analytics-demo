@@ -5,36 +5,34 @@ import { Route } from "next";
 import { useRouter } from "next/navigation";
 import React, { Suspense, lazy } from "react";
 
-const LazyBreadcrumbGroup = lazy(
-	() => import("@cloudscape-design/components/breadcrumb-group")
-);
+const LazyBreadcrumbGroup = lazy(() => import("@cloudscape-design/components/breadcrumb-group"));
 
 if (typeof window === "undefined") {
-	React.useLayoutEffect = () => ({});
+  React.useLayoutEffect = () => ({});
 }
 
 export default function ClientBreadcrumbGroup(props: {
-	items: {
-		text: string;
-		href: Route;
-		route: Route;
-	}[];
+  items: {
+    text: string;
+    href: Route;
+    route: Route;
+  }[];
 }) {
-	const router = useRouter();
+  const router = useRouter();
 
-	return (
-		<Suspense fallback={<span>Loading...</span>}>
-			<LazyBreadcrumbGroup
-				items={props.items}
-				onFollow={(e) => {
-					e.preventDefault();
-					router.replace(e.detail.href as Route);
-				}}
-				onClick={(e) => {
-					e.preventDefault();
-					router.replace(e.detail.href as Route);
-				}}
-			/>
-		</Suspense>
-	);
+  return (
+    <Suspense fallback={<span>Loading...</span>}>
+      <LazyBreadcrumbGroup
+        items={props.items}
+        onFollow={(e) => {
+          e.preventDefault();
+          router.replace(e.detail.href as Route);
+        }}
+        onClick={(e) => {
+          e.preventDefault();
+          router.replace(e.detail.href as Route);
+        }}
+      />
+    </Suspense>
+  );
 }
