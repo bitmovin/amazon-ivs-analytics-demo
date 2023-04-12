@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { fetchStreamSessionsForChannel } from "@/server/aws";
+import { listStreamSessions } from "@/server/aws";
 import ClientTable from "@/components/client/Table";
 import { TableProps } from "@cloudscape-design/components/table";
 import Link from "next/link";
@@ -27,7 +27,7 @@ export enum StreamSessionDetail {
 }
 
 export type IvsStreamSessionsProps = {
-	channelArn: string;
+	channelArn?: string | undefined;
 	maxResults: number;
 	children: ColumnElement<keyof typeof StreamSessionDetail>[];
 	footer?: JSX.Element;
@@ -87,7 +87,7 @@ async function Component(props: IvsStreamSessionsProps) {
 
 async function fetchData(props: IvsStreamSessionsProps) {
 	const { channelArn, maxResults } = props;
-	const { streamSessions } = await fetchStreamSessionsForChannel(
+	const streamSessions = await listStreamSessions(
 		{},
 		{ channelArn, maxResults }
 	);

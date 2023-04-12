@@ -1,8 +1,8 @@
 import { Organization } from "@bitmovin/api-sdk";
 import {
-	fetchChannels,
-	fetchStreamSessionDetails,
-	fetchStreamSessionsForChannel,
+	listChannels,
+	listStreamSessions,
+	getStreamSession,
 	getChannel,
 } from "./aws";
 import {
@@ -56,59 +56,40 @@ function getTitle(name: string) {
 	return title;
 }
 
-export const getSession = cache(async function (params?: {
-	orgId?: string;
-	channelArn?: string;
-	licenseKey?: string;
-	streamId?: string;
+export const getSession = cache(async function getSession(params?: {
+	orgId?: string | undefined;
+	channelArn?: string | undefined;
+	licenseKey?: string | undefined;
+	streamId?: string | undefined;
 }) {
-	const information = await fetchInformation();
-	const response = await fetchOrgs();
-	const organizations = await Promise.all(
-		response.orgs.map((org) => fetchOrgLicenses(org))
-	);
-	const { channels } = await fetchChannels({}, {});
+	const [information, organizations, licenses, channels] =
+		await getInformationAndOrganizations();
 
-	const orgId = params?.orgId ?? organizations?.at(0)?.id;
-	const licenseKey =
-		params?.licenseKey ?? organizations?.at(0)?.licenses.at(0)?.licenseKey;
-	const channelArn = params?.channelArn ?? channels?.at(0)?.arn;
+	const firstOrg = licenses?.at(0);
+	const firstLicense = firstOrg?.licenses.at(0);
+	const orgId = params?.orgId ?? firstOrg?.id;
+	const licenseKey = params?.licenseKey ?? firstLicense?.licenseKey;
 
-	if (!channels || !orgId || !licenseKey || !channelArn) {
-		redirect("/");
-	}
+	const firstChannel = channels?.at(0);
+	const channelArn = params?.channelArn ?? firstChannel?.arn;
 
-	const { channel } = await getChannel({}, { arn: channelArn });
-
-	const { streamSessions } = await fetchStreamSessionsForChannel(
-		{},
-		{ channelArn }
+	const [channel, streamSessions] = await getChannelsAndStreamSessions(
+		channelArn
 	);
 
-	const streamId = params?.streamId ?? streamSessions?.at(0)?.streamId;
+	const firstStreamSession = streamSessions?.at(0);
+	const streamId = params?.streamId ?? firstStreamSession?.streamId;
 
-	const { streamSession } = streamId
-		? await fetchStreamSessionDetails(
-				{},
-				{
-					channelArn,
-					streamId,
-				}
-		  )
-		: { streamSession: undefined };
-
-	const channelName = channel?.name
-		? getTitle(channel.name)
-		: "Channel (no name)";
+	const streamSession = await getStreamSession({}, { channelArn });
 
 	return {
 		bitmovin: {
 			information,
 			organizations,
+			licenses,
 		},
 		aws: {
 			channel,
-			channelName,
 			channels,
 			streamSession,
 			streamSessions,
@@ -122,3 +103,36 @@ export const getSession = cache(async function (params?: {
 		},
 	};
 });
+async function getChannelsAndStreamSessions(channelArn?: string) {
+	try {
+		return await Promise.all([
+			getChannel({}, { arn: channelArn }),
+			listStreamSessions({}, { channelArn }),
+		]);
+	} catch {
+		return [undefined, undefined] as const;
+	}
+}
+
+async function getInformationAndOrganizations() {
+	try {
+		const [information, organizations, channels] = await Promise.all([
+			fetchInformation(),
+			fetchOrgs(),
+			listChannels(),
+		] as const);
+
+		const licenses = await Promise.all(
+			organizations.orgs.map(fetchOrgLicenses)
+		);
+
+		return [information, organizations, licenses, channels] as const;
+	} catch {
+		return [undefined, undefined, undefined] as const;
+	}
+}
+
+function ok<T>(result: { ok: T } | { error: unknown }): result is { ok: T } {
+	return "ok" in result;
+}
+

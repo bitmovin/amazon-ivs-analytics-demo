@@ -12,11 +12,14 @@ export default async function Page(props: {
 		channelArn?: string;
 	};
 }) {
-	const {
-		searchParams: { channelArn, orgId, licenseKey },
-		aws: { channel, channelName },
-	} = await getSession(props.searchParams);
+	const session = await getSession(props.searchParams);
 
+	const { searchParams, aws } = session;
+
+	const { channelArn, orgId, licenseKey } = searchParams;
+	const { channel } = aws;
+
+	const channelName = channel?.name ?? "Unknown Channel";
 	const href =
 		`/dashboard/sessions/details?channelArn=${channelArn}&orgId=${orgId}&licenseKey=${licenseKey}` as const;
 
@@ -29,12 +32,16 @@ export default async function Page(props: {
 				variant="container"
 				maxResults={100}
 			>
-				<SessionsColumn id="streamId">Path</SessionsColumn>
-				<SessionsColumn id="startTime">Video</SessionsColumn>
-				<SessionsColumn id="endTime">OS</SessionsColumn>
-				<SessionsColumn id="error">Browser</SessionsColumn>
+				<SessionsColumn id="streamId">Stream ID</SessionsColumn>
+				<SessionsColumn id="startTime">Start Time</SessionsColumn>
+				<SessionsColumn id="endTime">End Time</SessionsColumn>
+				<SessionsColumn id="error">Error</SessionsColumn>
 				<SessionsColumn id="detailLink" />
 			</SessionsTable>
 		</ContentLayout>
 	);
 }
+function unwrap(channel: import("@aws-sdk/client-ivs").Channel | undefined) {
+	throw new Error("Function not implemented.");
+}
+

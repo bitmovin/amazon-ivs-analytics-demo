@@ -26,37 +26,64 @@ function getIvs(config: AwsClientConfig = {}) {
 	return new Ivs({ ...defaultConfig, ...config });
 }
 
-export const getChannel = cache(
-	async (config: AwsClientConfig = {}, input: GetChannelCommandInput) => {
-		const channels = await getIvs(config).getChannel(input);
-
-		return channels;
+export const getChannel = cache(async function getChannel(
+	config: AwsClientConfig = {},
+	input: GetChannelCommandInput
+) {
+	try {
+		return (await getIvs(config).getChannel(input)).channel;
+	} catch (error) {
+		console.error(error);
+		return undefined;
 	}
-);
+});
 
-export const fetchChannels = cache(
-	async (
-		config: AwsClientConfig = {},
-		args: ListChannelsCommandInput = {}
-	) => {
-		return await getIvs(config).listChannels(args);
+export const listChannels = cache(async function listChannels(
+	config: AwsClientConfig = {},
+	args: ListChannelsCommandInput = {}
+) {
+	try {
+		return (await getIvs(config).listChannels(args)).channels ?? [];
+	} catch (error) {
+		console.error(error);
+		return [];
 	}
-);
+});
 
-export const fetchStreamSessionsForChannel = cache(
-	async (
-		config: AwsClientConfig = {},
-		input: ListStreamSessionsCommandInput
-	) => {
-		return await getIvs(config).listStreamSessions(input);
+export const listStreamSessions = cache(async function listStreamSessions(
+	config: AwsClientConfig,
+	input: ListStreamSessionsCommandInput
+) {
+	try {
+		return (
+			(await getIvs(config).listStreamSessions(input)).streamSessions ??
+			[]
+		);
+	} catch (error) {
+		console.error(error);
+		return [];
 	}
-);
+});
 
-export const fetchStreamSessionDetails = cache(
-	async (
-		config: AwsClientConfig = {},
-		input: GetStreamSessionCommandInput
-	) => {
+export const getStreamSession = cache(async function getStreamSession(
+	config: AwsClientConfig = {},
+	input: GetStreamSessionCommandInput
+) {
+	try {
 		return await getIvs(config).getStreamSession(input);
+	} catch (error) {
+		return { error };
 	}
-);
+});
+
+export function isError<T extends object>(
+	result: T | { error: unknown }
+): result is { error: unknown } {
+	return "error" in result;
+}
+
+export function isOk<T extends object>(
+	result: T | { error: unknown }
+): result is T {
+	return !("error" in result);
+}

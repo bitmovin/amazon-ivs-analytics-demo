@@ -24,7 +24,10 @@ export type I18nStrings = Partial<
 >;
 
 export default function Board(
-	props: Omit<Props, "renderItem" | "onItemsChange" | "i18nStrings"> & {
+	props: Omit<
+		Props,
+		"renderItem" | "onItemsChange" | "i18nStrings" | "empty"
+	> & {
 		i18nStrings?: I18nStrings;
 	}
 ) {
@@ -34,7 +37,26 @@ export default function Board(
 		<Suspense fallback={<Spinner />}>
 			<LazyBoard
 				{...props}
-				items={items}
+				items={items.map(
+					({
+						id,
+						data,
+						rowSpan = 2,
+						columnSpan = 1,
+						definition = {
+							minRowSpan: 2,
+							minColumnSpan: 1,
+							defaultRowSpan: 2,
+							defaultColumnSpan: 1,
+						},
+					}) => ({
+						id,
+						data,
+						rowSpan,
+						columnSpan,
+						definition,
+					})
+				)}
 				onItemsChange={<D,>(event: Event<D>) =>
 					setItems(event.detail.items as Items)
 				}
@@ -61,6 +83,7 @@ export default function Board(
 					navigationAriaDescription:
 						props.i18nStrings?.navigationAriaDescription ?? "",
 				}}
+				empty={<p>No items</p>}
 			/>
 		</Suspense>
 	);

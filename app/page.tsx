@@ -12,8 +12,8 @@ export const metadata = {
 };
 
 export default async function RootPage() {
-	const { searchParams } = await getSession();
-	const { orgId, licenseKey, channelArn } = searchParams;
+	const session = await getSession();
+	const { orgId, licenseKey, channelArn } = session.searchParams;
 
 	redirect(
 		`/dashboard?orgId=${orgId}&licenseKey=${licenseKey}&channelArn=${channelArn}`

@@ -12,10 +12,17 @@ if (typeof window === "undefined") {
 	React.useLayoutEffect = () => ({});
 }
 
-export default function BoardItem({ ...props }: BoardItemProps) {
+export default function BoardItem(props: Omit<BoardItemProps, "i18nStrings">) {
 	return (
 		<Suspense fallback={<Spinner />}>
-			<LazyBoardItem {...props} />
+			<LazyBoardItem
+				{...props}
+				i18nStrings={{
+					dragHandleAriaLabel: "",
+					dragHandleAriaDescription: "",
+					resizeHandleAriaLabel: "",
+				}}
+			/>
 		</Suspense>
 	);
 }

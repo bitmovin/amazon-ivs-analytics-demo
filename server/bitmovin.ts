@@ -47,7 +47,7 @@ export const fetchQuery = cache(
 		query: K,
 		requestInit?: RequestInit,
 		tenantOrgId?: string,
-		params?: Parameters<QueriesApi[K]["create"]>[0]
+		params?: Partial<Parameters<QueriesApi[K]["create"]>[0]>
 	) => {
 		const client = getClient(requestInit, tenantOrgId);
 		return await client.analytics.queries[query].create(params);
@@ -153,9 +153,9 @@ export const preloadImpressions = (
 
 export const fetchImpressions = cache(
 	async (
-		requestInit?: RequestInit,
-		tenantOrgId?: string,
-		searchParams?: AnalyticsImpressionsQuery
+		requestInit?: RequestInit | undefined,
+		tenantOrgId?: string | undefined,
+		searchParams?: AnalyticsImpressionsQuery | undefined
 	) => {
 		const client = getClient(requestInit, tenantOrgId);
 		const response = await client.analytics.impressions.getImpressions(

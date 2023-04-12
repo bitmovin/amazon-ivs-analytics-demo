@@ -18,8 +18,8 @@ import { z } from "zod";
 import { Alert } from "./alert";
 
 export type ChartProps = {
-	orgId: string;
-	licenseKey: string;
+	orgId?: string | undefined;
+	licenseKey?: string | undefined;
 	limit: number;
 	factor?: number;
 	interval?: Interval;
@@ -76,10 +76,6 @@ async function Component(props: ChartProps) {
 }
 
 async function fetchData(props: ChartProps) {
-	const Params = z.object({
-		orgId: z.string().uuid(),
-		licenseKey: z.string().uuid(),
-	});
 	const { orgId, licenseKey } = props;
 	const now = Date.now();
 	const start = new Date(now - 1000 * 60 * 60 * 3);
@@ -93,36 +89,43 @@ async function fetchData(props: ChartProps) {
 			order: AnalyticsOrder[orderBy.order],
 		})) || [];
 
-	const results = await Promise.all(
-		props.children.map((bar) =>
-			fetchQuery(bar.props.query, { next: { revalidate: 60 } }, orgId, {
-				filters: [bar.props.children]
-					.flat()
-					.flatMap((filter) => filter)
-					.map((filter) => mapFilter(filter.props))
-					.flatMap((filter) => (filter ? [filter] : [])),
-				dimension: AnalyticsAttribute[bar.props.dimension],
-				includeContext: true,
-				start,
-				end,
-				interval,
-				licenseKey,
-				orderBy,
-				limit,
-			}).then((response) => ({
-				type: "bar" as const,
-				title: bar.props.id,
-				color: bar.props.color || "",
-				hidden: bar.props.hidden === true,
-				data: [
-					{
-						x: bar.props.id,
-						y: (response.rows?.at(0)?.at(0) ?? 0) * factor,
-					},
-				],
-			}))
-		)
-	);
+	const results = licenseKey
+		? await Promise.all(
+				props.children.map((bar) =>
+					fetchQuery(
+						bar.props.query,
+						{ next: { revalidate: 60 } },
+						orgId,
+						{
+							filters: [bar.props.children]
+								.flat()
+								.flatMap((filter) => filter)
+								.map((filter) => mapFilter(filter.props))
+								.flatMap((filter) => (filter ? [filter] : [])),
+							dimension: AnalyticsAttribute[bar.props.dimension],
+							includeContext: true,
+							start,
+							end,
+							interval,
+							licenseKey,
+							orderBy,
+							limit,
+						}
+					).then((response) => ({
+						type: "bar" as const,
+						title: bar.props.id,
+						color: bar.props.color || "",
+						hidden: bar.props.hidden === true,
+						data: [
+							{
+								x: bar.props.id,
+								y: (response.rows?.at(0)?.at(0) ?? 0) * factor,
+							},
+						],
+					}))
+				)
+		  )
+		: [];
 	return results;
 }
 

@@ -6,23 +6,25 @@ import { useSelectedLayoutSegments } from "next/navigation";
 import { useRouter } from "next/navigation";
 import React, { Suspense, lazy } from "react";
 
-const Button = lazy(() => import("@cloudscape-design/components/button"));
+const LazyButton = lazy(() => import("@cloudscape-design/components/button"));
 
 if (typeof window === "undefined") {
 	React.useLayoutEffect = () => ({});
 }
 
-export default function ClientButton(props: ButtonProps & { href?: Route }) {
+export default function Button(
+	props: ButtonProps & { route?: Route; href?: string }
+) {
 	const router = useRouter();
-	const path = useSelectedLayoutSegments();
 
 	return (
 		<Suspense fallback={<button type="button">{props.children}</button>}>
-			<Button
+			<LazyButton
+				href={props.href ?? props.route ?? "#"}
 				onFollow={(event) => {
-					if (props.href) {
+					if (props.route) {
 						event.preventDefault();
-						router.push(props.href);
+						router.push(props.route);
 					}
 				}}
 				{...props}

@@ -17,8 +17,8 @@ import { z } from "zod";
 import { Alert } from "./alert";
 
 export type ChartProps = {
-	orgId: string;
-	licenseKey: string;
+	orgId?: string | undefined;
+	licenseKey?: string | undefined;
 	children: AreaElement<QueryType> | AreaElement<QueryType>[];
 } & Partial<AreaChartProps<ChartDataTypes>>;
 
@@ -64,91 +64,101 @@ async function fetchData(props: ChartProps) {
 	const start = new Date(now - 1000 * 60 * 60 * 3);
 	const end = new Date(now);
 
-	const results = await Promise.all(
-		[props.children]
-			.flat()
-			.flatMap((area) => (area ? [area] : []))
-			.map((area) =>
-				fetchQuery(
-					area.props.query ?? "avg",
-					{ next: { revalidate: 60 } },
-					orgId,
-					{
-						filters: area.props.children
-							? [area.props.children]
-									.flat()
-									.flatMap((filter) => filter)
-									.map((filter) => mapFilter(filter.props))
-									.flatMap((filter) =>
-										filter ? [filter] : []
-									)
-							: [],
-						dimension: AnalyticsAttribute[area.props.field],
-						includeContext: true,
-						start,
-						end,
-						interval:
-							AnalyticsInterval[area.props.interval ?? "MINUTE"],
-						licenseKey,
-						groupBy:
-							area.props.groupBy?.map(
-								(g) => AnalyticsAttribute[g]
-							) ?? [],
-						orderBy: [
+	const results = licenseKey
+		? await Promise.all(
+				[props.children]
+					.flat()
+					.flatMap((area) => (area ? [area] : []))
+					.map((area) =>
+						fetchQuery(
+							area.props.query ?? "avg",
+							{ next: { revalidate: 60 } },
+							orgId,
 							{
-								name: AnalyticsAttribute[
-									area.props.interval ?? "MINUTE"
+								filters: area.props.children
+									? [area.props.children]
+											.flat()
+											.flatMap((filter) => filter)
+											.map((filter) =>
+												mapFilter(filter.props)
+											)
+											.flatMap((filter) =>
+												filter ? [filter] : []
+											)
+									: [],
+								dimension: AnalyticsAttribute[area.props.field],
+								includeContext: true,
+								start,
+								end,
+								interval:
+									AnalyticsInterval[
+										area.props.interval ?? "MINUTE"
+									],
+								licenseKey,
+								groupBy:
+									area.props.groupBy?.map(
+										(g) => AnalyticsAttribute[g]
+									) ?? [],
+								orderBy: [
+									{
+										name: AnalyticsAttribute[
+											area.props.interval ?? "MINUTE"
+										],
+										order: AnalyticsOrder.DESC,
+									},
 								],
-								order: AnalyticsOrder.DESC,
-							},
-						],
-						limit: area.props.limit || 100,
-					}
-				)
-					.then(
-						({
-							rowCount,
-							columnLabels,
-							rows,
-							contextDescription,
-						}) => ({
-							rowCount: rowCount ?? 0,
-							columnLabels: columnLabels ?? [],
-							rows:
-								rows?.map((row) => ({
-									group:
-										typeof row[1] === "string"
-											? row[1]
-											: undefined,
+								limit: area.props.limit || 100,
+							}
+						)
+							.then(
+								({
+									rowCount,
+									columnLabels,
+									rows,
+									contextDescription,
+								}) => ({
+									rowCount: rowCount ?? 0,
+									columnLabels: columnLabels ?? [],
+									rows:
+										rows?.map((row) => ({
+											group:
+												typeof row[1] === "string"
+													? row[1]
+													: undefined,
 
-									x: row[0] as number,
-									y: row[2] ?? row[1],
-								})) || [],
-							contextDescription: contextDescription ?? [],
-						})
+											x: row[0] as number,
+											y: row[2] ?? row[1],
+										})) || [],
+									contextDescription:
+										contextDescription ?? [],
+								})
+							)
+							.then((r) => {
+								const groups = r.rows.map((r) => r.group);
+								const uniqueGroups = groups.filter(
+									(v, i, a) => a.indexOf(v) === i
+								);
+
+								const grouped = uniqueGroups.map(
+									(group) =>
+										({
+											type: area.props.type ?? "area",
+											title: group || "all",
+											color: area.props.color || "",
+											hidden: area.props.hidden === true,
+											data: r.rows
+												.filter(
+													(row) => row.group === group
+												)
+												.map((r) => r),
+										} as const)
+								);
+
+								return grouped;
+							})
 					)
-					.then((r) => {
-						const groups = r.rows.map((r) => r.group);
-						const uniqueGroups = groups.filter(
-							(v, i, a) => a.indexOf(v) === i
-						);
-
-						const grouped = uniqueGroups.map((group) => {
-							return {
-								type: area.props.type ?? "area",
-								title: group || "all",
-								color: area.props.color || "",
-								hidden: area.props.hidden === true,
-								data: r.rows
-									.filter((row) => row.group === group)
-									.map((r) => r),
-							} as const;
-						});
-
-						return grouped;
-					})
-			)
-	);
+		  )
+		: [];
 	return results;
 }
 

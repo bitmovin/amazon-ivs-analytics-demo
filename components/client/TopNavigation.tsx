@@ -18,9 +18,9 @@ export default function TopNavigation(props: {
 	title: string;
 	href: Route;
 	firstName: string;
-	channelArn: string;
-	licenseKey: string;
-	orgId: string;
+	channelArn?: string | undefined;
+	licenseKey?: string | undefined;
+	orgId?: string | undefined;
 	channelName: {};
 	channels: {
 		arn: string;
@@ -38,10 +38,6 @@ export default function TopNavigation(props: {
 	const router = useRouter();
 	const pathname = usePath();
 	const { orgId, channelArn, licenseKey } = props;
-
-	function setQuery(arg0: { orgId: string; licenseKey: string | undefined }) {
-		throw new Error("Function not implemented.");
-	}
 
 	return (
 		<Suspense fallback={<p>Loading...</p>}>

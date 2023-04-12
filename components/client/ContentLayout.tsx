@@ -1,9 +1,9 @@
 "use client";
 
 import React, { Suspense, lazy } from "react";
-import type { ContentLayoutProps } from "@cloudscape-design/components";
+import type { ContentLayoutProps } from "@cloudscape-design/components/content-layout";
 
-const ContentLayout = lazy(
+const LazyContentLayout = lazy(
 	() => import("@cloudscape-design/components/content-layout")
 );
 
@@ -11,10 +11,10 @@ if (typeof window === "undefined") {
 	React.useLayoutEffect = () => ({});
 }
 
-export default function ClientContentLayout(props: ContentLayoutProps) {
+export default function ContentLayout(props: ContentLayoutProps) {
 	return (
 		<Suspense fallback={props.children}>
-			<ContentLayout {...props} />
+			<LazyContentLayout {...props} />
 		</Suspense>
 	);
 }

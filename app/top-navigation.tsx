@@ -32,20 +32,27 @@ async function Component(params: {
 	orgId?: string;
 	channelArn?: string;
 }) {
-	const { bitmovin, aws, searchParams } = await getSession(params);
-	const { information, organizations } = bitmovin;
+	const session = await getSession(params);
+
+	const { bitmovin, aws, searchParams } = session;
+	const { information, organizations, licenses } = bitmovin;
 	const { channels } = aws;
 	const { orgId, licenseKey, channelArn } = searchParams;
+
+	const source = information;
+	const firstName = source?.firstName ?? "Unknown";
+
+	const orgsWithLicenses = licenses ?? [];
 
 	return (
 		<ClientTopNavigation
 			href="/"
 			title="Bitmovin"
-			firstName={`${information.firstName ?? ""}`}
+			firstName={firstName}
 			orgId={orgId}
 			licenseKey={licenseKey}
 			channelArn={channelArn}
-			organizations={organizations.map(
+			organizations={orgsWithLicenses.map(
 				({ id, name = "[error]", licenses }) => ({
 					id,
 					name,
@@ -59,14 +66,16 @@ async function Component(params: {
 			)}
 			channelName={
 				channelArn
-					? channels.find(({ arn }) => arn === channelArn)?.name ??
+					? channels?.find(({ arn }) => arn === channelArn)?.name ??
 					  "Channels"
 					: "Channels"
 			}
-			channels={channels.map(({ arn = "[error]", name = "[error]" }) => ({
-				arn,
-				name,
-			}))}
+			channels={
+				channels?.map(({ arn = "[error]", name = "[error]" }) => ({
+					arn,
+					name,
+				})) ?? []
+			}
 		/>
 	);
 }

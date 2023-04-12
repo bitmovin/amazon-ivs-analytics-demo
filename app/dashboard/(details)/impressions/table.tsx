@@ -14,8 +14,8 @@ import { Alert } from "@/components/alert";
 export const ImpressionsColumn = TableColumn<AttributeKey>;
 
 export type AnalyticsTableProps = {
-	orgId: string;
-	licenseKey: string;
+	orgId?: string | undefined;
+	licenseKey?: string | undefined;
 	children: ColumnElement<AttributeKey>[];
 	limit: number;
 	footer?: JSX.Element;
@@ -92,20 +92,22 @@ async function fetchData(props: AnalyticsTableProps) {
 	const start = new Date(now - 1000 * 60 * 60);
 	const end = new Date(now);
 
-	const result = await fetchImpressions({ next: { revalidate: 60 } }, orgId, {
-		licenseKey,
-		start,
-		end,
-		filters,
-		limit: props.limit,
-	});
+	const result = licenseKey
+		? await fetchImpressions({ next: { revalidate: 60 } }, orgId, {
+				licenseKey,
+				start,
+				end,
+				filters,
+				limit: props.limit,
+		  })
+		: { impressions: [] };
 
 	const cells: Cell[] = [];
 
 	if ("impressions" in result) {
 		const detailedImpressions = await Promise.all(
 			result.impressions.flatMap((impression) => {
-				if (impression.impressionId) {
+				if (impression.impressionId && licenseKey) {
 					return fetchImpression(
 						impression.impressionId,
 						licenseKey,

@@ -13,27 +13,9 @@ if (typeof window === "undefined") {
 }
 
 export default function AppLayout(props: AppLayoutProps) {
-	const [navigationOpen, setNavigationOpen] = useState(false);
-	const [toolsOpen, setToolsOpen] = useState(false);
 	return (
 		<Suspense fallback={props.content}>
-			<LazyAppLayout
-				{...props}
-				navigationOpen={
-					props.navigationHide === false && navigationOpen
-				}
-				onNavigationChange={({ detail }) => {
-					if (props.navigationHide === false) {
-						setNavigationOpen(detail.open);
-					}
-				}}
-				toolsOpen={props.toolsHide === false && toolsOpen}
-				onToolsChange={({ detail }) => {
-					if (props.toolsHide === false) {
-						setToolsOpen(detail.open);
-					}
-				}}
-			/>
+			<LazyAppLayout {...props} />
 		</Suspense>
 	);
 }
