@@ -73,6 +73,10 @@ export const fetchStreamSessionDetails = cache(
   }
 );
 
+// TODO: Add support for getting metrics as data. Resources:
+// https://docs.aws.amazon.com/ivs/latest/userguide/stream-health.html
+// https://dev.to/aws/monitoring-amazon-ivs-live-stream-health-4bpb
+
 export const getMetricImage = async (
   channelArn: string,
   startDate: Date,
@@ -85,7 +89,8 @@ export const getMetricImage = async (
   if (!period) {
     return null;
   }
-
+  
+  // See https://docs.aws.amazon.com/AmazonCloudWatch/latest/APIReference/CloudWatch-Metric-Widget-Structure.html
   const getMetricWidgetImageInput = {
     MetricWidget: JSON.stringify({
       metrics: metrics.map((metric) => {
@@ -108,6 +113,12 @@ export const getMetricImage = async (
   }
 };
 
+/**
+ * Calculates the best possible period (in seconds) for metrics, based on data aging.
+ * 
+ * Valid Values: 1, 5, 10, 30, 60, and any multiple of 60. 1, 5, 10, and 30 are only for high-resolution metrics.
+ * See also https://docs.aws.amazon.com/AmazonCloudWatch/latest/APIReference/CloudWatch-Metric-Widget-Structure.html
+ */
 const calculateCloudwatchPeriod = (startDate: Date, endDate = new Date()): number | null => {
   const nowHours = endDate.getTime() / 1000 / 60 / 60;
   const startHours = startDate.getTime() / 1000 / 60 / 60;
