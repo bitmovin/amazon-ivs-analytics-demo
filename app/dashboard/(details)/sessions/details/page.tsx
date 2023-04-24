@@ -74,10 +74,30 @@ export default async function Page(props: {
     <ContentLayout header={<Header description={description}>Stream: {streamSession.streamId}</Header>}>
       <Board>
         <BoardItem
+          id="StreamSessionHealth"
+          header={<Header variant="h3">Stream Health</Header>}
+          columnSpan={2}
+          rowSpan={13}
+        >
+          <>
+            <img src={streamHealthImages[0] ? streamHealthImages[0] : ""} alt="Ingest Frame Rate" width={"90%"}></img>
+            <img
+              src={streamHealthImages[1] ? streamHealthImages[1] : ""}
+              alt="Ingest Video Bitrate"
+              width={"90%"}
+            ></img>
+            <img
+              src={streamHealthImages[2] ? streamHealthImages[2] : ""}
+              alt="Ingest Audio Bitrate"
+              width={"90%"}
+            ></img>
+          </>
+        </BoardItem>
+        <BoardItem
           id="StreamSessionEvents"
           header={<Header variant="h3">Stream Events</Header>}
           columnSpan={2}
-          rowSpan={3}
+          rowSpan={6}
         >
           <Table
             variant="embedded"
@@ -102,17 +122,9 @@ export default async function Page(props: {
           />
         </BoardItem>
         <BoardItem
-          id="StreamSessionMetrics"
-          header={<Header variant="h3">Stream Metrics</Header>}
-          columnSpan={1}
-          rowSpan={3}
-        >
-          <h5>No data yet</h5>
-        </BoardItem>
-        <BoardItem
           id="IngestCodecConfiguration"
           header={<Header variant="h3">Encoding Configuration</Header>}
-          columnSpan={1}
+          columnSpan={2}
           rowSpan={6}
         >
           <Table
@@ -131,24 +143,12 @@ export default async function Page(props: {
           />
         </BoardItem>
         <BoardItem
-          id="StreamSessionHealth"
-          header={<Header variant="h3">Stream Health</Header>}
-          columnSpan={2}
-          rowSpan={13}
+          id="StreamSessionMetrics"
+          header={<Header variant="h3">Stream Metrics</Header>}
+          columnSpan={1}
+          rowSpan={3}
         >
-          <>
-            <img src={streamHealthImages[0] ? streamHealthImages[0] : ""} alt="Ingest Frame Rate" width={"90%"}></img>
-            <img
-              src={streamHealthImages[1] ? streamHealthImages[1] : ""}
-              alt="Ingest Video Bitrate"
-              width={"90%"}
-            ></img>
-            <img
-              src={streamHealthImages[2] ? streamHealthImages[2] : ""}
-              alt="Ingest Audio Bitrate"
-              width={"90%"}
-            ></img>
-          </>
+          <h5>No data yet</h5>
         </BoardItem>
         <BoardItem
           id="PlaybackHealth"
@@ -160,13 +160,10 @@ export default async function Page(props: {
         </BoardItem>
         <BoardItem
           id="PlaybackSessionList"
-          header={<Header variant="h3">Playback Session List</Header>}
-          columnSpan={1}
-          rowSpan={3}
+          header={<Header variant="h3">Latest Playback Sessions</Header>}
+          columnSpan={4}
+          rowSpan={5}
         >
-          <h5>No data yet</h5>
-        </BoardItem>
-        <BoardItem id="impressions-table" header={<Header>Error Sessions</Header>} columnSpan={2} rowSpan={4}>
           <ImpressionsTable
             orgId={orgId}
             licenseKey={licenseKey}
@@ -174,20 +171,45 @@ export default async function Page(props: {
             endDate={streamSession.endTime ? streamSession.endTime.toISOString() : undefined}
             variant="embedded"
             stickyHeader
-            limit={100}
+            limit={15}
           >
             <ImpressionsColumn id="IMPRESSION_ID" filters={[{ not: "null" }]}>
               ID
             </ImpressionsColumn>
+            <ImpressionsColumn id="TIME">Latest Update</ImpressionsColumn>
+            <ImpressionsColumn id="OPERATINGSYSTEM">OS</ImpressionsColumn>
+            <ImpressionsColumn id="PLATFORM">Platform</ImpressionsColumn>
+            <ImpressionsColumn id="BROWSER">Browser</ImpressionsColumn>
+            <ImpressionsColumn id="ERROR_CODE">Error</ImpressionsColumn>
+          </ImpressionsTable>
+        </BoardItem>
+        <BoardItem
+          id="PlaybackErrorSessionList"
+          header={<Header>Latest Playback Error Sessions</Header>}
+          columnSpan={4}
+          rowSpan={5}
+        >
+          <ImpressionsTable
+            orgId={orgId}
+            licenseKey={licenseKey}
+            startDate={streamSession.startTime.toISOString()}
+            endDate={streamSession.endTime ? streamSession.endTime.toISOString() : undefined}
+            variant="embedded"
+            stickyHeader
+            limit={15}
+          >
+            <ImpressionsColumn id="IMPRESSION_ID" filters={[{ not: "null" }]}>
+              ID
+            </ImpressionsColumn>
+            <ImpressionsColumn id="TIME">Error Time</ImpressionsColumn>
             <ImpressionsColumn id="ERROR_CODE" filters={[{ above: 0 }, { not: 10000 }]}>
               Error
             </ImpressionsColumn>
-            <ImpressionsColumn id="PATH">Path</ImpressionsColumn>
-            <ImpressionsColumn id="VIDEO_TITLE">Video</ImpressionsColumn>
             <ImpressionsColumn id="OPERATINGSYSTEM">OS</ImpressionsColumn>
             <ImpressionsColumn id="BROWSER">Browser</ImpressionsColumn>
           </ImpressionsTable>
         </BoardItem>
+        {/* TODO: Add Rebuffering %, etc from BM Analytics */}
       </Board>
     </ContentLayout>
   );
