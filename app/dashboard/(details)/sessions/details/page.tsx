@@ -49,26 +49,18 @@ export default async function Page(props: {
 
   const { startTime, endTime } = streamSession;
 
-  const from = startTime
-    ? intlFormat(startTime, {
-        year: "2-digit",
-        month: "2-digit",
-        day: "2-digit",
-        weekday: "short",
-        hour: "2-digit",
-        minute: "2-digit",
-      })
-    : "Unknown";
-  const to = endTime
-    ? intlFormat(endTime, {
-        year: "2-digit",
-        month: "2-digit",
-        day: "2-digit",
-        weekday: "short",
-        hour: "2-digit",
-        minute: "2-digit",
-      })
-    : "LIVE";
+  // Setting as any because there are no explicit types available
+  const intlDateTimeFormatConfig = {
+    year: "2-digit",
+    month: "2-digit",
+    day: "2-digit",
+    weekday: "short",
+    hour: "2-digit",
+    minute: "2-digit",
+  } as any;
+
+  const from = startTime ? intlFormat(startTime, intlDateTimeFormatConfig) : "Unknown";
+  const to = endTime ? intlFormat(endTime, intlDateTimeFormatConfig) : "LIVE";
 
   const description = (
     <>
@@ -93,7 +85,7 @@ export default async function Page(props: {
               streamSession?.truncatedEvents?.map((event) => {
                 return {
                   name: <>{event.name || ""}</>,
-                  time: <>{event.eventTime?.toISOString() || ""}</>,
+                  time: <>{event.eventTime ? intlFormat(event.eventTime, intlDateTimeFormatConfig as any) : 'Unknown'}</>,
                 };
               }) || []
             }
