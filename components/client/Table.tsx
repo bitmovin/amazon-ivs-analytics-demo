@@ -34,8 +34,7 @@ export default function Table(
             header: column.children ? <>{column.children}</> : <></>,
             ariaLabel: (data) => `${data}${column}`,
             cell: <T extends { [x: string]: JSX.Element }>(item: T) => {
-              if (column.type === 'date') {
-                console.log(`formatting ${item[column.id]} as date...`);
+              if (column.type === "date") {
                 return intlFormat(new Date(item[column.id] as any), {
                   year: "2-digit",
                   month: "2-digit",
