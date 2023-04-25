@@ -263,12 +263,11 @@ async function getStreamHealthMetricImages(
   startTime: Date,
   endTime: Date
 ): Promise<(string | null)[]> {
-  const promises = [
+  return Promise.all([
     getMetricImage(channelArn, startTime, endTime, [ImageMetric.IngestFramerate]),
     getMetricImage(channelArn, startTime, endTime, [ImageMetric.IngestVideoBitrate]),
     getMetricImage(channelArn, startTime, endTime, [ImageMetric.IngestAudioBitrate]),
-  ];
-  return Promise.all(promises);
+  ]);
 }
 
 function getFallbackDateNowMinusDaysAgo(days: number = 14): Date {
