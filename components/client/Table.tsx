@@ -5,6 +5,7 @@ import React, { Suspense, lazy } from "react";
 import type { TableProps } from "@cloudscape-design/components/table";
 import Spinner from "./Spinner";
 import { intlFormat } from "date-fns";
+import Link from "next/link";
 import { ColumnProps } from "../column";
 
 const LazyTable = lazy(() => import("@cloudscape-design/components/table"));
@@ -43,6 +44,11 @@ export default function Table(
                   hour: "2-digit",
                   minute: "2-digit",
                 });
+              } else if (column.type === "link" && column.href) {
+                const href: any = `${column.href}${column.href.includes("?") ? "&" : "?"}analyticsSessionId=${
+                  item[column.id]
+                }`;
+                return <Link href={href}>{item[column.id]}</Link>;
               }
               return item[column.id];
             },
