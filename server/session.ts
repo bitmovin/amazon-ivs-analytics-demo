@@ -48,6 +48,7 @@ export const getSession = cache(async function (params?: {
   channelArn?: string;
   licenseKey?: string;
   streamId?: string;
+  analyticsSessionId?: string;
 }) {
   const information = await fetchInformation();
   const response = await fetchOrgs();
@@ -57,6 +58,7 @@ export const getSession = cache(async function (params?: {
   const orgId = params?.orgId ?? organizations?.at(0)?.id;
   const licenseKey = params?.licenseKey ?? organizations?.at(0)?.licenses.at(0)?.licenseKey;
   const channelArn = params?.channelArn ?? channels?.at(0)?.arn;
+  const analyticsSessionId = params?.analyticsSessionId ?? undefined;
 
   if (!channels || !orgId || !licenseKey || !channelArn) {
     redirect("/");
@@ -91,6 +93,7 @@ export const getSession = cache(async function (params?: {
       licenseKey,
       channelArn,
       streamId,
+      analyticsSessionId,
       ...params,
     },
   };

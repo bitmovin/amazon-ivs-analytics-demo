@@ -30,12 +30,13 @@ export default async function Page(props: {
         <BoardItem id="sessions-table" header={<Header>Stream Sessions</Header>} columnSpan={4} rowSpan={2}>
           <SessionsItem {...searchParams} />
         </BoardItem>
-        <BoardItem id="area-chart" header={<Header>Error Rate</Header>} columnSpan={2} rowSpan={3}>
+        <></>
+        {/* <BoardItem id="area-chart" header={<Header>Error Rate</Header>} columnSpan={2} rowSpan={3}>
           <AreaChart orgId={orgId} licenseKey={licenseKey} xScaleType="time">
             <Area query="avg" field="ERROR_RATE" interval="MINUTE" factor={1000} limit={100} />
           </AreaChart>
-        </BoardItem>
-        <BoardItem id="bar-chart" header={<Header>Video Codecs</Header>} columnSpan={2} rowSpan={3}>
+        </BoardItem> */}
+        {/* <BoardItem id="bar-chart" header={<Header>Video Codecs</Header>} columnSpan={2} rowSpan={3}>
           <BarChart orgId={orgId} licenseKey={licenseKey} interval="DAY" limit={100}>
             <Bar id="AVC" query="count" dimension="IMPRESSION_ID">
               <Filter field="SUPPORTED_VIDEO_CODECS" has="avc" />
@@ -54,8 +55,8 @@ export default async function Page(props: {
               <Filter field="VIDEO_STARTUPTIME" above={0} />
             </Bar>
           </BarChart>
-        </BoardItem>
-        <BoardItem id="impressions-table" header={<Header>Error Sessions</Header>} columnSpan={2} rowSpan={4}>
+        </BoardItem> */}
+        {/* <BoardItem id="impressions-table" header={<Header>Error Sessions</Header>} columnSpan={2} rowSpan={4}>
           <ImpressionsTable orgId={orgId} licenseKey={licenseKey} variant="embedded" stickyHeader limit={100}>
             <ImpressionsColumn id="IMPRESSION_ID" filters={[{ not: "null" }]}>
               ID
@@ -68,7 +69,7 @@ export default async function Page(props: {
             <ImpressionsColumn id="OPERATINGSYSTEM">OS</ImpressionsColumn>
             <ImpressionsColumn id="BROWSER">Browser</ImpressionsColumn>
           </ImpressionsTable>
-        </BoardItem>
+        </BoardItem> */}
       </Board>
     </ContentLayout>
   );
@@ -78,7 +79,14 @@ function SessionsItem(props: { orgId: string; licenseKey: string; channelArn: st
   const { orgId, licenseKey, channelArn } = props;
   const href = `/dashboard/sessions?orgId=${orgId}&licenseKey=${licenseKey}&channelArn=${channelArn}` as const;
   return (
-    <SessionsTable channelArn={channelArn} variant="embedded" stickyHeader maxResults={100}>
+    <SessionsTable
+      orgId={orgId}
+      licenseKey={licenseKey}
+      channelArn={channelArn}
+      variant="embedded"
+      stickyHeader
+      maxResults={100}
+    >
       <SessionsColumn id="streamId">Stream ID</SessionsColumn>
       <SessionsColumn id="startTime">Start Time</SessionsColumn>
       <SessionsColumn id="endTime">End Time</SessionsColumn>

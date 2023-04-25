@@ -35,7 +35,7 @@ function getIvs(config: AwsClientConfig = {}) {
 }
 
 function getCloudwatchClient(config: AwsClientConfig = {}) {
-  return new CloudWatchClient({ ...defaultConfig, ...config });
+  return new CloudWatchClient({ ...defaultConfig, ...config } as CloudWatchClientConfig);
 }
 
 export const getChannel = cache(async (channelArn: string, config: AwsClientConfig = {}) => {
