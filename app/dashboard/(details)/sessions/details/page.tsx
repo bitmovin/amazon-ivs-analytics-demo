@@ -70,6 +70,10 @@ export default async function Page(props: {
     </>
   );
 
+  const queryParamString = Object.keys(searchParams)
+    .map((param) => `${param}=${(searchParams as any)[param]}`)
+    .join("&");
+
   return (
     <ContentLayout header={<Header description={description}>Stream: {streamSession.streamId}</Header>}>
       <Board>
@@ -207,7 +211,12 @@ export default async function Page(props: {
             stickyHeader
             limit={15}
           >
-            <ImpressionsColumn id="IMPRESSION_ID" filters={[{ not: "null" }]}>
+            <ImpressionsColumn
+              id="IMPRESSION_ID"
+              filters={[{ not: "null" }]}
+              type="link"
+              href={`/dashboard/sessions/details/playback-session?${queryParamString}`}
+            >
               ID
             </ImpressionsColumn>
             <ImpressionsColumn id="TIME" type="date">
