@@ -5,6 +5,7 @@ import React, { Suspense, lazy } from "react";
 import type { TableProps } from "@cloudscape-design/components/table";
 import Spinner from "./Spinner";
 import { intlFormat } from "date-fns";
+import { ColumnProps } from "../column";
 
 const LazyTable = lazy(() => import("@cloudscape-design/components/table"));
 
@@ -14,7 +15,7 @@ if (typeof window === "undefined") {
 
 export default function Table(
   props: Omit<TableProps<unknown>, "trackBy" | "isItemDisabled" | "columnDefinitions"> & {
-    columns: { id: string; children?: JSX.Element | string; type?: 'date' }[];
+    columns: ColumnProps<string>[];
   }
 ) {
   return (
