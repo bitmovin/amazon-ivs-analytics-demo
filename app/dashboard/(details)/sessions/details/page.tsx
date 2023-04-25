@@ -105,7 +105,9 @@ export default async function Page(props: {
               streamSession?.truncatedEvents?.map((event) => {
                 return {
                   name: <>{event.name || ""}</>,
-                  time: <>{event.eventTime ? intlFormat(event.eventTime, intlDateTimeFormatConfig as any) : 'Unknown'}</>,
+                  time: (
+                    <>{event.eventTime ? intlFormat(event.eventTime, intlDateTimeFormatConfig as any) : "Unknown"}</>
+                  ),
                 };
               }) || []
             }
@@ -173,10 +175,17 @@ export default async function Page(props: {
             stickyHeader
             limit={15}
           >
-            <ImpressionsColumn id="IMPRESSION_ID" filters={[{ not: "null" }]}>
+            <ImpressionsColumn
+              id="IMPRESSION_ID"
+              filters={[{ not: "null" }]}
+              type="link"
+              href={`/dashboard/sessions/details/playback-session?${queryParamString}`}
+            >
               ID
             </ImpressionsColumn>
-            <ImpressionsColumn id="TIME" type="date">Latest Update</ImpressionsColumn>
+            <ImpressionsColumn id="TIME" type="date">
+              Latest Update
+            </ImpressionsColumn>
             <ImpressionsColumn id="OPERATINGSYSTEM">OS</ImpressionsColumn>
             <ImpressionsColumn id="PLATFORM">Platform</ImpressionsColumn>
             <ImpressionsColumn id="BROWSER">Browser</ImpressionsColumn>
@@ -201,7 +210,9 @@ export default async function Page(props: {
             <ImpressionsColumn id="IMPRESSION_ID" filters={[{ not: "null" }]}>
               ID
             </ImpressionsColumn>
-            <ImpressionsColumn id="TIME" type="date">Error Time</ImpressionsColumn>
+            <ImpressionsColumn id="TIME" type="date">
+              Error Time
+            </ImpressionsColumn>
             <ImpressionsColumn id="ERROR_CODE" filters={[{ above: 0 }, { not: 10000 }]}>
               Error
             </ImpressionsColumn>
