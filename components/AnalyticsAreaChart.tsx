@@ -12,13 +12,13 @@ import { QueryType, mapFilter } from "./filter";
 import { z } from "zod";
 import { Alert } from "./alert";
 
-export type ChartProps = {
+export type AnalyticsChartProps = {
   orgId: string;
   licenseKey: string;
   children: AreaElement<QueryType> | AreaElement<QueryType>[];
 } & Partial<AreaChartProps<ChartDataTypes>>;
 
-export default function AreaChart(props: ChartProps) {
+export default function AnalyticsAreaChart(props: AnalyticsChartProps) {
   return (
     <Suspense fallback={<Fallback {...props} />}>
       {/* @ts-expect-error suspense */}
@@ -27,7 +27,7 @@ export default function AreaChart(props: ChartProps) {
   );
 }
 
-export function Fallback(props: Partial<ChartProps>) {
+export function Fallback(props: Partial<AnalyticsChartProps>) {
   return (
     <AreaChartItem
       {...props}
@@ -42,7 +42,7 @@ export function Fallback(props: Partial<ChartProps>) {
   );
 }
 
-async function Component(props: ChartProps) {
+async function Component(props: AnalyticsChartProps) {
   try {
     const results = await fetchData(props);
 
@@ -52,7 +52,7 @@ async function Component(props: ChartProps) {
     return <AreaChartItem series={[]} empty={<Alert error={safeError} />} />;
   }
 }
-async function fetchData(props: ChartProps) {
+async function fetchData(props: AnalyticsChartProps) {
   const { orgId, licenseKey } = props;
   const now = Date.now();
   const start = new Date(now - 1000 * 60 * 60 * 3);

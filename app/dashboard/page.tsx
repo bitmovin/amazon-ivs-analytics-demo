@@ -2,7 +2,7 @@ import Board from "@/components/board";
 import BoardItem from "@/components/board-item";
 import BarChart from "@/components/bar-chart";
 import Bar from "@/components/bar";
-import AreaChart from "@/components/area-chart";
+import AnalyticsAreaChart from "@/components/AnalyticsAreaChart";
 import Header from "@/components/client/Header";
 import Filter from "@/components/filter";
 import Area from "@/components/area";
