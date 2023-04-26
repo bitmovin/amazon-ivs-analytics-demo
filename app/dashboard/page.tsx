@@ -1,6 +1,6 @@
 import Board from "@/components/board";
 import BoardItem from "@/components/board-item";
-import BarChart from "@/components/bar-chart";
+import AnalyticsBarChart from "@/components/AnalyticsBarChart";
 import Bar from "@/components/bar";
 import AnalyticsAreaChart from "@/components/AnalyticsAreaChart";
 import Header from "@/components/client/Header";
