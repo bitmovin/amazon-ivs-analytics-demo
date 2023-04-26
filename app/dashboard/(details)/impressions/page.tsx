@@ -1,5 +1,5 @@
 import Header from "@/components/client/Header";
-import Table, { Column } from "@/components/table";
+import AnalyticsTable, { AnalyticsTableColumn } from "@/components/AnalyticsTable";
 
 export default async function Page(props: {
   searchParams: {
@@ -8,23 +8,23 @@ export default async function Page(props: {
   };
 }) {
   return (
-    <Table
+    <AnalyticsTable
       params={props.searchParams}
       header={<Header variant="h2">Errors</Header>}
       stickyHeader
       variant="container"
       limit={100}
     >
-      <Column id="IMPRESSION_ID" filters={[{ not: "null" }]}>
+      <AnalyticsTableColumn id="IMPRESSION_ID" filters={[{ not: "null" }]}>
         ID
-      </Column>
-      <Column id="ERROR_CODE" filters={[{ above: 0 }, { not: 10000 }]}>
+      </AnalyticsTableColumn>
+      <AnalyticsTableColumn id="ERROR_CODE" filters={[{ above: 0 }, { not: 10000 }]}>
         Error
-      </Column>
-      <Column id="PATH">Path</Column>
-      <Column id="VIDEO_TITLE">Video</Column>
-      <Column id="OPERATINGSYSTEM">OS</Column>
-      <Column id="BROWSER">Browser</Column>
-    </Table>
+      </AnalyticsTableColumn>
+      <AnalyticsTableColumn id="PATH">Path</AnalyticsTableColumn>
+      <AnalyticsTableColumn id="VIDEO_TITLE">Video</AnalyticsTableColumn>
+      <AnalyticsTableColumn id="OPERATINGSYSTEM">OS</AnalyticsTableColumn>
+      <AnalyticsTableColumn id="BROWSER">Browser</AnalyticsTableColumn>
+    </AnalyticsTable>
   );
 }

@@ -9,7 +9,7 @@ import { Cell, ColumnElement, Item, TableColumn } from "./column";
 import { z } from "zod";
 import { Alert } from "./alert";
 
-export const Column = TableColumn<AttributeKey>;
+export const AnalyticsTableColumn = TableColumn<AttributeKey>;
 
 export type AnalyticsTableProps = {
   params: unknown;
@@ -18,7 +18,7 @@ export type AnalyticsTableProps = {
   footer?: JSX.Element;
 } & Partial<TableProps>;
 
-export default function Table(props: AnalyticsTableProps) {
+export default function AnalyticsTable(props: AnalyticsTableProps) {
   return (
     <Suspense fallback={<Fallback {...props} />}>
       {/* @ts-expect-error suspense */}
