@@ -7,6 +7,7 @@ import { getSession } from "@/server/session";
 import { getMetricImage, ImageMetric } from "@/server/aws";
 import { intlFormat } from "date-fns";
 import { redirect } from "next/navigation";
+import UserSession from "@/components/UserSession";
 
 export default async function Page(props: {
   searchParams: {
@@ -61,6 +62,18 @@ export default async function Page(props: {
   return (
     <ContentLayout header={<Header>Playback Session {analyticsSessionId}</Header>}>
       <Board>
+        <BoardItem
+          id="UserSessionInfo"
+          header={<Header variant="h3">User Session Details</Header>}
+          columnSpan={4}
+          rowSpan={4}
+        >
+          <UserSession
+            orgId={orgId}
+            licenseKey={licenseKey}
+            sessionId={analyticsSessionId}
+          ></UserSession>
+        </BoardItem>
         <BoardItem
           id="StreamSessionHealth"
           header={<Header variant="h3">Stream Health</Header>}
