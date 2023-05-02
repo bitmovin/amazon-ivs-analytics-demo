@@ -1,10 +1,11 @@
 import "server-only";
 
 import { Suspense } from "react";
-import { QueryType, mapFilter } from "./filter";
+import Spinner from "@/components/client/Spinner";
 import React from "react";
 import { z } from "zod";
 import { fetchImpression } from "../server/bitmovin";
+import { Alert } from "./alert";
 
 export type UserSessionProps = {
   orgId: string;
@@ -23,7 +24,10 @@ export default function UserSession(props: UserSessionProps) {
 
 export function Fallback(props: Partial<UserSessionProps>) {
   return (
-    <>Fallback</>
+    <div>
+      <Spinner />
+      Loading sessions
+    </div>
   );
 }
 
@@ -65,7 +69,7 @@ async function Component(props: UserSessionProps) {
     );
   } catch (e) {
     const safeError = z.instanceof(Error).parse(e);
-    return <>{safeError}</>
+    return <Alert error={safeError} />
   }
 }
 
