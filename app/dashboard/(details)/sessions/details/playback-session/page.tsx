@@ -60,7 +60,7 @@ export default async function Page(props: {
     streamSession.endTime || new Date()
   );
 
-  const analyticsImpression = await getAnalyticsImpression(licenseKey, analyticsSessionId) as any;
+  const analyticsImpression = (await getAnalyticsImpression(licenseKey, analyticsSessionId)) as any;
 
   return (
     <ContentLayout header={<Header>Playback Session {analyticsSessionId}</Header>}>
@@ -71,9 +71,7 @@ export default async function Page(props: {
           columnSpan={4}
           rowSpan={4}
         >
-          <UserSession
-            data={analyticsImpression[0]}
-          ></UserSession>
+          <UserSession data={analyticsImpression[0]}></UserSession>
         </BoardItem>
         <BoardItem
           id="StreamSessionHealth"

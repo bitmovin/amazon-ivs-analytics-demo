@@ -8,7 +8,7 @@ import { z } from "zod";
 import { Alert } from "./alert";
 
 export type UserSessionProps = {
-  analyticsSamples: AnalyticsImpressionSample[];
+  data: AnalyticsImpressionSample[];
 };
 
 export default function UserSession(props: UserSessionProps) {
@@ -31,7 +31,7 @@ export function Fallback(props: Partial<UserSessionProps>) {
 
 async function Component(props: UserSessionProps) {
   try {
-    const analyticsSamples = props.analyticsSamples;
+    const analyticsSamples = props.data;
 
     // Should not be as it's 'AnalyticsImpressionSample[]' but Typescript types are all over the place.
     // Example: Types define `browserVersionMajor` but API returns `browser_version_major`
