@@ -9,6 +9,7 @@ import { intlFormat } from "date-fns";
 import { redirect } from "next/navigation";
 import UserSession from "@/components/UserSession";
 import { fetchImpression } from "@/server/bitmovin";
+import UserSessionLog from "@/components/UserSessionLog";
 
 export default async function Page(props: {
   searchParams: {
@@ -72,6 +73,14 @@ export default async function Page(props: {
           rowSpan={4}
         >
           <UserSession data={analyticsImpression[0]}></UserSession>
+        </BoardItem>
+        <BoardItem
+          id="UserSessionLog"
+          header={<Header variant="h3">User Session Log</Header>}
+          columnSpan={4}
+          rowSpan={4}
+        >
+          <UserSessionLog analyticsSamples={analyticsImpression[0]} variant="embedded"></UserSessionLog>
         </BoardItem>
         <BoardItem
           id="StreamSessionHealth"
