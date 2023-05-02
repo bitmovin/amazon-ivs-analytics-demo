@@ -1,16 +1,14 @@
 import "server-only";
 
 import { Suspense } from "react";
+import { AnalyticsImpressionSample } from "@bitmovin/api-sdk";
 import Spinner from "@/components/client/Spinner";
 import React from "react";
 import { z } from "zod";
-import { fetchImpression } from "../server/bitmovin";
 import { Alert } from "./alert";
 
 export type UserSessionProps = {
-  orgId: string;
-  licenseKey: string;
-  sessionId: string;
+  analyticsSamples: AnalyticsImpressionSample[];
 };
 
 export default function UserSession(props: UserSessionProps) {
@@ -33,18 +31,18 @@ export function Fallback(props: Partial<UserSessionProps>) {
 
 async function Component(props: UserSessionProps) {
   try {
-    const analyticsSamples = await fetchData(props)
+    const analyticsSamples = props.analyticsSamples;
 
-    // Should be 'as AnalyticsImpressionSample' but Typescript types are all over the place.
+    // Should not be as it's 'AnalyticsImpressionSample[]' but Typescript types are all over the place.
     // Example: Types define `browserVersionMajor` but API returns `browser_version_major`
-    const firstSample = (analyticsSamples as any)[0][0];
+    const firstSample = (analyticsSamples as any)[0];
 
     const customDataLiArray = [];
     for (let i = 1; i <= 30; i++) {
       customDataLiArray.push(<li>Custom Data {i}: {firstSample[`custom_data_${i}`]}</li>);
     }
 
-    const errorSample = (analyticsSamples as any)[0].find((sample: any) => sample.state === "error");
+    const errorSample = (analyticsSamples as any).find((sample: any) => sample.state === "error");
     const errorInfoElement = errorSample 
       ? <li>Error: {errorSample.error_message} ({errorSample.error_code}). Details: {errorSample.data}</li>
       : <li>No error occurred</li>;
@@ -71,15 +69,4 @@ async function Component(props: UserSessionProps) {
     const safeError = z.instanceof(Error).parse(e);
     return <Alert error={safeError} />
   }
-}
-
-async function fetchData(props: UserSessionProps) {
-  const Params = z.object({
-    orgId: z.string().uuid(),
-    licenseKey: z.string().uuid(),
-    sessionId: z.string().uuid(),
-  });
-  const { orgId, licenseKey, sessionId } = props;
-
-  return await fetchImpression(sessionId, licenseKey);
 }

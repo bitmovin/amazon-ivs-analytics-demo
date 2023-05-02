@@ -8,6 +8,7 @@ import { getMetricImage, ImageMetric } from "@/server/aws";
 import { intlFormat } from "date-fns";
 import { redirect } from "next/navigation";
 import UserSession from "@/components/UserSession";
+import { fetchImpression } from "@/server/bitmovin";
 
 export default async function Page(props: {
   searchParams: {
@@ -59,6 +60,8 @@ export default async function Page(props: {
     streamSession.endTime || new Date()
   );
 
+  const analyticsImpression = await getAnalyticsImpression(licenseKey, analyticsSessionId) as any;
+
   return (
     <ContentLayout header={<Header>Playback Session {analyticsSessionId}</Header>}>
       <Board>
@@ -69,9 +72,7 @@ export default async function Page(props: {
           rowSpan={4}
         >
           <UserSession
-            orgId={orgId}
-            licenseKey={licenseKey}
-            sessionId={analyticsSessionId}
+            data={analyticsImpression[0]}
           ></UserSession>
         </BoardItem>
         <BoardItem
@@ -146,4 +147,8 @@ function getFallbackDateNowMinusDaysAgo(days: number = 14): Date {
   const day = date.getDate() - days;
   date.setDate(day);
   return date;
+}
+
+async function getAnalyticsImpression(licenseKey: string, sessionId: string) {
+  return await fetchImpression(sessionId, licenseKey);
 }
