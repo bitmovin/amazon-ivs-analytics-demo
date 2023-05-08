@@ -10,6 +10,7 @@ import { redirect } from "next/navigation";
 import UserSession from "@/components/UserSession";
 import { fetchImpression } from "@/server/bitmovin";
 import UserSessionLog from "@/components/UserSessionLog";
+import ClientButton from "@/components/client/Button";
 
 export default async function Page(props: {
   searchParams: {
@@ -63,8 +64,22 @@ export default async function Page(props: {
 
   const analyticsImpression = (await getAnalyticsImpression(licenseKey, analyticsSessionId)) as any;
 
+  const bmDashboardLink = `https://bitmovin.com/dashboard/analytics/sessions/${analyticsSessionId}?licenseKey=${licenseKey}&orgId=${orgId}`;
+
   return (
-    <ContentLayout header={<Header>Playback Session {analyticsSessionId}</Header>}>
+    <ContentLayout
+      header={
+        <Header
+          description={
+            <a href={bmDashboardLink} target="about:blank">
+              <ClientButton>Open Session in Bitmovin Dashboard</ClientButton>
+            </a>
+          }
+        >
+          Playback Session {analyticsSessionId}
+        </Header>
+      }
+    >
       <Board>
         <BoardItem
           id="UserSessionInfo"
