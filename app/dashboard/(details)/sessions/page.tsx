@@ -27,6 +27,8 @@ export default async function Page(props: {
         stickyHeader
         variant="container"
         maxResults={100}
+        orgId={orgId}
+        licenseKey={licenseKey}
       >
         <SessionsColumn id="streamId">Path</SessionsColumn>
         <SessionsColumn id="startTime">Video</SessionsColumn>
