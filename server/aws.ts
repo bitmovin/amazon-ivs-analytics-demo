@@ -24,10 +24,10 @@ export type AwsClientConfig = IvsClientConfig | CloudWatchClientConfig;
 
 const defaultConfig: AwsClientConfig = {
   credentials: {
-    accessKeyId: requireEnv("AWS_ACCESS_KEY"),
-    secretAccessKey: requireEnv("AWS_SECRET_KEY"),
+    accessKeyId: requireEnv("AMAZON_ACCESS_KEY"),
+    secretAccessKey: requireEnv("AMAZON_SECRET_KEY"),
   },
-  region: requireEnv("AWS_REGION") || "us-east-1",
+  region: requireEnv("AMAZON_REGION") || "us-east-1",
 };
 
 function getIvs(config: AwsClientConfig = {}) {
