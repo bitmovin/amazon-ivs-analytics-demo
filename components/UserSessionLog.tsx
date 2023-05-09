@@ -79,7 +79,7 @@ async function Component(props: UserSessionLogProps) {
       };
     });
 
-    return <ClientTable {...props} columns={columns} items={relevantFieldsOnly} resizableColumns />;
+    return <ClientTable {...props} columns={columns} items={relevantFieldsOnly} />;
   } catch (e) {
     const safeError = z.instanceof(Error).parse(e);
     return <Alert error={safeError}></Alert>;
