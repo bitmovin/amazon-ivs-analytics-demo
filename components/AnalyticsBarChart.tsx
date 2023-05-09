@@ -13,7 +13,7 @@ import React from "react";
 import { z } from "zod";
 import { Alert } from "./alert";
 
-export type ChartProps = {
+export type AnalyticsChartProps = {
   orgId: string;
   licenseKey: string;
   limit: number;
@@ -26,7 +26,7 @@ export type ChartProps = {
   children: BarElement<QueryType>[];
 } & Partial<BarChartProps<ChartDataTypes>>;
 
-export default function BarChart(props: ChartProps) {
+export default function AnalyticsBarChart(props: AnalyticsChartProps) {
   return (
     <Suspense fallback={<Fallback {...props} />}>
       {/* @ts-expect-error suspense */}
@@ -35,7 +35,7 @@ export default function BarChart(props: ChartProps) {
   );
 }
 
-export function Fallback(props: Partial<ChartProps>) {
+export function Fallback(props: Partial<AnalyticsChartProps>) {
   return (
     <ClientBarChart
       {...props}
@@ -50,7 +50,7 @@ export function Fallback(props: Partial<ChartProps>) {
   );
 }
 
-async function Component(props: ChartProps) {
+async function Component(props: AnalyticsChartProps) {
   try {
     const results = await fetchData(props);
 
@@ -69,7 +69,7 @@ async function Component(props: ChartProps) {
   }
 }
 
-async function fetchData(props: ChartProps) {
+async function fetchData(props: AnalyticsChartProps) {
   const Params = z.object({
     orgId: z.string().uuid(),
     licenseKey: z.string().uuid(),

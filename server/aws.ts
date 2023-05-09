@@ -89,7 +89,7 @@ export const getMetricImage = async (
   if (!period) {
     return null;
   }
-  
+
   // See https://docs.aws.amazon.com/AmazonCloudWatch/latest/APIReference/CloudWatch-Metric-Widget-Structure.html
   const getMetricWidgetImageInput = {
     MetricWidget: JSON.stringify({
@@ -115,7 +115,7 @@ export const getMetricImage = async (
 
 /**
  * Calculates the best possible period (in seconds) for metrics, based on data aging.
- * 
+ *
  * Valid Values: 1, 5, 10, 30, 60, and any multiple of 60. 1, 5, 10, and 30 are only for high-resolution metrics.
  * See also https://docs.aws.amazon.com/AmazonCloudWatch/latest/APIReference/CloudWatch-Metric-Widget-Structure.html
  */

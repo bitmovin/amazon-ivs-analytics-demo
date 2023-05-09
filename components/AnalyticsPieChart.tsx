@@ -6,9 +6,9 @@ import { fetchImpressions } from "@/server/bitmovin";
 import { AnalyticsAttribute, AnalyticsNotEqualFilter, AnalyticsQueryOperator } from "@bitmovin/api-sdk";
 import Spinner from "@/components/client/Spinner";
 
-export type PieChartProps = { licenseKey: string; orgId: string };
+export type AnalyticsPieChartProps = { licenseKey: string; orgId: string };
 
-export default function PieChart(props: PieChartProps) {
+export default function AnalyticsPieChart(props: AnalyticsPieChartProps) {
   return (
     <Suspense fallback={<Fallback />}>
       {/* @ts-expect-error suspense */}
@@ -32,7 +32,7 @@ function Fallback() {
   );
 }
 
-async function Component(props: PieChartProps) {
+async function Component(props: AnalyticsPieChartProps) {
   const now = Date.now();
   const start = new Date(now - 1000 * 60 * 10);
   const end = new Date(now);
