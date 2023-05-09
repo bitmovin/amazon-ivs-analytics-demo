@@ -2,8 +2,6 @@ import ContentLayout from "@/components/client/ContentLayout";
 import SessionsTable, { SessionsColumn as SessionsColumn } from "./table";
 import Header from "@/components/client/Header";
 import { getSession } from "@/server/session";
-import { redirect } from "next/navigation";
-import Link from "next/link";
 
 export default async function Page(props: {
   searchParams: {
