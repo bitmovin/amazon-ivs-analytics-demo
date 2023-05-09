@@ -85,7 +85,7 @@ export default async function Page(props: {
           id="UserSessionInfo"
           header={<Header variant="h3">User Session Details</Header>}
           columnSpan={4}
-          rowSpan={4}
+          rowSpan={8}
         >
           <UserSession data={analyticsImpression[0]}></UserSession>
         </BoardItem>
