@@ -5,7 +5,6 @@ import Bar from "@/components/bar";
 import AnalyticsAreaChart from "@/components/AnalyticsAreaChart";
 import Header from "@/components/client/Header";
 import Filter from "@/components/filter";
-import Area from "@/components/area";
 import ImpressionsTable, { ImpressionsColumn } from "./(details)/impressions/table";
 import SessionsTable, { SessionsColumn } from "./(details)/sessions/table";
 import ContentLayout from "@/components/client/ContentLayout";
@@ -31,11 +30,6 @@ export default async function Page(props: {
           <SessionsItem {...searchParams} />
         </BoardItem>
         <></>
-        {/* <BoardItem id="area-chart" header={<Header>Error Rate</Header>} columnSpan={2} rowSpan={3}>
-          <AreaChart orgId={orgId} licenseKey={licenseKey} xScaleType="time">
-            <Area query="avg" field="ERROR_RATE" interval="MINUTE" factor={1000} limit={100} />
-          </AreaChart>
-        </BoardItem> */}
         {/* <BoardItem id="bar-chart" header={<Header>Video Codecs</Header>} columnSpan={2} rowSpan={3}>
           <BarChart orgId={orgId} licenseKey={licenseKey} interval="DAY" limit={100}>
             <Bar id="AVC" query="count" dimension="IMPRESSION_ID">

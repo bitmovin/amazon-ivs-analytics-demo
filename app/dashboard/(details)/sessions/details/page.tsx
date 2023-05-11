@@ -9,6 +9,8 @@ import { getSession } from "@/server/session";
 import { intlFormat } from "date-fns";
 import { redirect } from "next/navigation";
 import ImpressionsTable, { ImpressionsColumn } from "../../impressions/table";
+import AnalyticsAreaChart from "@/components/AnalyticsAreaChart";
+import Area from "@/components/area";
 
 export default async function Page(props: {
   searchParams: {
@@ -163,6 +165,17 @@ export default async function Page(props: {
           rowSpan={3}
         >
           <h5>No data yet</h5>
+        </BoardItem>
+        <BoardItem id="area-chart" header={<Header>Error Rate</Header>} columnSpan={2} rowSpan={4}>
+          <AnalyticsAreaChart
+            orgId={orgId}
+            licenseKey={licenseKey}
+            start={streamSession.startTime}
+            end={streamSession.endTime || new Date()}
+            xScaleType="time"
+          >
+            <Area query="avg" field="ERROR_RATE" interval="MINUTE" factor={1000} limit={100} />
+          </AnalyticsAreaChart>
         </BoardItem>
         <BoardItem
           id="PlaybackSessionList"
