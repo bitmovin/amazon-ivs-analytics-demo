@@ -19,7 +19,7 @@ export default function ClientBreadcrumbGroup(props: {}) {
   const breadcrumbs: { text: string; href: string }[] = [];
   for (let i = 0; i < routeParts.length; i++) {
     breadcrumbs.push({
-      text: routeParts[i] || "/",
+      text: routeParts[i].toUpperCase().replaceAll("-", " ") || "/",
       href: (routeParts.slice(0, i + 1).join("/") || "/") + "?" + route[0].split("?")[1],
     });
   }
