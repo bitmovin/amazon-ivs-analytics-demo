@@ -52,7 +52,6 @@ export function Fallback(props: IvsStreamSessionsProps) {
       loading={true}
       loadingText="Loading sessions"
       items={[]}
-      resizableColumns
     />
   );
 }
@@ -72,7 +71,6 @@ async function Component(props: IvsStreamSessionsProps) {
         columns={columns}
         loading={false}
         items={[]}
-        resizableColumns
         empty={<Alert error={safeError} />}
       />
     );
