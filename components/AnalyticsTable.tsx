@@ -35,7 +35,6 @@ export function Fallback(props: AnalyticsTableProps) {
       loading
       loadingText="Loading sessions"
       items={[]}
-      resizableColumns
     />
   );
 }
@@ -45,7 +44,7 @@ async function Component(props: AnalyticsTableProps) {
   try {
     const results = await fetchData(props);
 
-    return <ClientTable {...props} columns={columns} items={results} resizableColumns />;
+    return <ClientTable {...props} columns={columns} items={results} />;
   } catch (e) {
     const safeError = z.instanceof(Error).parse(e);
 
@@ -54,7 +53,6 @@ async function Component(props: AnalyticsTableProps) {
         {...props}
         columns={props.children.map(({ props }) => props)}
         items={[]}
-        resizableColumns
         empty={<Alert error={safeError} />}
       />
     );

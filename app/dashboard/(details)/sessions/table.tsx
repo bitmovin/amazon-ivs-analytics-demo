@@ -52,7 +52,6 @@ export function Fallback(props: IvsStreamSessionsProps) {
       loading={true}
       loadingText="Loading sessions"
       items={[]}
-      resizableColumns
     />
   );
 }
@@ -62,20 +61,11 @@ async function Component(props: IvsStreamSessionsProps) {
   try {
     const results = await fetchData(props);
 
-    return <ClientTable {...props} columns={columns} loading={false} items={results} resizableColumns />;
+    return <ClientTable {...props} columns={columns} loading={false} items={results} empty="No elements to display" />;
   } catch (e) {
     const safeError = z.instanceof(Error).parse(e);
 
-    return (
-      <ClientTable
-        {...props}
-        columns={columns}
-        loading={false}
-        items={[]}
-        resizableColumns
-        empty={<Alert error={safeError} />}
-      />
-    );
+    return <ClientTable {...props} columns={columns} loading={false} items={[]} empty={<Alert error={safeError} />} />;
   }
 }
 

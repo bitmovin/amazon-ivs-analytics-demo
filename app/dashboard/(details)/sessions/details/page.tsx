@@ -9,6 +9,8 @@ import { getSession } from "@/server/session";
 import { intlFormat } from "date-fns";
 import { redirect } from "next/navigation";
 import ImpressionsTable, { ImpressionsColumn } from "../../impressions/table";
+import AnalyticsAreaChart from "@/components/AnalyticsAreaChart";
+import Area from "@/components/area";
 
 export default async function Page(props: {
   searchParams: {
@@ -71,6 +73,7 @@ export default async function Page(props: {
   );
 
   const queryParamString = Object.keys(searchParams)
+    .filter((param) => (searchParams as any)[param])
     .map((param) => `${param}=${(searchParams as any)[param]}`)
     .join("&");
 
@@ -148,21 +151,16 @@ export default async function Page(props: {
             ]}
           />
         </BoardItem>
-        <BoardItem
-          id="StreamSessionMetrics"
-          header={<Header variant="h3">Stream Metrics</Header>}
-          columnSpan={1}
-          rowSpan={3}
-        >
-          <h5>No data yet</h5>
-        </BoardItem>
-        <BoardItem
-          id="PlaybackHealth"
-          header={<Header variant="h3">Playback Health</Header>}
-          columnSpan={1}
-          rowSpan={3}
-        >
-          <h5>No data yet</h5>
+        <BoardItem id="ErrorRate" header={<Header>Error Rate</Header>} columnSpan={2} rowSpan={4}>
+          <AnalyticsAreaChart
+            orgId={orgId}
+            licenseKey={licenseKey}
+            startTime={streamSession.startTime.getTime()}
+            endTime={streamSession.endTime?.getTime() || Date.now()}
+            xScaleType="time"
+          >
+            <Area query="avg" field="ERROR_RATE" interval="MINUTE" factor={1000} limit={100} />
+          </AnalyticsAreaChart>
         </BoardItem>
         <BoardItem
           id="PlaybackSessionList"
@@ -173,8 +171,8 @@ export default async function Page(props: {
           <ImpressionsTable
             orgId={orgId}
             licenseKey={licenseKey}
-            startDate={streamSession.startTime.toISOString()}
-            endDate={streamSession.endTime ? streamSession.endTime.toISOString() : undefined}
+            startTime={streamSession.startTime.getTime()}
+            endTime={streamSession.endTime?.getTime() || Date.now()}
             variant="embedded"
             stickyHeader
             limit={15}
@@ -205,8 +203,8 @@ export default async function Page(props: {
           <ImpressionsTable
             orgId={orgId}
             licenseKey={licenseKey}
-            startDate={streamSession.startTime.toISOString()}
-            endDate={streamSession.endTime ? streamSession.endTime.toISOString() : undefined}
+            startTime={streamSession.startTime.getTime()}
+            endTime={streamSession.endTime?.getTime() || Date.now()}
             variant="embedded"
             stickyHeader
             limit={15}
