@@ -154,8 +154,8 @@ export default async function Page(props: {
           <AnalyticsAreaChart
             orgId={orgId}
             licenseKey={licenseKey}
-            start={streamSession.startTime}
-            end={streamSession.endTime || new Date()}
+            startTime={streamSession.startTime.getTime()}
+            endTime={streamSession.endTime?.getTime() || Date.now()}
             xScaleType="time"
           >
             <Area query="avg" field="ERROR_RATE" interval="MINUTE" factor={1000} limit={100} />
@@ -170,8 +170,8 @@ export default async function Page(props: {
           <ImpressionsTable
             orgId={orgId}
             licenseKey={licenseKey}
-            startDate={streamSession.startTime.toISOString()}
-            endDate={streamSession.endTime ? streamSession.endTime.toISOString() : undefined}
+            startTime={streamSession.startTime.getTime()}
+            endTime={streamSession.endTime?.getTime() || Date.now()}
             variant="embedded"
             stickyHeader
             limit={15}
@@ -202,8 +202,8 @@ export default async function Page(props: {
           <ImpressionsTable
             orgId={orgId}
             licenseKey={licenseKey}
-            startDate={streamSession.startTime.toISOString()}
-            endDate={streamSession.endTime ? streamSession.endTime.toISOString() : undefined}
+            startTime={streamSession.startTime.getTime()}
+            endTime={streamSession.endTime?.getTime() || Date.now()}
             variant="embedded"
             stickyHeader
             limit={15}

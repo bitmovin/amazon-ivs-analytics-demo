@@ -12,8 +12,8 @@ export const ImpressionsColumn = TableColumn<AttributeKey>;
 export type AnalyticsTableProps = {
   orgId: string;
   licenseKey: string;
-  startDate: string;
-  endDate: string | undefined;
+  startTime: number;
+  endTime: number;
   children: ColumnElement<AttributeKey>[];
   limit: number;
   footer?: JSX.Element;
@@ -61,7 +61,7 @@ async function Component(props: AnalyticsTableProps) {
 }
 
 async function fetchData(props: AnalyticsTableProps) {
-  const { orgId, licenseKey, startDate, endDate } = props;
+  const { orgId, licenseKey, startTime, endTime } = props;
   const columns = props.children.map((c) => c.props.id.toLowerCase() as Lowercase<AttributeKey>);
   const filters = props.children
     .flatMap(
@@ -75,9 +75,8 @@ async function fetchData(props: AnalyticsTableProps) {
     .map(mapFilter)
     .flatMap((filter) => (filter ? [filter] : []));
 
-  const now = Date.now();
-  const start = new Date(startDate);
-  const end = endDate ? new Date(endDate) : new Date(now);
+  const start = new Date(startTime);
+  const end = new Date(endTime);
 
   const result = await fetchImpressions({ next: { revalidate: 60 } }, orgId, {
     licenseKey,

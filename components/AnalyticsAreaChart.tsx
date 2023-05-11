@@ -16,8 +16,8 @@ export type AnalyticsChartProps = {
   orgId: string;
   licenseKey: string;
   children: AreaElement<QueryType> | AreaElement<QueryType>[];
-  start: Date;
-  end: Date;
+  startTime: number;
+  endTime: number;
 } & Partial<AreaChartProps<ChartDataTypes>>;
 
 export default function AnalyticsAreaChart(props: AnalyticsChartProps) {
@@ -55,7 +55,7 @@ async function Component(props: AnalyticsChartProps) {
   }
 }
 async function fetchData(props: AnalyticsChartProps) {
-  const { orgId, licenseKey, start, end } = props;
+  const { orgId, licenseKey, startTime, endTime } = props;
 
   const results = await Promise.all(
     [props.children]
@@ -72,8 +72,8 @@ async function fetchData(props: AnalyticsChartProps) {
             : [],
           dimension: AnalyticsAttribute[area.props.field],
           includeContext: true,
-          start,
-          end,
+          start: new Date(startTime),
+          end: new Date(endTime),
           interval: AnalyticsInterval[area.props.interval ?? "MINUTE"],
           licenseKey,
           groupBy: area.props.groupBy?.map((g) => AnalyticsAttribute[g]) ?? [],
