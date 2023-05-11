@@ -73,6 +73,7 @@ export default async function Page(props: {
   );
 
   const queryParamString = Object.keys(searchParams)
+    .filter((param) => (searchParams as any)[param])
     .map((param) => `${param}=${(searchParams as any)[param]}`)
     .join("&");
 
