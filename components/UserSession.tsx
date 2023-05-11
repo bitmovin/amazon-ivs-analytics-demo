@@ -101,9 +101,7 @@ async function Component(props: UserSessionProps) {
               <th colSpan={6}>Errors</th>
             </tr>
           </thead>
-          <tbody>
-            {errorInfoElement}
-          </tbody>
+          <tbody>{errorInfoElement}</tbody>
           <thead>
             <tr>
               <th colSpan={6}>Device</th>
