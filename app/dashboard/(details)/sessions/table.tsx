@@ -65,15 +65,7 @@ async function Component(props: IvsStreamSessionsProps) {
   } catch (e) {
     const safeError = z.instanceof(Error).parse(e);
 
-    return (
-      <ClientTable
-        {...props}
-        columns={columns}
-        loading={false}
-        items={[]}
-        empty={<Alert error={safeError} />}
-      />
-    );
+    return <ClientTable {...props} columns={columns} loading={false} items={[]} empty={<Alert error={safeError} />} />;
   }
 }
 
