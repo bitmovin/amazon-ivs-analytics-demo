@@ -62,7 +62,7 @@ async function Component(props: IvsStreamSessionsProps) {
   try {
     const results = await fetchData(props);
 
-    return <ClientTable {...props} columns={columns} loading={false} items={results} resizableColumns />;
+    return <ClientTable {...props} columns={columns} loading={false} items={results} empty="No elements to display" />;
   } catch (e) {
     const safeError = z.instanceof(Error).parse(e);
 
