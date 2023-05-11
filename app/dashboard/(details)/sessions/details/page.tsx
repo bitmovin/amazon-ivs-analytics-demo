@@ -150,23 +150,7 @@ export default async function Page(props: {
             ]}
           />
         </BoardItem>
-        <BoardItem
-          id="StreamSessionMetrics"
-          header={<Header variant="h3">Stream Metrics</Header>}
-          columnSpan={1}
-          rowSpan={3}
-        >
-          <h5>No data yet</h5>
-        </BoardItem>
-        <BoardItem
-          id="PlaybackHealth"
-          header={<Header variant="h3">Playback Health</Header>}
-          columnSpan={1}
-          rowSpan={3}
-        >
-          <h5>No data yet</h5>
-        </BoardItem>
-        <BoardItem id="area-chart" header={<Header>Error Rate</Header>} columnSpan={2} rowSpan={4}>
+        <BoardItem id="ErrorRate" header={<Header>Error Rate</Header>} columnSpan={2} rowSpan={4}>
           <AnalyticsAreaChart
             orgId={orgId}
             licenseKey={licenseKey}
