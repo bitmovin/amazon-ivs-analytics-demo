@@ -60,7 +60,7 @@ export default function TopNavigation(props: {
         utilities={[
           {
             type: "menu-dropdown",
-            text: props.channelName,
+            text: "Channels",
             iconName: "video-on",
             disableTextCollapse: true,
             disableUtilityCollapse: true,
