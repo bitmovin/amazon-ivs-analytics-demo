@@ -19,7 +19,7 @@ export default function TopNavigation(props: {
   channelArn: string;
   licenseKey: string;
   orgId: string;
-  channelName: {};
+  channelName: string;
   channels: {
     arn: string;
     name: string;
@@ -47,7 +47,7 @@ export default function TopNavigation(props: {
         identity={{
           href: props.href,
           title: props.title,
-          logo: { src: "/favicon.ico", alt: "logo" },
+          logo: { src: "/bitmovin.svg", alt: "logo" },
           onFollow: (event) => {
             event.preventDefault();
             router.push(props.href);
@@ -60,7 +60,7 @@ export default function TopNavigation(props: {
         utilities={[
           {
             type: "menu-dropdown",
-            text: "Channels",
+            text: props.channelName,
             iconName: "video-on",
             disableTextCollapse: true,
             disableUtilityCollapse: true,
