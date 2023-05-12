@@ -36,7 +36,7 @@ async function Component(params: { licenseKey?: string; orgId?: string; channelA
   return (
     <ClientTopNavigation
       href="/"
-      title="Bitmovin"
+      title="Amazon IVS & Bitmovin Analytics Demo"
       firstName={`${information.firstName ?? ""}`}
       orgId={orgId}
       licenseKey={licenseKey}
