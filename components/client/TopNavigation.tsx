@@ -47,7 +47,7 @@ export default function TopNavigation(props: {
         identity={{
           href: props.href,
           title: props.title,
-          logo: { src: "/favicon.ico", alt: "logo" },
+          logo: { src: "/bitmovin.svg", alt: "logo" },
           onFollow: (event) => {
             event.preventDefault();
             router.push(props.href);
